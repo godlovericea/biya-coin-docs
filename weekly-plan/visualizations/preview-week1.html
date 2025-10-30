@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1: 基础架构与钱包</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #48bb78;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            border-left: 5px solid #48bb78;
+            padding-left: 15px;
+        }
+        .mermaid {
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #48bb78;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 5px;
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: #48bb78;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Week 1: 基础架构与钱包 (Day 1-7)</h1>
+        
+        <div style="background: #e6fffa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <strong>🎯 目标：</strong> 项目可运行，钱包可连接，市场数据可展示<br>
+            <strong>👥 负责人：</strong> 全员（5人）<br>
+            <strong>✅ 验收：</strong> yarn dev启动成功，可连接Metamask，显示市场列表
+        </div>
+
+        <div class="nav">
+            <a href="preview-gantt.html">📅 甘特图</a>
+            <a href="preview-mindmap.html">🧠 思维导图总览</a>
+            <a href="preview-week2.html">➡️ Week 2</a>
+        </div>
+
+        <h2>📋 每日工作流程</h2>
+        <div class="mermaid">
+graph TD
+    A[Day 1: 项目搭建] --> B[Day 2: 目录结构]
+    B --> C[Day 3-4: 钱包连接]
+    B --> D[Day 5-6: 市场数据]
+    C --> E[Day 7: 主页路由]
+    D --> E
+    
+    style A fill:#90EE90
+    style B fill:#87CEEB
+    style C fill:#FFB6C1
+    style D fill:#DDA0DD
+    style E fill:#F0E68C
+        </div>
+
+        <h2>⏱️ 工时分配</h2>
+        <div class="mermaid">
+pie title "Week 1 工时分配 (40小时)"
+    "Day 1: 项目搭建" : 8
+    "Day 2: 目录结构" : 8
+    "Day 3-4: 钱包连接" : 16
+    "Day 5-6: 市场数据" : 16
+    "Day 7: 主页路由" : 8
+        </div>
+
+        <h2>🏗️ 技术栈</h2>
+        <div class="mermaid">
+graph LR
+    A[Week 1 技术栈]
+    
+    A --> B[Next.js 15]
+    A --> C[TypeScript]
+    A --> D[Tailwind CSS]
+    A --> E[Zustand]
+    A --> F[Injective SDK]
+    A --> G[React Query]
+    A --> H[Radix UI]
+    
+    B --> B1[App Router]
+    C --> C1[严格模式]
+    D --> D1[暗色主题]
+    E --> E1[persist中间件]
+    F --> F1[Wallet Strategy]
+    G --> G1[缓存策略]
+    H --> H1[Dialog/Dropdown]
+        </div>
+
+        <h2>✅ 验收标准</h2>
+        <div class="mermaid">
+graph TB
+    subgraph 功能验收
+        F1[✓ 项目可启动]
+        F2[✓ 4种钱包连接]
+        F3[✓ 市场数据显示]
+        F4[✓ 主题/语言切换]
+    end
+    
+    subgraph 性能验收
+        P1[✓ 首屏 < 3s]
+        P2[✓ 钱包 < 2s]
+        P3[✓ 无卡顿]
+    end
+    
+    subgraph 质量验收
+        Q1[✓ 无TS错误]
+        Q2[✓ 无Lint错误]
+        Q3[✓ 代码规范]
+    end
+    
+    F1 --> F2
+    F2 --> F3
+    F3 --> F4
+    F4 --> P1
+    P1 --> P2
+    P2 --> P3
+    P3 --> Q1
+    Q1 --> Q2
+    Q2 --> Q3
+    Q3 --> PASS[Week 1 通过✅]
+    
+    style PASS fill:#90EE90,stroke:#006400,stroke-width:3px
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f7fafc; border-radius: 8px;">
+            <h3>📊 关键指标</h3>
+            <div class="badge">功能验收: 18项</div>
+            <div class="badge">性能验收: 4项</div>
+            <div class="badge">质量验收: 6项</div>
+            <div class="badge">UI验收: 7项</div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>
+

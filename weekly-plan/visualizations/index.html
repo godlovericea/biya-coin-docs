@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8周迁移计划 - 可视化导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+        }
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .card-desc {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        .section-title {
+            color: white;
+            font-size: 2em;
+            margin: 40px 0 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+        .overview {
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .overview h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .overview ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .overview li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .overview li:before {
+            content: "✓ ";
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 8周迁移计划</h1>
+        <p>Injective Helix: Nuxt.js → Next.js</p>
+    </div>
+
+    <div class="container">
+        <div class="overview">
+            <h2>🎯 项目概览</h2>
+            <ul>
+                <li><strong>项目类型：</strong>代码翻译项目（非从零开发）</li>
+                <li><strong>工期：</strong>8周 / 56个工作日</li>
+                <li><strong>团队规模：</strong>4-5人全职</li>
+                <li><strong>总工时：</strong>1600小时</li>
+                <li><strong>技术栈：</strong>Next.js 15 + React 19 + TypeScript + Zustand</li>
+            </ul>
+        </div>
+
+        <h2 class="section-title">📅 总览图表</h2>
+        <div class="grid">
+            <a href="preview-gantt.html" class="card">
+                <div class="card-icon">📅</div>
+                <div class="card-title">甘特图总览</div>
+                <div class="card-desc">
+                    完整的8周时间线，显示任务依赖关系和关键路径
+                    <div class="badge">3个图表</div>
+                </div>
+            </a>
+
+            <a href="preview-mindmap.html" class="card">
+                <div class="card-icon">🧠</div>
+                <div class="card-title">思维导图总览</div>
+                <div class="card-desc">
+                    整体结构视图，包含技术栈和依赖关系
+                    <div class="badge">3个图表</div>
+                </div>
+            </a>
+        </div>
+
+        <h2 class="section-title">📊 每周详细图表</h2>
+        <div class="grid">
+            <a href="preview-week1.html" class="card">
+                <div class="card-icon">1️⃣</div>
+                <div class="card-title">Week 1: 基础架构与钱包</div>
+                <div class="card-desc">
+                    项目搭建、钱包连接、市场数据
+                    <div class="badge">Day 1-7</div>
+                </div>
+            </a>
+
+            <a href="preview-week2.html" class="card">
+                <div class="card-icon">2️⃣</div>
+                <div class="card-title">Week 2: 现货交易核心</div>
+                <div class="card-desc">
+                    订单簿、下单表单、WebSocket
+                    <div class="badge">Day 8-14</div>
+                </div>
+            </a>
+
+            <a href="preview-week3.html" class="card">
+                <div class="card-icon">3️⃣</div>
+                <div class="card-title">Week 3: 期货交易核心</div>
+                <div class="card-desc">
+                    杠杆、持仓、TradingView
+                    <div class="badge">Day 15-21</div>
+                </div>
+            </a>
+
+            <a href="preview-weeks.html" class="card">
+                <div class="card-icon">4️⃣➡️8️⃣</div>
+                <div class="card-title">Week 4-8: 完整功能</div>
+                <div class="card-desc">
+                    订单持仓资产、高级功能、UI完善、测试、发布
+                    <div class="badge">Day 22-56</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="overview" style="margin-top: 40px;">
+            <h2>💡 使用提示</h2>
+            <ul>
+                <li>所有图表使用 Mermaid.js 渲染，支持交互</li>
+                <li>可以右键图表保存为图片</li>
+                <li>建议使用 Chrome/Firefox/Edge 浏览器查看</li>
+                <li>可以将此页面加入书签，方便随时查看</li>
+                <li>适合团队会议、进度汇报时展示</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

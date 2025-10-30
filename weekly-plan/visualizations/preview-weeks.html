@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 4-8: 完整功能与发布</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #e74c3c;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            border-left: 5px solid #e74c3c;
+            padding-left: 15px;
+        }
+        .mermaid {
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Week 4-8: 完整功能与发布 (Day 22-56)</h1>
+        
+        <div style="background: #ffebee; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <strong>📅 时间段：</strong> Week 4-8 (共35天)<br>
+            <strong>🎯 核心目标：</strong> 完善所有功能、测试、优化、正式上线
+        </div>
+
+        <div class="nav">
+            <a href="index.html">🏠 导航</a>
+            <a href="preview-week3.html">⬅️ Week 3</a>
+            <a href="preview-gantt.html">📅 甘特图</a>
+        </div>
+
+        <h2>🗓️ Week 4-8 时间线</h2>
+        <div class="mermaid">
+gantt
+    title Week 4-8 时间线
+    dateFormat YYYY-MM-DD
+    
+    section Week 4
+    订单管理页面    :w4d1, 2025-01-22, 2d
+    持仓管理页面    :w4d3, after w4d1, 2d
+    资产管理页面    :w4d5, after w4d3, 2d
+    投资组合        :w4d7, after w4d5, 1d
+    
+    section Week 5
+    Swap功能       :w5d1, after w4d7, 2d
+    流动性功能     :w5d3, after w5d1, 2d
+    网格交易       :w5d5, after w5d3, 3d
+    
+    section Week 6
+    TradingView    :w6d1, after w5d5, 2d
+    图表组件       :w6d3, after w6d1, 2d
+    设置页面       :w6d5, after w6d3, 1d
+    通知系统       :w6d6, after w6d5, 1d
+    推荐积分       :w6d7, after w6d6, 1d
+    
+    section Week 7
+    单元测试       :crit, w7d1, after w6d7, 2d
+    集成测试       :crit, w7d3, after w7d1, 2d
+    E2E测试        :crit, w7d5, after w7d3, 2d
+    Bug修复        :crit, w7d7, after w7d5, 1d
+    
+    section Week 8
+    性能优化       :w8d1, after w7d7, 2d
+    部署配置       :w8d3, after w8d1, 2d
+    监控系统       :w8d5, after w8d3, 1d
+    灰度发布       :active, w8d6, after w8d5, 2d
+        </div>
+
+        <h2>✅ 关键验收点</h2>
+        <div class="mermaid">
+graph LR
+    W4[Week 4<br/>订单持仓资产] --> W4V{验收}
+    W4V -->|✓| W5[Week 5<br/>高级功能]
+    W5 --> W5V{验收}
+    W5V -->|✓| W6[Week 6<br/>UI完善]
+    W6 --> W6V{验收}
+    W6V -->|✓| W7[Week 7<br/>测试修复]
+    W7 --> W7V{验收<br/>测试覆盖率>70%}
+    W7V -->|✓| W8[Week 8<br/>优化发布]
+    W8 --> W8V{验收}
+    W8V -->|✓| DONE[项目上线✅]
+    
+    style W4 fill:#F0E68C
+    style W5 fill:#FFB6C1
+    style W6 fill:#FFA07A
+    style W7 fill:#FFD700
+    style W8 fill:#98FB98
+    style DONE fill:#90EE90,stroke:#006400,stroke-width:3px
+        </div>
+
+        <h2>📊 工作分布</h2>
+        <div class="mermaid">
+pie title "Week 4-8 工时分配"
+    "Week 4: 订单持仓资产" : 200
+    "Week 5: 高级功能" : 200
+    "Week 6: UI完善" : 150
+    "Week 7: 测试修复" : 250
+    "Week 8: 优化发布" : 150
+        </div>
+
+        <h2>🎯 Week 7-8 重点</h2>
+        <div class="mermaid">
+graph TB
+    subgraph Week 7: 测试修复
+        T1[单元测试<br/>覆盖率>70%]
+        T2[集成测试<br/>功能验证]
+        T3[E2E测试<br/>流程验证]
+        T4[Bug修复<br/>Critical=0]
+    end
+    
+    subgraph Week 8: 优化发布
+        O1[性能优化<br/>Lighthouse>85]
+        O2[部署配置<br/>CI/CD]
+        O3[监控系统<br/>Sentry]
+        O4[灰度发布<br/>逐步上线]
+    end
+    
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> O1
+    O1 --> O2
+    O2 --> O3
+    O3 --> O4
+    O4 --> LAUNCH[🎉 正式上线]
+    
+    style LAUNCH fill:#90EE90,stroke:#006400,stroke-width:3px
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3: 期货交易核心</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #e67e22;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            border-left: 5px solid #e67e22;
+            padding-left: 15px;
+        }
+        .mermaid {
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: #e67e22;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Week 3: 期货交易核心 (Day 15-21)</h1>
+        
+        <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <strong>🎯 目标：</strong> 完整的期货交易功能（开仓、平仓、持仓管理）<br>
+            <strong>👥 负责人：</strong> 2-3名高级开发<br>
+            <strong>✅ 验收：</strong> 可以开仓做多/做空，显示持仓和盈亏
+        </div>
+
+        <div class="nav">
+            <a href="index.html">🏠 导航</a>
+            <a href="preview-week2.html">⬅️ Week 2</a>
+            <a href="preview-weeks.html">➡️ Week 4-8</a>
+        </div>
+
+        <h2>💰 保证金计算</h2>
+        <div class="mermaid">
+graph LR
+    A[持仓名义价值] --> B[÷ 杠杆倍数]
+    B --> C[初始保证金]
+    C --> D[+ 开仓手续费]
+    D --> E[所需保证金]
+    
+    A --> F[× 维持保证金率]
+    F --> G[维持保证金]
+    
+    H[账户余额] --> I[- 占用保证金]
+    I --> J[可用保证金]
+    
+    style C fill:#FFB6C1
+    style G fill:#FFD700
+    style J fill:#90EE90
+        </div>
+
+        <h2>⚠️ 风险等级</h2>
+        <div class="mermaid">
+graph LR
+    A{保证金率} -->|> 50%| B[安全<br/>🟢]
+    A -->|20-50%| C[警告<br/>🟡]
+    A -->|10-20%| D[危险<br/>🟠]
+    A -->|< 10%| E[极度危险<br/>🔴]
+    A -->|触及维持| F[强制平仓<br/>⚫]
+    
+    style B fill:#90EE90
+    style C fill:#FFD700
+    style D fill:#FFA500
+    style E fill:#FF4500
+    style F fill:#8B0000,color:#fff
+        </div>
+
+        <h2>💵 持仓盈亏计算</h2>
+        <div class="mermaid">
+graph TD
+    A[持仓数量] --> B[× 当前价格]
+    B --> C[当前价值]
+    
+    D[持仓数量] --> E[× 开仓价格]
+    E --> F[开仓价值]
+    
+    C --> G[未实现盈亏]
+    F --> G
+    
+    G --> H{做多 or 做空}
+    H -->|做多| I[当前价值 - 开仓价值]
+    H -->|做空| J[开仓价值 - 当前价值]
+    
+    I --> K[- 持仓手续费]
+    J --> K
+    K --> L[净未实现盈亏]
+    
+    style L fill:#90EE90
+        </div>
+
+        <h2>📊 期货交易流程</h2>
+        <div class="mermaid">
+graph TD
+    A[选择期货市场] --> B[选择方向]
+    B --> C{做多 or 做空}
+    C -->|做多| D[买入开多]
+    C -->|做空| E[卖出开空]
+    D --> F[选择杠杆]
+    E --> F
+    F --> G[输入数量]
+    G --> H[计算保证金]
+    H --> I[计算强平价]
+    I --> J{保证金充足?}
+    J -->|否| K[提示不足]
+    J -->|是| L[显示风险]
+    L --> M{用户确认}
+    M -->|取消| N[返回]
+    M -->|确认| O[提交订单]
+    O --> P[成功开仓]
+    P --> Q[监控持仓]
+    Q --> R{平仓?}
+    R -->|是| S[提交平仓]
+    R -->|否| Q
+    S --> T[平仓成功]
+    
+    style P fill:#90EE90
+    style T fill:#87CEEB
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>
+

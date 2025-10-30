@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8周迁移计划 - 甘特图预览</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+        }
+        .mermaid {
+            margin: 20px 0;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Injective Helix 8周迁移计划 - 甘特图总览</h1>
+        
+        <div class="info">
+            <strong>💡 提示：</strong> 这个页面使用 Mermaid.js 渲染图表，可以直接在浏览器中查看。
+        </div>
+
+        <p>这是整个 8 周迁移项目的时间线视图。</p>
+
+        <h2>🗓️ 项目时间线</h2>
+        <div class="mermaid">
+gantt
+    title Injective Helix 8周迁移计划
+    dateFormat YYYY-MM-DD
+    
+    section Week 1
+    项目搭建与环境配置           :w1d1, 2025-01-01, 1d
+    目录结构与静态资源           :w1d2, after w1d1, 1d
+    钱包连接系统                 :w1d3, after w1d2, 2d
+    市场数据服务                 :w1d5, after w1d3, 2d
+    主页与路由                   :w1d7, after w1d5, 1d
+    
+    section Week 2
+    订单簿与成交记录             :w2d1, after w1d7, 1d
+    现货下单表单                 :w2d2, after w2d1, 2d
+    订单管理功能                 :w2d4, after w2d2, 2d
+    WebSocket完善               :w2d6, after w2d4, 2d
+    
+    section Week 3
+    期货市场基础                 :w3d1, after w2d6, 2d
+    杠杆与保证金                 :w3d3, after w3d1, 2d
+    持仓管理                     :w3d5, after w3d3, 2d
+    TradingView集成             :w3d7, after w3d5, 1d
+    
+    section Week 4
+    订单管理页面                 :w4d1, after w3d7, 2d
+    持仓管理页面                 :w4d3, after w4d1, 2d
+    资产管理页面                 :w4d5, after w4d3, 2d
+    投资组合分析                 :w4d7, after w4d5, 1d
+    
+    section Week 5
+    Swap功能                    :w5d1, after w4d7, 2d
+    流动性功能                   :w5d3, after w5d1, 2d
+    网格交易                     :w5d5, after w5d3, 3d
+    
+    section Week 6
+    TradingView完整集成         :w6d1, after w5d5, 2d
+    图表组件                     :w6d3, after w6d1, 2d
+    设置页面                     :w6d5, after w6d3, 1d
+    通知系统                     :w6d6, after w6d5, 1d
+    推荐积分                     :w6d7, after w6d6, 1d
+    
+    section Week 7
+    单元测试                     :crit, w7d1, after w6d7, 2d
+    集成测试                     :crit, w7d3, after w7d1, 2d
+    E2E测试                     :crit, w7d5, after w7d3, 2d
+    Bug修复                     :crit, w7d7, after w7d5, 1d
+    
+    section Week 8
+    性能优化                     :w8d1, after w7d7, 2d
+    部署配置                     :w8d3, after w8d1, 2d
+    监控系统                     :w8d5, after w8d3, 1d
+    灰度发布                     :active, w8d6, after w8d5, 2d
+        </div>
+
+        <h2>🎯 关键里程碑</h2>
+        <div class="mermaid">
+graph LR
+    A[Day 1<br/>项目启动] --> B[Day 7<br/>基础完成]
+    B --> C[Day 14<br/>现货交易]
+    C --> D[Day 21<br/>期货交易]
+    D --> E[Day 28<br/>资产管理]
+    E --> F[Day 35<br/>高级功能]
+    F --> G[Day 42<br/>UI完善]
+    G --> H[Day 49<br/>测试通过]
+    H --> I[Day 56<br/>正式上线]
+    
+    style A fill:#90EE90
+    style I fill:#FFB6C1
+    style H fill:#FFD700
+        </div>
+
+        <h2>👥 团队工作负载</h2>
+        <div class="mermaid">
+pie title "工时分配 (1600小时)"
+    "基础架构" : 200
+    "现货交易" : 200
+    "期货交易" : 250
+    "资产管理" : 200
+    "高级功能" : 200
+    "UI完善" : 150
+    "测试修复" : 250
+    "优化发布" : 150
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#3498db',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#2980b9',
+                lineColor: '#34495e',
+                secondaryColor: '#2ecc71',
+                tertiaryColor: '#e74c3c'
+            }
+        });
+    </script>
+</body>
+</html>
+

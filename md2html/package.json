@@ -1,0 +1,16 @@
+{
+  "name": "md-to-html-converter",
+  "version": "1.0.0",
+  "description": "Markdown to HTML converter script",
+  "main": "md-to-html.js",
+  "scripts": {
+    "convert": "node md-to-html.js"
+  },
+  "keywords": ["markdown", "html", "converter"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "marked": "^11.0.0"
+  }
+}
+

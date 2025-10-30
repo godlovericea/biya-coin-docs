@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8周迁移计划 - 思维导图总览</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            padding: 10px 0;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+        .mermaid {
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Injective Helix 8周迁移计划 - 思维导图总览</h1>
+        
+        <div class="info">
+            <strong>💡 导航：</strong> 点击下方按钮查看其他图表
+        </div>
+
+        <div class="nav">
+            <a href="preview-gantt.html">📅 甘特图</a>
+            <a href="preview-week1.html">📊 Week 1</a>
+            <a href="preview-week2.html">📊 Week 2</a>
+            <a href="preview-week3.html">📊 Week 3</a>
+            <a href="preview-weeks.html">📊 Week 4-8</a>
+        </div>
+
+        <h2>🎯 整体结构思维导图</h2>
+        <div class="mermaid">
+mindmap
+  root((8周迁移计划<br/>Nuxt→Next.js))
+    Week 1<br/>基础架构
+      Day 1::项目搭建
+        Next.js 15 初始化
+        TypeScript 配置
+        ESLint & Prettier
+        Tailwind CSS
+        国际化 i18n
+        主题系统
+      Day 2::目录结构
+        标准目录创建
+        静态资源复制
+        Layout 组件
+        通用 UI 组件
+      Day 3-4::钱包连接
+        Wallet Store
+        Injective SDK
+        4种钱包支持
+        余额查询
+      Day 5-6::市场数据
+        Core Service
+        Market Service
+        Market Store
+        Market 组件
+        WebSocket 基础
+      Day 7::路由页面
+        首页创建
+        路由结构
+        集成测试
+        
+    Week 2<br/>现货交易
+      Day 8::订单簿
+        Orderbook Service
+        Spot Store
+        Orderbook 组件
+        TradesList 组件
+      Day 9-10::下单表单
+        Trading Service
+        表单验证
+        OrderForm 组件
+        计算工具
+        集成测试
+      Day 11-12::订单管理
+        订单列表
+        订单筛选
+        订单取消
+        订单导出
+      Day 13-14::WebSocket
+        完整架构
+        订阅管理
+        消息队列
+        性能优化
+        
+    Week 3<br/>期货交易
+      Day 15-16::期货基础
+        Derivatives Service
+        期货 Store
+        期货订单簿
+        期货下单表单
+      Day 17-18::杠杆保证金
+        杠杆选择
+        保证金计算
+        风险控制
+        强平价计算
+      Day 19-20::持仓管理
+        持仓列表
+        盈亏计算
+        平仓功能
+        调整保证金
+      Day 21::图表集成
+        TradingView 基础
+        K线图表
+        测试集成
+        
+    Week 4<br/>订单持仓资产
+      Day 22-23::订单页面
+        订单列表页
+        筛选排序
+        批量操作
+        订单导出
+      Day 24-25::持仓页面
+        持仓列表
+        持仓统计
+        持仓操作
+      Day 26-27::资产页面
+        资产列表
+        充值提现
+        资产统计
+      Day 28::投资组合
+        组合分析
+        收益统计
+        子账户管理
+        
+    Week 5<br/>高级功能
+      Day 29-30::Swap
+        Swap Service
+        Swap 表单
+        价格计算
+        滑点控制
+      Day 31-32::流动性
+        流动性 Service
+        添加流动性
+        移除流动性
+        LP Token
+      Day 33-35::网格交易
+        网格策略
+        策略创建
+        策略监控
+        策略管理
+        
+    Week 6<br/>UI完善
+      Day 36-37::TradingView
+        完整集成
+        指标添加
+        图表联动
+      Day 38-39::图表组件
+        深度图
+        资产图表
+        盈亏图表
+      Day 40::设置页面
+        主题设置
+        语言设置
+        交易设置
+      Day 41::通知系统
+        Toast 通知
+        通知中心
+        价格预警
+      Day 42::推荐积分
+        推荐系统
+        积分系统
+        
+    Week 7<br/>测试修复
+      Day 43-44::单元测试
+        工具函数测试
+        Hooks 测试
+        Store 测试
+      Day 45-46::集成测试
+        组件测试
+        页面测试
+        流程测试
+      Day 47-48::E2E测试
+        Playwright 配置
+        关键流程测试
+        兼容性测试
+      Day 49::Bug修复
+        Bug 修复
+        性能测试
+        Code Review
+        
+    Week 8<br/>优化与发布
+      Day 50-51::性能优化
+        代码分割
+        懒加载
+        渲染优化
+        缓存优化
+      Day 52-53::部署配置
+        PM2 配置
+        Docker 配置
+        Nginx 配置
+        CI/CD 配置
+      Day 54::监控系统
+        Sentry 配置
+        日志系统
+        告警配置
+      Day 55-56::灰度发布
+        内部测试
+        小范围发布
+        全量发布
+        24h监控
+        </div>
+
+        <h2>📚 技术栈概览</h2>
+        <div class="mermaid">
+graph TB
+    subgraph 前端框架
+        A[Next.js 15]
+        B[React 19]
+        C[TypeScript 5]
+    end
+    
+    subgraph 状态管理
+        D[Zustand]
+        E[React Query]
+        F[React Hook Form]
+    end
+    
+    subgraph UI框架
+        G[Tailwind CSS]
+        H[Radix UI]
+    end
+    
+    subgraph 区块链
+        I[Injective SDK]
+        J[Wallet Connectors]
+    end
+    
+    subgraph 图表
+        K[TradingView]
+        L[ApexCharts]
+    end
+    
+    subgraph 测试
+        M[Jest]
+        N[Testing Library]
+        O[Playwright]
+    end
+    
+    A --> D
+    A --> G
+    B --> E
+    B --> H
+    I --> J
+    K --> L
+    M --> N
+    N --> O
+        </div>
+
+        <h2>🔗 依赖关系</h2>
+        <div class="mermaid">
+graph TD
+    W1[Week 1<br/>基础架构] --> W2[Week 2<br/>现货交易]
+    W2 --> W3[Week 3<br/>期货交易]
+    W3 --> W4[Week 4<br/>订单持仓资产]
+    W2 --> W5[Week 5<br/>高级功能]
+    W3 --> W5
+    W4 --> W6[Week 6<br/>UI完善]
+    W5 --> W6
+    W6 --> W7[Week 7<br/>测试修复]
+    W7 --> W8[Week 8<br/>优化发布]
+    
+    style W1 fill:#90EE90
+    style W2 fill:#87CEEB
+    style W3 fill:#DDA0DD
+    style W4 fill:#F0E68C
+    style W5 fill:#FFB6C1
+    style W6 fill:#FFA07A
+    style W7 fill:#FFD700
+    style W8 fill:#98FB98
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#5a67d8',
+                lineColor: '#4c51bf',
+                secondaryColor: '#48bb78',
+                tertiaryColor: '#ed8936'
+            }
+        });
+    </script>
+</body>
+</html>
+
