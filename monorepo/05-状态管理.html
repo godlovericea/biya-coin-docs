@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05-状态管理</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+
+<div class="content">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05-状态管理</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#状态管理策略" class="toc-link">🗂️ 状态管理策略</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📖 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#状态分层策略" class="toc-link">🎯 状态分层策略</a>
+    <li class="toc-item toc-level-3">
+      <a href="#核心原则" class="toc-link">核心原则</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#决策树" class="toc-link">决策树</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#共享状态设计" class="toc-link">🌐 共享状态设计</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-theme-store-主题状态" class="toc-link">1. Theme Store（主题状态）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-wallet-store-钱包状态" class="toc-link">2. Wallet Store（钱包状态）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-auth-store-认证状态" class="toc-link">3. Auth Store（认证状态）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#应用特定状态" class="toc-link">🎮 应用特定状态</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-bridge-app-state" class="toc-link">1. Bridge App State</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-dex-app-state" class="toc-link">2. DEX App State</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-helix-app-state" class="toc-link">3. Helix App State</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#状态持久化" class="toc-link">💾 状态持久化</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-持久化策略" class="toc-link">1. 持久化策略</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-持久化清单" class="toc-link">2. 持久化清单</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-自定义存储" class="toc-link">3. 自定义存储</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#性能优化" class="toc-link">⚡ 性能优化</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-使用选择器" class="toc-link">1. 使用选择器</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-组合多个选择器" class="toc-link">2. 组合多个选择器</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-避免内联选择器" class="toc-link">3. 避免内联选择器</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-使用-useshallow-hook" class="toc-link">4. 使用 useShallow Hook</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#最佳实践" class="toc-link">📋 最佳实践</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-状态分层原则" class="toc-link">1. 状态分层原则</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-单一职责" class="toc-link">2. 单一职责</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-类型安全" class="toc-link">3. 类型安全</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-导出选择器" class="toc-link">4. 导出选择器</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#5-actions-命名约定" class="toc-link">5. Actions 命名约定</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#6-错误处理" class="toc-link">6. 错误处理</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#7-devtools-集成" class="toc-link">7. DevTools 集成</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#下一步" class="toc-link">🚀 下一步</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#本章小结" class="toc-link">📚 本章小结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#状态分层" class="toc-link">状态分层</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心原则" class="toc-link">核心原则</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="状态管理策略">🗂️ 状态管理策略</h1>
+<blockquote>
+<p><strong>核心内容</strong>: Zustand 状态管理的分层设计与最佳实践<br><strong>目标</strong>: 区分共享状态和应用特定状态，实现高效的状态管理<br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="目录">📖 目录</h2>
+<ol>
+<li><a href="#%E7%8A%B6%E6%80%81%E5%88%86%E5%B1%82%E7%AD%96%E7%95%A5">状态分层策略</a></li>
+<li><a href="#%E5%85%B1%E4%BA%AB%E7%8A%B6%E6%80%81%E8%AE%BE%E8%AE%A1">共享状态设计</a></li>
+<li><a href="#%E5%BA%94%E7%94%A8%E7%89%B9%E5%AE%9A%E7%8A%B6%E6%80%81">应用特定状态</a></li>
+<li><a href="#%E7%8A%B6%E6%80%81%E6%8C%81%E4%B9%85%E5%8C%96">状态持久化</a></li>
+<li><a href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96">性能优化</a></li>
+<li><a href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5">最佳实践</a></li>
+</ol>
+<hr>
+<h2 id="状态分层策略">🎯 状态分层策略</h2>
+<h3 id="核心原则">核心原则</h3>
+<pre><code>┌─────────────────────────────────────────────────┐
+│                  应用层状态                      │
+│  (App-Specific State in apps/*/store/)         │
+│  ├── Bridge: 交易历史、表单状态                 │
+│  ├── DEX: 订单簿、交易对                        │
+│  └── Helix: 用户偏好、临时数据                  │
+└─────────────────────────────────────────────────┘
+                      ▲
+                      │ 引用
+                      │
+┌─────────────────────────────────────────────────┐
+│                  共享层状态                      │
+│  (Shared State in packages/*/store/)           │
+│  ├── @biya/theme: 主题配置                      │
+│  ├── @biya/wallet: 钱包连接                     │
+│  └── @biya/auth: 用户认证                       │
+└─────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h3 id="决策树">决策树</h3>
+<pre><code>状态需要跨应用共享？
+├─ 是 → 放在共享包中 (packages/*/store/)
+│   ├─ 主题设置 → @biya/theme
+│   ├─ 钱包连接 → @biya/wallet
+│   ├─ 用户认证 → @biya/auth
+│   └─ 其他全局状态 → @biya/shared/store
+│
+└─ 否 → 放在应用中 (apps/*/store/)
+    ├─ Bridge 交易记录 → apps/bridge/store
+    ├─ DEX 订单数据 → apps/dex/store
+    └─ Helix 特定状态 → apps/helix/store
+</code></pre>
+<hr>
+<h2 id="共享状态设计">🌐 共享状态设计</h2>
+<h3 id="1-theme-store-主题状态">1. Theme Store（主题状态）</h3>
+<pre><code class="language-typescript">// packages/theme/store/theme-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>export type Theme = &#39;light&#39; | &#39;dark&#39; | &#39;system&#39;</p>
+<p>interface ThemeState {<br>  // 状态<br>  theme: Theme<br>  isDark: boolean</p>
+<p>  // 操作<br>  setTheme: (theme: Theme) =&gt; void<br>  toggleTheme: () =&gt; void<br>}</p>
+<p>export const useThemeStore = create&lt;ThemeState&gt;()(<br>  persist(<br>    (set, get) =&gt; ({<br>      theme: &#39;system&#39;,<br>      isDark: false,</p>
+<pre><code>  setTheme: (theme) =&amp;gt; {
+    const root = document.documentElement
+    const isDark = theme === &amp;#39;dark&amp;#39; || 
+      (theme === &amp;#39;system&amp;#39; &amp;amp;&amp;amp; window.matchMedia(&amp;#39;(prefers-color-scheme: dark)&amp;#39;).matches)
+    
+    root.classList.toggle(&amp;#39;dark&amp;#39;, isDark)
+    set({ theme, isDark })
+  },
+  
+  toggleTheme: () =&amp;gt; {
+    const current = get().theme
+    const newTheme = current === &amp;#39;dark&amp;#39; ? &amp;#39;light&amp;#39; : &amp;#39;dark&amp;#39;
+    get().setTheme(newTheme)
+  },
+}),
+{
+  name: &amp;#39;biya-theme-storage&amp;#39;,
+  storage: createJSONStorage(() =&amp;gt; localStorage),
+}
+</code></pre>
+<p>  )<br>)</p>
+<p>// 导出选择器（性能优化）<br>export const selectTheme = (state: ThemeState) =&gt; state.theme<br>export const selectIsDark = (state: ThemeState) =&gt; state.isDark<br></code></pre></p>
+<hr>
+<h3 id="2-wallet-store-钱包状态">2. Wallet Store（钱包状态）</h3>
+<pre><code class="language-typescript">// packages/wallet/store/wallet-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>interface WalletState {<br>  // EVM 钱包<br>  address: string | null<br>  chainId: number | null</p>
+<p>  // Injective 钱包<br>  injectiveAddress: string | null</p>
+<p>  // 状态<br>  isConnected: boolean<br>  isConnecting: boolean</p>
+<p>  // 余额<br>  balance: string | null</p>
+<p>  // 操作<br>  connect: () =&gt; Promise&lt;void&gt;<br>  disconnect: () =&gt; void<br>  setAddress: (address: string | null) =&gt; void<br>  setInjectiveAddress: (address: string | null) =&gt; void<br>  setChainId: (chainId: number | null) =&gt; void<br>  setBalance: (balance: string | null) =&gt; void<br>  reset: () =&gt; void<br>}</p>
+<p>export const useWalletStore = create&lt;WalletState&gt;()(<br>  persist(<br>    (set) =&gt; ({<br>      // 初始状态<br>      address: null,<br>      chainId: null,<br>      injectiveAddress: null,<br>      isConnected: false,<br>      isConnecting: false,<br>      balance: null,</p>
+<pre><code>  // 连接钱包
+  connect: async () =&amp;gt; {
+    set({ isConnecting: true })
+    try {
+      // 连接逻辑
+      // const { address, chainId } = await connectWallet()
+      // set({ address, chainId, isConnected: true })
+    } catch (error) {
+      console.error(&amp;#39;Failed to connect wallet:&amp;#39;, error)
+      throw error
+    } finally {
+      set({ isConnecting: false })
+    }
+  },
+  
+  // 断开连接
+  disconnect: () =&amp;gt; {
+    set({
+      address: null,
+      chainId: null,
+      injectiveAddress: null,
+      isConnected: false,
+      balance: null,
+    })
+  },
+  
+  // Setters
+  setAddress: (address) =&amp;gt; set({ address, isConnected: !!address }),
+  setInjectiveAddress: (injectiveAddress) =&amp;gt; set({ injectiveAddress }),
+  setChainId: (chainId) =&amp;gt; set({ chainId }),
+  setBalance: (balance) =&amp;gt; set({ balance }),
+  
+  // 重置
+  reset: () =&amp;gt; {
+    set({
+      address: null,
+      chainId: null,
+      injectiveAddress: null,
+      isConnected: false,
+      isConnecting: false,
+      balance: null,
+    })
+  },
+}),
+{
+  name: &amp;#39;biya-wallet-storage&amp;#39;,
+  storage: createJSONStorage(() =&amp;gt; localStorage),
+  partialize: (state) =&amp;gt; ({
+    address: state.address,
+    chainId: state.chainId,
+    injectiveAddress: state.injectiveAddress,
+  }),
+}
+</code></pre>
+<p>  )<br>)</p>
+<p>// 选择器<br>export const selectAddress = (state: WalletState) =&gt; state.address<br>export const selectIsConnected = (state: WalletState) =&gt; state.isConnected<br>export const selectBalance = (state: WalletState) =&gt; state.balance<br></code></pre></p>
+<hr>
+<h3 id="3-auth-store-认证状态">3. Auth Store（认证状态）</h3>
+<pre><code class="language-typescript">// packages/auth/store/auth-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>interface User {<br>  id: string<br>  email: string<br>  name: string<br>  avatar?: string<br>}</p>
+<p>interface AuthState {<br>  // 用户信息<br>  user: User | null<br>  token: string | null</p>
+<p>  // 状态<br>  isAuthenticated: boolean<br>  isLoading: boolean</p>
+<p>  // 操作<br>  login: (email: string, password: string) =&gt; Promise&lt;void&gt;<br>  logout: () =&gt; void<br>  setUser: (user: User | null) =&gt; void<br>  setToken: (token: string | null) =&gt; void<br>  refreshToken: () =&gt; Promise&lt;void&gt;<br>}</p>
+<p>export const useAuthStore = create&lt;AuthState&gt;()(<br>  persist(<br>    (set, get) =&gt; ({<br>      // 初始状态<br>      user: null,<br>      token: null,<br>      isAuthenticated: false,<br>      isLoading: false,</p>
+<pre><code>  // 登录
+  login: async (email, password) =&amp;gt; {
+    set({ isLoading: true })
+    try {
+      // const response = await authService.login(email, password)
+      // set({
+      //   user: response.user,
+      //   token: response.token,
+      //   isAuthenticated: true,
+      // })
+    } catch (error) {
+      console.error(&amp;#39;Login failed:&amp;#39;, error)
+      throw error
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+  
+  // 登出
+  logout: () =&amp;gt; {
+    set({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    })
+  },
+  
+  // Setters
+  setUser: (user) =&amp;gt; set({ user, isAuthenticated: !!user }),
+  setToken: (token) =&amp;gt; set({ token }),
+  
+  // 刷新 Token
+  refreshToken: async () =&amp;gt; {
+    const currentToken = get().token
+    if (!currentToken) return
+    
+    try {
+      // const newToken = await authService.refreshToken(currentToken)
+      // set({ token: newToken })
+    } catch (error) {
+      console.error(&amp;#39;Failed to refresh token:&amp;#39;, error)
+      get().logout()
+    }
+  },
+}),
+{
+  name: &amp;#39;biya-auth-storage&amp;#39;,
+  storage: createJSONStorage(() =&amp;gt; localStorage),
+  partialize: (state) =&amp;gt; ({
+    user: state.user,
+    token: state.token,
+  }),
+}
+</code></pre>
+<p>  )<br>)</p>
+<p>// 选择器<br>export const selectUser = (state: AuthState) =&gt; state.user<br>export const selectIsAuthenticated = (state: AuthState) =&gt; state.isAuthenticated<br>export const selectToken = (state: AuthState) =&gt; state.token<br></code></pre></p>
+<hr>
+<h2 id="应用特定状态">🎮 应用特定状态</h2>
+<h3 id="1-bridge-app-state">1. Bridge App State</h3>
+<pre><code class="language-typescript">// apps/bridge/store/bridge-store.ts
+import { create } from &#39;zustand&#39;
+
+<p>interface BridgeTransaction {<br>  id: string<br>  from: string<br>  to: string<br>  amount: string<br>  token: string<br>  status: &#39;pending&#39; | &#39;completed&#39; | &#39;failed&#39;<br>  timestamp: number<br>  txHash?: string<br>}</p>
+<p>interface BridgeState {<br>  // 交易历史<br>  transactions: BridgeTransaction[]</p>
+<p>  // 表单状态<br>  fromChain: string<br>  toChain: string<br>  selectedToken: string<br>  amount: string</p>
+<p>  // UI 状态<br>  isTransferring: boolean<br>  showHistory: boolean</p>
+<p>  // 操作<br>  addTransaction: (tx: BridgeTransaction) =&gt; void<br>  updateTransaction: (id: string, updates: Partial&lt;BridgeTransaction&gt;) =&gt; void<br>  setFromChain: (chain: string) =&gt; void<br>  setToChain: (chain: string) =&gt; void<br>  setSelectedToken: (token: string) =&gt; void<br>  setAmount: (amount: string) =&gt; void<br>  setTransferring: (transferring: boolean) =&gt; void<br>  toggleHistory: () =&gt; void<br>  reset: () =&gt; void<br>}</p>
+<p>export const useBridgeStore = create&lt;BridgeState&gt;((set) =&gt; ({<br>  // 初始状态<br>  transactions: [],<br>  fromChain: &#39;ethereum&#39;,<br>  toChain: &#39;injective&#39;,<br>  selectedToken: &#39;USDT&#39;,<br>  amount: &#39;&#39;,<br>  isTransferring: false,<br>  showHistory: false,</p>
+<p>  // 交易操作<br>  addTransaction: (tx) =&gt; set((state) =&gt; ({<br>    transactions: [tx, ...state.transactions],<br>  })),</p>
+<p>  updateTransaction: (id, updates) =&gt; set((state) =&gt; ({<br>    transactions: state.transactions.map((tx) =&gt;<br>      tx.id === id ? { ...tx, ...updates } : tx<br>    ),<br>  })),</p>
+<p>  // 表单操作<br>  setFromChain: (fromChain) =&gt; set({ fromChain }),<br>  setToChain: (toChain) =&gt; set({ toChain }),<br>  setSelectedToken: (selectedToken) =&gt; set({ selectedToken }),<br>  setAmount: (amount) =&gt; set({ amount }),</p>
+<p>  // UI 操作<br>  setTransferring: (isTransferring) =&gt; set({ isTransferring }),<br>  toggleHistory: () =&gt; set((state) =&gt; ({ showHistory: !state.showHistory })),</p>
+<p>  // 重置<br>  reset: () =&gt; set({<br>    fromChain: &#39;ethereum&#39;,<br>    toChain: &#39;injective&#39;,<br>    selectedToken: &#39;USDT&#39;,<br>    amount: &#39;&#39;,<br>    isTransferring: false,<br>  }),<br>}))</p>
+<p>// 选择器<br>export const selectTransactions = (state: BridgeState) =&gt; state.transactions<br>export const selectIsTransferring = (state: BridgeState) =&gt; state.isTransferring<br></code></pre></p>
+<hr>
+<h3 id="2-dex-app-state">2. DEX App State</h3>
+<pre><code class="language-typescript">// apps/dex/store/dex-store.ts
+import { create } from &#39;zustand&#39;
+
+<p>interface Order {<br>  id: string<br>  type: &#39;buy&#39; | &#39;sell&#39;<br>  price: string<br>  amount: string<br>  total: string<br>  timestamp: number<br>  status: &#39;pending&#39; | &#39;filled&#39; | &#39;cancelled&#39;<br>}</p>
+<p>interface DexState {<br>  // 交易对<br>  baseCurrency: string<br>  quoteCurrency: string</p>
+<p>  // 订单簿<br>  buyOrders: Order[]<br>  sellOrders: Order[]</p>
+<p>  // 用户订单<br>  myOrders: Order[]</p>
+<p>  // 表单状态<br>  orderType: &#39;buy&#39; | &#39;sell&#39;<br>  price: string<br>  amount: string</p>
+<p>  // UI 状态<br>  isPlacingOrder: boolean</p>
+<p>  // 操作<br>  setTradingPair: (base: string, quote: string) =&gt; void<br>  setBuyOrders: (orders: Order[]) =&gt; void<br>  setSellOrders: (orders: Order[]) =&gt; void<br>  addMyOrder: (order: Order) =&gt; void<br>  updateMyOrder: (id: string, updates: Partial&lt;Order&gt;) =&gt; void<br>  setOrderType: (type: &#39;buy&#39; | &#39;sell&#39;) =&gt; void<br>  setPrice: (price: string) =&gt; void<br>  setAmount: (amount: string) =&gt; void<br>  setPlacingOrder: (placing: boolean) =&gt; void<br>  reset: () =&gt; void<br>}</p>
+<p>export const useDexStore = create&lt;DexState&gt;((set) =&gt; ({<br>  // 初始状态<br>  baseCurrency: &#39;INJ&#39;,<br>  quoteCurrency: &#39;USDT&#39;,<br>  buyOrders: [],<br>  sellOrders: [],<br>  myOrders: [],<br>  orderType: &#39;buy&#39;,<br>  price: &#39;&#39;,<br>  amount: &#39;&#39;,<br>  isPlacingOrder: false,</p>
+<p>  // 交易对操作<br>  setTradingPair: (baseCurrency, quoteCurrency) =&gt; set({ baseCurrency, quoteCurrency }),</p>
+<p>  // 订单簿操作<br>  setBuyOrders: (buyOrders) =&gt; set({ buyOrders }),<br>  setSellOrders: (sellOrders) =&gt; set({ sellOrders }),</p>
+<p>  // 用户订单操作<br>  addMyOrder: (order) =&gt; set((state) =&gt; ({<br>    myOrders: [order, ...state.myOrders],<br>  })),</p>
+<p>  updateMyOrder: (id, updates) =&gt; set((state) =&gt; ({<br>    myOrders: state.myOrders.map((order) =&gt;<br>      order.id === id ? { ...order, ...updates } : order<br>    ),<br>  })),</p>
+<p>  // 表单操作<br>  setOrderType: (orderType) =&gt; set({ orderType }),<br>  setPrice: (price) =&gt; set({ price }),<br>  setAmount: (amount) =&gt; set({ amount }),</p>
+<p>  // UI 操作<br>  setPlacingOrder: (isPlacingOrder) =&gt; set({ isPlacingOrder }),</p>
+<p>  // 重置<br>  reset: () =&gt; set({<br>    orderType: &#39;buy&#39;,<br>    price: &#39;&#39;,<br>    amount: &#39;&#39;,<br>    isPlacingOrder: false,<br>  }),<br>}))</p>
+<p>// 选择器<br>export const selectBuyOrders = (state: DexState) =&gt; state.buyOrders<br>export const selectSellOrders = (state: DexState) =&gt; state.sellOrders<br>export const selectMyOrders = (state: DexState) =&gt; state.myOrders<br></code></pre></p>
+<hr>
+<h3 id="3-helix-app-state">3. Helix App State</h3>
+<pre><code class="language-typescript">// apps/helix/store/helix-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>interface HelixState {<br>  // 用户偏好<br>  defaultView: &#39;simple&#39; | &#39;advanced&#39;<br>  showTutorial: boolean<br>  favoriteTokens: string[]</p>
+<p>  // UI 状态<br>  sidebarOpen: boolean</p>
+<p>  // 操作<br>  setDefaultView: (view: &#39;simple&#39; | &#39;advanced&#39;) =&gt; void<br>  setShowTutorial: (show: boolean) =&gt; void<br>  addFavoriteToken: (token: string) =&gt; void<br>  removeFavoriteToken: (token: string) =&gt; void<br>  toggleSidebar: () =&gt; void<br>}</p>
+<p>export const useHelixStore = create&lt;HelixState&gt;()(<br>  persist(<br>    (set) =&gt; ({<br>      // 初始状态<br>      defaultView: &#39;simple&#39;,<br>      showTutorial: true,<br>      favoriteTokens: [],<br>      sidebarOpen: true,</p>
+<pre><code>  // 操作
+  setDefaultView: (defaultView) =&amp;gt; set({ defaultView }),
+  setShowTutorial: (showTutorial) =&amp;gt; set({ showTutorial }),
+  
+  addFavoriteToken: (token) =&amp;gt; set((state) =&amp;gt; ({
+    favoriteTokens: [...state.favoriteTokens, token],
+  })),
+  
+  removeFavoriteToken: (token) =&amp;gt; set((state) =&amp;gt; ({
+    favoriteTokens: state.favoriteTokens.filter((t) =&amp;gt; t !== token),
+  })),
+  
+  toggleSidebar: () =&amp;gt; set((state) =&amp;gt; ({
+    sidebarOpen: !state.sidebarOpen,
+  })),
+}),
+{
+  name: &amp;#39;helix-storage&amp;#39;,
+  storage: createJSONStorage(() =&amp;gt; localStorage),
+}
+</code></pre>
+<p>  )<br>)</p>
+<p>// 选择器<br>export const selectFavoriteTokens = (state: HelixState) =&gt; state.favoriteTokens<br>export const selectSidebarOpen = (state: HelixState) =&gt; state.sidebarOpen<br></code></pre></p>
+<hr>
+<h2 id="状态持久化">💾 状态持久化</h2>
+<h3 id="1-持久化策略">1. 持久化策略</h3>
+<pre><code class="language-typescript">// 持久化所有状态（默认）
+persist(
+  (set) =&gt; ({ /* ... */ }),
+  {
+    name: &#39;storage-key&#39;,
+    storage: createJSONStorage(() =&gt; localStorage),
+  }
+)
+
+<p>// 部分持久化<br>persist(<br>  (set) =&gt; ({ /* ... */ }),<br>  {<br>    name: &#39;storage-key&#39;,<br>    storage: createJSONStorage(() =&gt; localStorage),<br>    partialize: (state) =&gt; ({<br>      // 只持久化这些字段<br>      theme: state.theme,<br>      user: state.user,<br>    }),<br>  }<br>)</p>
+<p>// 不持久化<br>create&lt;State&gt;((set) =&gt; ({ /* ... */ }))<br></code></pre></p>
+<hr>
+<h3 id="2-持久化清单">2. 持久化清单</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>持久化</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@biya/theme</code></td>
+<td>✅ 全部</td>
+<td>保持用户主题偏好</td>
+</tr>
+<tr>
+<td><code>@biya/wallet</code></td>
+<td>✅ 部分</td>
+<td>保存地址，不保存余额</td>
+</tr>
+<tr>
+<td><code>@biya/auth</code></td>
+<td>✅ 部分</td>
+<td>保存用户信息和 Token</td>
+</tr>
+<tr>
+<td><code>bridge-store</code></td>
+<td>❌ 无</td>
+<td>交易历史不需要持久化</td>
+</tr>
+<tr>
+<td><code>dex-store</code></td>
+<td>❌ 无</td>
+<td>订单数据实时获取</td>
+</tr>
+<tr>
+<td><code>helix-store</code></td>
+<td>✅ 全部</td>
+<td>保存用户偏好</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="3-自定义存储">3. 自定义存储</h3>
+<pre><code class="language-typescript">// 使用 sessionStorage
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>export const useSessionStore = create&lt;State&gt;()(<br>  persist(<br>    (set) =&gt; ({ /* ... */ }),<br>    {<br>      name: &#39;session-storage&#39;,<br>      storage: createJSONStorage(() =&gt; sessionStorage),<br>    }<br>  )<br>)</p>
+<p>// 使用 IndexedDB（大数据）<br>import { persist } from &#39;zustand/middleware&#39;<br>import { get, set, del } from &#39;idb-keyval&#39;</p>
+<p>export const useIndexedDBStore = create&lt;State&gt;()(<br>  persist(<br>    (set) =&gt; ({ /* ... */ }),<br>    {<br>      name: &#39;indexed-db-storage&#39;,<br>      storage: {<br>        getItem: async (name) =&gt; {<br>          return (await get(name)) || null<br>        },<br>        setItem: async (name, value) =&gt; {<br>          await set(name, value)<br>        },<br>        removeItem: async (name) =&gt; {<br>          await del(name)<br>        },<br>      },<br>    }<br>  )<br>)<br></code></pre></p>
+<hr>
+<h2 id="性能优化">⚡ 性能优化</h2>
+<h3 id="1-使用选择器">1. 使用选择器</h3>
+<pre><code class="language-typescript">// ❌ 不好：组件会在任何状态变化时重新渲染
+function Component() {
+  const store = useWalletStore()
+  return &lt;div&gt;{store.address}&lt;/div&gt;
+}
+
+<p>// ✅ 好：只在 address 变化时重新渲染<br>function Component() {<br>  const address = useWalletStore((state) =&gt; state.address)<br>  return &lt;div&gt;{address}&lt;/div&gt;<br>}</p>
+<p>// ✅ 更好：使用导出的选择器<br>import { useWalletStore, selectAddress } from &#39;@biya/wallet&#39;</p>
+<p>function Component() {<br>  const address = useWalletStore(selectAddress)<br>  return &lt;div&gt;{address}&lt;/div&gt;<br>}<br></code></pre></p>
+<hr>
+<h3 id="2-组合多个选择器">2. 组合多个选择器</h3>
+<pre><code class="language-typescript">// ❌ 不好：多次订阅
+function Component() {
+  const address = useWalletStore((state) =&gt; state.address)
+  const balance = useWalletStore((state) =&gt; state.balance)
+  const isConnected = useWalletStore((state) =&gt; state.isConnected)
+  // ...
+}
+
+<p>// ✅ 好：使用 shallow 比较<br>import { shallow } from &#39;zustand/shallow&#39;</p>
+<p>function Component() {<br>  const { address, balance, isConnected } = useWalletStore(<br>    (state) =&gt; ({<br>      address: state.address,<br>      balance: state.balance,<br>      isConnected: state.isConnected,<br>    }),<br>    shallow<br>  )<br>  // ...<br>}<br></code></pre></p>
+<hr>
+<h3 id="3-避免内联选择器">3. 避免内联选择器</h3>
+<pre><code class="language-typescript">// ❌ 不好：每次渲染都创建新函数
+function Component() {
+  const user = useAuthStore((state) =&gt; state.user)
+  // ...
+}
+
+<p>// ✅ 好：在组件外定义选择器<br>const selectUser = (state: AuthState) =&gt; state.user</p>
+<p>function Component() {<br>  const user = useAuthStore(selectUser)<br>  // ...<br>}<br></code></pre></p>
+<hr>
+<h3 id="4-使用-useshallow-hook">4. 使用 useShallow Hook</h3>
+<pre><code class="language-typescript">// Zustand v4.4.0+ 提供的新 Hook
+import { useShallow } from &#39;zustand/react/shallow&#39;
+
+<p>function Component() {<br>  const { address, balance, isConnected } = useWalletStore(<br>    useShallow((state) =&gt; ({<br>      address: state.address,<br>      balance: state.balance,<br>      isConnected: state.isConnected,<br>    }))<br>  )<br>  // ...<br>}<br></code></pre></p>
+<hr>
+<h2 id="最佳实践">📋 最佳实践</h2>
+<h3 id="1-状态分层原则">1. 状态分层原则</h3>
+<pre><code class="language-typescript">// ✅ 共享状态：放在 packages/*/store/
+// - 主题、钱包、认证等跨应用状态
+
+<p>// ✅ 应用状态：放在 apps/*/store/<br>// - 应用特定的业务逻辑和 UI 状态</p>
+<p>// ❌ 避免：在应用中创建共享状态<br>// ❌ 避免：在共享包中创建应用特定状态<br></code></pre></p>
+<hr>
+<h3 id="2-单一职责">2. 单一职责</h3>
+<pre><code class="language-typescript">// ✅ 好：每个 Store 只管理一类状态
+const useThemeStore = create(/* 只管理主题 */)
+const useWalletStore = create(/* 只管理钱包 */)
+const useAuthStore = create(/* 只管理认证 */)
+
+<p>// ❌ 不好：一个 Store 管理所有状态<br>const useGlobalStore = create(/* 主题、钱包、认证全在这里 */)<br></code></pre></p>
+<hr>
+<h3 id="3-类型安全">3. 类型安全</h3>
+<pre><code class="language-typescript">// ✅ 始终定义 TypeScript 接口
+interface WalletState {
+  address: string | null
+  isConnected: boolean
+  connect: () =&gt; Promise&lt;void&gt;
+  disconnect: () =&gt; void
+}
+
+<p>export const useWalletStore = create&lt;WalletState&gt;()(/* ... */)<br></code></pre></p>
+<hr>
+<h3 id="4-导出选择器">4. 导出选择器</h3>
+<pre><code class="language-typescript">// store/wallet-store.ts
+export const useWalletStore = create&lt;WalletState&gt;()(/* ... */)
+
+<p>// 导出常用选择器<br>export const selectAddress = (state: WalletState) =&gt; state.address<br>export const selectIsConnected = (state: WalletState) =&gt; state.isConnected<br>export const selectBalance = (state: WalletState) =&gt; state.balance</p>
+<p>// 使用时<br>import { useWalletStore, selectAddress } from &#39;@biya/wallet&#39;<br>const address = useWalletStore(selectAddress)<br></code></pre></p>
+<hr>
+<h3 id="5-actions-命名约定">5. Actions 命名约定</h3>
+<pre><code class="language-typescript">interface State {
+  // 状态：名词
+  user: User | null
+  isLoading: boolean
+  
+<p>  // 设置器：setXxx<br>  setUser: (user: User | null) =&gt; void<br>  setLoading: (loading: boolean) =&gt; void</p>
+<p>  // 切换器：toggleXxx<br>  toggleSidebar: () =&gt; void</p>
+<p>  // 异步操作：动词<br>  login: (email: string, password: string) =&gt; Promise&lt;void&gt;<br>  logout: () =&gt; void</p>
+<p>  // 重置：reset<br>  reset: () =&gt; void<br>}<br></code></pre></p>
+<hr>
+<h3 id="6-错误处理">6. 错误处理</h3>
+<pre><code class="language-typescript">export const useAuthStore = create&lt;AuthState&gt;((set) =&gt; ({
+  login: async (email, password) =&gt; {
+    set({ isLoading: true, error: null })
+    try {
+      const response = await authService.login(email, password)
+      set({ user: response.user, isAuthenticated: true })
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : &#39;Login failed&#39; })
+      throw error
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+}))
+</code></pre>
+<hr>
+<h3 id="7-devtools-集成">7. DevTools 集成</h3>
+<pre><code class="language-typescript">import { create } from &#39;zustand&#39;
+import { devtools } from &#39;zustand/middleware&#39;
+
+<p>export const useWalletStore = create&lt;WalletState&gt;()(<br>  devtools(<br>    (set) =&gt; ({ /* ... */ }),<br>    { name: &#39;WalletStore&#39; }<br>  )<br>)</p>
+<p>// 在浏览器中使用 Redux DevTools Extension 查看状态变化<br></code></pre></p>
+<hr>
+<h2 id="下一步">🚀 下一步</h2>
+<p>状态管理策略已明确，继续阅读：</p>
+<p><strong>→ <a href="./06-%E5%AE%9E%E6%96%BD%E6%AD%A5%E9%AA%A4.md">06-实施步骤.md</a></strong></p>
+<p>了解如何一步步将 <code>biya-helix-app</code> 迁移到 Monorepo。</p>
+<hr>
+<h2 id="本章小结">📚 本章小结</h2>
+<h3 id="状态分层">状态分层</h3>
+<ol>
+<li><p><strong>共享状态</strong>（packages/*/store/）</p>
+<ul>
+<li><code>@biya/theme</code>: 主题配置</li>
+<li><code>@biya/wallet</code>: 钱包连接</li>
+<li><code>@biya/auth</code>: 用户认证</li>
+</ul>
+</li>
+<li><p><strong>应用状态</strong>（apps/*/store/）</p>
+<ul>
+<li><code>bridge-store</code>: 交易历史、表单状态</li>
+<li><code>dex-store</code>: 订单簿、用户订单</li>
+<li><code>helix-store</code>: 用户偏好、UI 状态</li>
+</ul>
+</li>
+</ol>
+<h3 id="核心原则">核心原则</h3>
+<ol>
+<li><strong>单一职责</strong>: 每个 Store 只管理一类状态</li>
+<li><strong>类型安全</strong>: 使用 TypeScript 接口</li>
+<li><strong>性能优化</strong>: 使用选择器和 shallow 比较</li>
+<li><strong>持久化</strong>: 只持久化必要的状态</li>
+<li><strong>可测试</strong>: Actions 是纯函数</li>
+</ol>
+<hr>
+<p><em>最后更新: 2025-10-31</em></p>
+
+</div>
+</body>
+</html>
+</div>
+</body>
+</html>

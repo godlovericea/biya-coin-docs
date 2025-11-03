@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06-实施步骤</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#创建备份分支" class="toc-link">创建备份分支</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#创建迁移分支" class="toc-link">创建迁移分支</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#或者确保-npm-是最新版本" class="toc-link">或者确保 npm 是最新版本</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#验证版本" class="toc-link">验证版本</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#确保当前项目可以正常运行" class="toc-link">确保当前项目可以正常运行</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#确保没有-typescript-错误" class="toc-link">确保没有 TypeScript 错误</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#确保构建成功" class="toc-link">确保构建成功</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#创建目录" class="toc-link">创建目录</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#构建" class="toc-link">构建</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#缓存" class="toc-link">缓存</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#环境变量" class="toc-link">环境变量</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#调试" class="toc-link">调试</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#ide" class="toc-link">IDE</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#os" class="toc-link">OS</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#typescript" class="toc-link">TypeScript</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#测试" class="toc-link">测试</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#vercel" class="toc-link">Vercel</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#安装所有依赖" class="toc-link">安装所有依赖</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#或使用-pnpm" class="toc-link">或使用 pnpm</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制整个项目" class="toc-link">复制整个项目</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#或者使用-powershell" class="toc-link">或者使用 PowerShell</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#copy-item-path-biya-helix-app-destination-apps-helix-recurse" class="toc-link">Copy-Item -Path &quot;biya-helix-app&quot; -Destination &quot;apps\helix&quot; -Recurse</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#例如-迁移-button-tsx" class="toc-link">例如，迁移 Button.tsx</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#如果-apps-helix-components-button-tsx-存在" class="toc-link">如果 apps/helix/components/Button.tsx 存在</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#移动到-packages-shared-components-ui-button-tsx-已创建" class="toc-link">移动到 packages/shared/components/ui/Button.tsx（已创建）</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#安装依赖-如果还没有" class="toc-link">安装依赖（如果还没有）</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#启动-helix-应用" class="toc-link">启动 Helix 应用</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#在浏览器中访问-http-localhost-3000" class="toc-link">在浏览器中访问 <a href="http://localhost:3000">http://localhost:3000</a></a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#从-apps-helix-复制到-apps-bridge" class="toc-link">从 apps/helix 复制到 apps/bridge</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制-bridge-页面" class="toc-link">复制 Bridge 页面</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制-bridge-组件" class="toc-link">复制 Bridge 组件</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制-bridge-context" class="toc-link">复制 Bridge Context</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制-bridge-业务逻辑" class="toc-link">复制 Bridge 业务逻辑</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制-bridge-翻译" class="toc-link">复制 Bridge 翻译</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#从-apps-helix-messages-提取-bridge-相关翻译" class="toc-link">从 apps/helix/messages 提取 bridge 相关翻译</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#复制-bridge-图片" class="toc-link">复制 Bridge 图片</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#安装依赖" class="toc-link">安装依赖</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#启动-bridge-应用-端口-3001" class="toc-link">启动 Bridge 应用（端口 3001）</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#在浏览器中访问-http-localhost-3001" class="toc-link">在浏览器中访问 <a href="http://localhost:3001">http://localhost:3001</a></a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#清理所有构建" class="toc-link">清理所有构建</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#安装依赖" class="toc-link">安装依赖</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#类型检查" class="toc-link">类型检查</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#lint-检查" class="toc-link">Lint 检查</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#构建所有应用" class="toc-link">构建所有应用</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#启动-helix" class="toc-link">启动 Helix</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#启动-bridge-新终端" class="toc-link">启动 Bridge（新终端）</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#查看构建输出-确保" class="toc-link">查看构建输出，确保：</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#共享包被正确打包" class="toc-link">- 共享包被正确打包</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#没有重复依赖" class="toc-link">- 没有重复依赖</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#bundle-大小合理" class="toc-link">- Bundle 大小合理</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#添加所有更改" class="toc-link">添加所有更改</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#提交" class="toc-link">提交</a>
+  </li>
+    <li class="toc-item toc-level-1">
+      <a href="#推送到远程-如果需要" class="toc-link">推送到远程（如果需要）</a>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06-实施步骤</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#实施步骤" class="toc-link">🚀 实施步骤</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📖 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#准备工作" class="toc-link">📋 准备工作</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-备份现有代码" class="toc-link">1. 备份现有代码</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-安装工具" class="toc-link">2. 安装工具</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-项目状态检查" class="toc-link">3. 项目状态检查</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#阶段-1-创建-monorepo-结构" class="toc-link">🏗️ 阶段 1：创建 Monorepo 结构</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-1-创建根目录结构" class="toc-link">步骤 1.1：创建根目录结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-2-创建根-package-json" class="toc-link">步骤 1.2：创建根 package.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-3-创建根-tsconfig-json" class="toc-link">步骤 1.3：创建根 tsconfig.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-4-更新-gitignore" class="toc-link">步骤 1.4：更新 .gitignore</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#阶段-2-创建共享包" class="toc-link">📦 阶段 2：创建共享包</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-1-创建-biya-shared" class="toc-link">步骤 2.1：创建 @biya/shared</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-2-创建-biya-theme" class="toc-link">步骤 2.2：创建 @biya/theme</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-3-创建-biya-wallet" class="toc-link">步骤 2.3：创建 @biya/wallet</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-4-安装共享包依赖" class="toc-link">步骤 2.4：安装共享包依赖</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#阶段-3-迁移主应用" class="toc-link">🏠 阶段 3：迁移主应用</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-1-移动-biya-helix-app-到-apps-helix" class="toc-link">步骤 3.1：移动 biya-helix-app 到 apps/helix</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-2-更新-apps-helix-package-json" class="toc-link">步骤 3.2：更新 apps/helix/package.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-3-更新-apps-helix-tsconfig-json" class="toc-link">步骤 3.3：更新 apps/helix/tsconfig.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-4-迁移通用组件到-biya-shared" class="toc-link">步骤 3.4：迁移通用组件到 @biya/shared</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-5-更新主题相关代码" class="toc-link">步骤 3.5：更新主题相关代码</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-6-测试-helix-应用" class="toc-link">步骤 3.6：测试 Helix 应用</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#阶段-4-分离-bridge-应用" class="toc-link">🌉 阶段 4：分离 Bridge 应用</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-1-创建-bridge-应用目录" class="toc-link">步骤 4.1：创建 Bridge 应用目录</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-2-创建-bridge-package-json" class="toc-link">步骤 4.2：创建 Bridge package.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-3-复制-bridge-相关代码" class="toc-link">步骤 4.3：复制 Bridge 相关代码</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-4-创建-bridge-next-config-ts" class="toc-link">步骤 4.4：创建 Bridge next.config.ts</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-5-创建-bridge-tsconfig-json" class="toc-link">步骤 4.5：创建 Bridge tsconfig.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-6-创建-bridge-主页面" class="toc-link">步骤 4.6：创建 Bridge 主页面</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-7-创建-bridge-layout" class="toc-link">步骤 4.7：创建 Bridge Layout</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-8-测试-bridge-应用" class="toc-link">步骤 4.8：测试 Bridge 应用</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#阶段-5-配置和优化" class="toc-link">⚙️ 阶段 5：配置和优化</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-1-配置-vercel-部署" class="toc-link">步骤 5.1：配置 Vercel 部署</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-2-创建-vercel-忽略脚本" class="toc-link">步骤 5.2：创建 Vercel 忽略脚本</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-3-优化共享包" class="toc-link">步骤 5.3：优化共享包</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-4-配置-eslint-和-prettier" class="toc-link">步骤 5.4：配置 ESLint 和 Prettier</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#阶段-6-测试和验证" class="toc-link">✅ 阶段 6：测试和验证</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-6-1-运行完整测试" class="toc-link">步骤 6.1：运行完整测试</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-6-2-功能测试清单" class="toc-link">步骤 6.2：功能测试清单</a>
+    <li class="toc-item toc-level-4">
+      <a href="#helix-应用" class="toc-link">Helix 应用</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#bridge-应用" class="toc-link">Bridge 应用</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-6-3-性能检查" class="toc-link">步骤 6.3：性能检查</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-6-4-提交代码" class="toc-link">步骤 6.4：提交代码</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#完整验证清单" class="toc-link">📋 完整验证清单</a>
+    <li class="toc-item toc-level-3">
+      <a href="#目录结构" class="toc-link">目录结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#配置文件" class="toc-link">配置文件</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#功能测试" class="toc-link">功能测试</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#构建和部署" class="toc-link">构建和部署</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#完成" class="toc-link">🎉 完成！</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#下一步" class="toc-link">🚀 下一步</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#本章小结" class="toc-link">📚 本章小结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#迁移步骤" class="toc-link">迁移步骤</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#关键点" class="toc-link">关键点</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="实施步骤">🚀 实施步骤</h1>
+<blockquote>
+<p><strong>核心内容</strong>: 将 biya-helix-app 迁移到 Monorepo 的完整步骤<br><strong>目标</strong>: 分阶段、低风险地完成迁移<br><strong>预计时间</strong>: 2-3 天<br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="目录">📖 目录</h2>
+<ol>
+<li><a href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C">准备工作</a></li>
+<li><a href="#%E9%98%B6%E6%AE%B5-1%E5%88%9B%E5%BB%BA-monorepo-%E7%BB%93%E6%9E%84">阶段 1：创建 Monorepo 结构</a></li>
+<li><a href="#%E9%98%B6%E6%AE%B5-2%E5%88%9B%E5%BB%BA%E5%85%B1%E4%BA%AB%E5%8C%85">阶段 2：创建共享包</a></li>
+<li><a href="#%E9%98%B6%E6%AE%B5-3%E8%BF%81%E7%A7%BB%E4%B8%BB%E5%BA%94%E7%94%A8">阶段 3：迁移主应用</a></li>
+<li><a href="#%E9%98%B6%E6%AE%B5-4%E5%88%86%E7%A6%BB-bridge-%E5%BA%94%E7%94%A8">阶段 4：分离 Bridge 应用</a></li>
+<li><a href="#%E9%98%B6%E6%AE%B5-5%E9%85%8D%E7%BD%AE%E5%92%8C%E4%BC%98%E5%8C%96">阶段 5：配置和优化</a></li>
+<li><a href="#%E9%98%B6%E6%AE%B5-6%E6%B5%8B%E8%AF%95%E5%92%8C%E9%AA%8C%E8%AF%81">阶段 6：测试和验证</a></li>
+</ol>
+<hr>
+<h2 id="准备工作">📋 准备工作</h2>
+<h3 id="1-备份现有代码">1. 备份现有代码</h3>
+<pre><code class="language-bash"># 在 D:\rwa\biya-coin 目录下
+cd D:\rwa\biya-coin
+
+<h1 id="创建备份分支">创建备份分支</h1>
+<p>git checkout -b backup-before-monorepo<br>git add .<br>git commit -m &quot;Backup before Monorepo migration&quot;</p>
+<h1 id="创建迁移分支">创建迁移分支</h1>
+<p>git checkout -b feature/monorepo-migration<br></code></pre></p>
+<hr>
+<h3 id="2-安装工具">2. 安装工具</h3>
+<pre><code class="language-bash"># 如果使用 pnpm（推荐）
+npm install -g pnpm
+
+<h1 id="或者确保-npm-是最新版本">或者确保 npm 是最新版本</h1>
+<p>npm install -g npm@latest</p>
+<h1 id="验证版本">验证版本</h1>
+<p>pnpm --version  # 或 npm --version<br>node --version  # 应该 &gt;= 18.0.0<br></code></pre></p>
+<hr>
+<h3 id="3-项目状态检查">3. 项目状态检查</h3>
+<pre><code class="language-bash">cd biya-helix-app
+
+<h1 id="确保当前项目可以正常运行">确保当前项目可以正常运行</h1>
+<p>npm install<br>npm run dev</p>
+<h1 id="确保没有-typescript-错误">确保没有 TypeScript 错误</h1>
+<p>npm run type-check</p>
+<h1 id="确保构建成功">确保构建成功</h1>
+<p>npm run build<br></code></pre></p>
+<hr>
+<h2 id="阶段-1-创建-monorepo-结构">🏗️ 阶段 1：创建 Monorepo 结构</h2>
+<h3 id="步骤-1-1-创建根目录结构">步骤 1.1：创建根目录结构</h3>
+<pre><code class="language-bash"># 在 D:\rwa\biya-coin 目录下
+cd D:\rwa\biya-coin
+
+<h1 id="创建目录">创建目录</h1>
+<p>mkdir -p apps<br>mkdir -p packages/shared<br>mkdir -p packages/theme<br>mkdir -p packages/i18n<br>mkdir -p packages/wallet<br>mkdir -p packages/auth<br></code></pre></p>
+<hr>
+<h3 id="步骤-1-2-创建根-package-json">步骤 1.2：创建根 package.json</h3>
+<pre><code class="language-bash"># 创建根 package.json
+cd D:\rwa\biya-coin
+</code></pre>
+<p>创建 <code>package.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;biya-coin&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;workspaces&quot;: [
+    &quot;apps/*&quot;,
+    &quot;packages/*&quot;
+  ],
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;npm run dev --workspaces --if-present&quot;,
+    &quot;dev:helix&quot;: &quot;npm run dev --workspace=apps/helix&quot;,
+    &quot;dev:bridge&quot;: &quot;npm run dev --workspace=apps/bridge&quot;,
+    &quot;build&quot;: &quot;npm run build --workspaces --if-present&quot;,
+    &quot;build:helix&quot;: &quot;npm run build --workspace=apps/helix&quot;,
+    &quot;build:bridge&quot;: &quot;npm run build --workspace=apps/bridge&quot;,
+    &quot;start:helix&quot;: &quot;npm run start --workspace=apps/helix&quot;,
+    &quot;start:bridge&quot;: &quot;npm run start --workspace=apps/bridge&quot;,
+    &quot;lint&quot;: &quot;npm run lint --workspaces --if-present&quot;,
+    &quot;type-check&quot;: &quot;npm run type-check --workspaces --if-present&quot;,
+    &quot;clean&quot;: &quot;rimraf node_modules apps/*/node_modules packages/*/node_modules&quot;,
+    &quot;clean:build&quot;: &quot;rimraf apps/*/.next packages/*/dist&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/node&quot;: &quot;^20.0.0&quot;,
+    &quot;@types/react&quot;: &quot;^19.0.0&quot;,
+    &quot;@types/react-dom&quot;: &quot;^19.0.0&quot;,
+    &quot;typescript&quot;: &quot;^5.0.0&quot;,
+    &quot;eslint&quot;: &quot;^9.0.0&quot;,
+    &quot;prettier&quot;: &quot;^3.6.2&quot;,
+    &quot;rimraf&quot;: &quot;^6.0.1&quot;
+  },
+  &quot;engines&quot;: {
+    &quot;node&quot;: &quot;&gt;=18.0.0&quot;,
+    &quot;npm&quot;: &quot;&gt;=9.0.0&quot;
+  }
+}
+</code></pre>
+<hr>
+<h3 id="步骤-1-3-创建根-tsconfig-json">步骤 1.3：创建根 tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    &quot;target&quot;: &quot;ES2022&quot;,
+    &quot;lib&quot;: [&quot;ES2022&quot;, &quot;DOM&quot;, &quot;DOM.Iterable&quot;],
+    &quot;module&quot;: &quot;ESNext&quot;,
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    &quot;strict&quot;: true,
+    &quot;esModuleInterop&quot;: true,
+    &quot;skipLibCheck&quot;: true,
+    &quot;jsx&quot;: &quot;preserve&quot;,
+    &quot;resolveJsonModule&quot;: true,
+    &quot;isolatedModules&quot;: true,
+    &quot;noEmit&quot;: true,
+    &quot;incremental&quot;: true,
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@biya/shared&quot;: [&quot;./packages/shared&quot;],
+      &quot;@biya/shared/*&quot;: [&quot;./packages/shared/*&quot;],
+      &quot;@biya/theme&quot;: [&quot;./packages/theme&quot;],
+      &quot;@biya/theme/*&quot;: [&quot;./packages/theme/*&quot;],
+      &quot;@biya/i18n&quot;: [&quot;./packages/i18n&quot;],
+      &quot;@biya/i18n/*&quot;: [&quot;./packages/i18n/*&quot;],
+      &quot;@biya/wallet&quot;: [&quot;./packages/wallet&quot;],
+      &quot;@biya/wallet/*&quot;: [&quot;./packages/wallet/*&quot;],
+      &quot;@biya/auth&quot;: [&quot;./packages/auth&quot;],
+      &quot;@biya/auth/*&quot;: [&quot;./packages/auth/*&quot;]
+    }
+  },
+  &quot;include&quot;: [&quot;apps/**/*&quot;, &quot;packages/**/*&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;.next&quot;, &quot;dist&quot;]
+}
+</code></pre>
+<hr>
+<h3 id="步骤-1-4-更新-gitignore">步骤 1.4：更新 .gitignore</h3>
+<pre><code class="language-gitignore"># 依赖
+node_modules/
+.pnp
+.pnp.js
+
+<h1 id="构建">构建</h1>
+<p>.next/<br>out/<br>dist/<br>build/</p>
+<h1 id="缓存">缓存</h1>
+<p>.turbo/<br>.cache/</p>
+<h1 id="环境变量">环境变量</h1>
+<p>.env<br>.env*.local</p>
+<h1 id="调试">调试</h1>
+<p>npm-debug.log*<br>yarn-debug.log*<br>pnpm-debug.log*</p>
+<h1 id="ide">IDE</h1>
+<p>.vscode/<br>.idea/<br>*.swp</p>
+<h1 id="os">OS</h1>
+<p>.DS_Store<br>Thumbs.db</p>
+<h1 id="typescript">TypeScript</h1>
+<p>*.tsbuildinfo</p>
+<h1 id="测试">测试</h1>
+<p>coverage/</p>
+<h1 id="vercel">Vercel</h1>
+<p>.vercel<br></code></pre></p>
+<hr>
+<h2 id="阶段-2-创建共享包">📦 阶段 2：创建共享包</h2>
+<h3 id="步骤-2-1-创建-biya-shared">步骤 2.1：创建 @biya/shared</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin\packages\shared
+</code></pre>
+<p><strong>创建 package.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/shared&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;main&quot;: &quot;./index.ts&quot;,
+  &quot;types&quot;: &quot;./index.ts&quot;,
+  &quot;exports&quot;: {
+    &quot;.&quot;: &quot;./index.ts&quot;,
+    &quot;./components&quot;: &quot;./components/index.ts&quot;,
+    &quot;./hooks&quot;: &quot;./hooks/index.ts&quot;,
+    &quot;./utils&quot;: &quot;./utils/index.ts&quot;,
+    &quot;./types&quot;: &quot;./types/index.ts&quot;
+  },
+  &quot;scripts&quot;: {
+    &quot;type-check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;peerDependencies&quot;: {
+    &quot;react&quot;: &quot;^19.0.0&quot;,
+    &quot;react-dom&quot;: &quot;^19.0.0&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;clsx&quot;: &quot;^2.1.1&quot;,
+    &quot;tailwind-merge&quot;: &quot;^3.3.1&quot;,
+    &quot;lucide-react&quot;: &quot;^0.548.0&quot;
+  }
+}
+</code></pre>
+<p><strong>创建目录结构</strong>:</p>
+<pre><code class="language-bash">mkdir -p components/ui
+mkdir -p components/layout
+mkdir -p hooks
+mkdir -p utils
+mkdir -p types
+</code></pre>
+<p><strong>创建 components/ui/Button.tsx</strong>:</p>
+<pre><code class="language-typescript">import { forwardRef } from &#39;react&#39;
+import { cn } from &#39;../../utils/cn&#39;
+
+<p>export interface ButtonProps<br>  extends React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; {<br>  variant?: &#39;default&#39; | &#39;primary&#39; | &#39;secondary&#39; | &#39;outline&#39; | &#39;ghost&#39; | &#39;destructive&#39;<br>  size?: &#39;sm&#39; | &#39;md&#39; | &#39;lg&#39;<br>  isLoading?: boolean<br>}</p>
+<p>const Button = forwardRef&lt;HTMLButtonElement, ButtonProps&gt;(<br>  ({ className, variant = &#39;default&#39;, size = &#39;md&#39;, isLoading, children, disabled, ...props }, ref) =&gt; {<br>    return (<br>      &lt;button<br>        ref={ref}<br>        className={cn(<br>          &#39;inline-flex items-center justify-center rounded-lg font-medium transition-colors&#39;,<br>          &#39;focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2&#39;,<br>          &#39;disabled:pointer-events-none disabled:opacity-50&#39;,<br>          {<br>            &#39;h-8 px-3 text-sm&#39;: size === &#39;sm&#39;,<br>            &#39;h-10 px-4 text-base&#39;: size === &#39;md&#39;,<br>            &#39;h-12 px-6 text-lg&#39;: size === &#39;lg&#39;,<br>          },<br>          {<br>            &#39;bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-50 dark:text-gray-900&#39;: variant === &#39;default&#39;,<br>            &#39;bg-blue-600 text-white hover:bg-blue-700&#39;: variant === &#39;primary&#39;,<br>            &#39;bg-gray-200 text-gray-900 hover:bg-gray-300&#39;: variant === &#39;secondary&#39;,<br>            &#39;border border-gray-300 bg-transparent hover:bg-gray-100&#39;: variant === &#39;outline&#39;,<br>            &#39;hover:bg-gray-100 dark:hover:bg-gray-800&#39;: variant === &#39;ghost&#39;,<br>            &#39;bg-red-600 text-white hover:bg-red-700&#39;: variant === &#39;destructive&#39;,<br>          },<br>          className<br>        )}<br>        disabled={disabled || isLoading}<br>        {...props}<br>      &gt;<br>        {isLoading &amp;&amp; (<br>          &lt;svg className=&quot;mr-2 h-4 w-4 animate-spin&quot; viewBox=&quot;0 0 24 24&quot;&gt;<br>            &lt;circle className=&quot;opacity-25&quot; cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;10&quot; stroke=&quot;currentColor&quot; strokeWidth=&quot;4&quot; fill=&quot;none&quot; /&gt;<br>            &lt;path className=&quot;opacity-75&quot; fill=&quot;currentColor&quot; d=&quot;M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z&quot; /&gt;<br>          &lt;/svg&gt;<br>        )}<br>        {children}<br>      &lt;/button&gt;<br>    )<br>  }<br>)</p>
+<p>Button.displayName = &#39;Button&#39;</p>
+<p>export { Button }<br></code></pre></p>
+<p><strong>创建 utils/cn.ts</strong>:</p>
+<pre><code class="language-typescript">import { type ClassValue, clsx } from &#39;clsx&#39;
+import { twMerge } from &#39;tailwind-merge&#39;
+
+<p>export function cn(...inputs: ClassValue[]) {<br>  return twMerge(clsx(inputs))<br>}<br></code></pre></p>
+<p><strong>创建 hooks/useDebounce.ts</strong>:</p>
+<pre><code class="language-typescript">import { useEffect, useState } from &#39;react&#39;
+
+<p>export function useDebounce&lt;T&gt;(value: T, delay: number = 500): T {<br>  const [debouncedValue, setDebouncedValue] = useState&lt;T&gt;(value)</p>
+<p>  useEffect(() =&gt; {<br>    const timer = setTimeout(() =&gt; {<br>      setDebouncedValue(value)<br>    }, delay)</p>
+<pre><code>return () =&amp;gt; {
+  clearTimeout(timer)
+}
+</code></pre>
+<p>  }, [value, delay])</p>
+<p>  return debouncedValue<br>}<br></code></pre></p>
+<p><strong>创建 index.ts</strong>:</p>
+<pre><code class="language-typescript">// 组件
+export * from &#39;./components/ui/Button&#39;
+
+<p>// Hooks<br>export * from &#39;./hooks/useDebounce&#39;</p>
+<p>// 工具<br>export * from &#39;./utils/cn&#39;<br></code></pre></p>
+<p><strong>创建 tsconfig.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;composite&quot;: true,
+    &quot;declaration&quot;: true,
+    &quot;declarationMap&quot;: true
+  },
+  &quot;include&quot;: [&quot;**/*.ts&quot;, &quot;**/*.tsx&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;dist&quot;]
+}
+</code></pre>
+<hr>
+<h3 id="步骤-2-2-创建-biya-theme">步骤 2.2：创建 @biya/theme</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin\packages\theme
+</code></pre>
+<p><strong>创建 package.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/theme&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;main&quot;: &quot;./index.ts&quot;,
+  &quot;types&quot;: &quot;./index.ts&quot;,
+  &quot;exports&quot;: {
+    &quot;.&quot;: &quot;./index.ts&quot;,
+    &quot;./store&quot;: &quot;./store/theme-store.ts&quot;,
+    &quot;./components&quot;: &quot;./components/index.ts&quot;
+  },
+  &quot;peerDependencies&quot;: {
+    &quot;react&quot;: &quot;^19.0.0&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;zustand&quot;: &quot;^5.0.8&quot;
+  }
+}
+</code></pre>
+<p><strong>创建目录</strong>:</p>
+<pre><code class="language-bash">mkdir -p store
+mkdir -p components
+mkdir -p hooks
+</code></pre>
+<p><strong>创建 store/theme-store.ts</strong>:</p>
+<pre><code class="language-typescript">import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>export type Theme = &#39;light&#39; | &#39;dark&#39; | &#39;system&#39;</p>
+<p>interface ThemeState {<br>  theme: Theme<br>  isDark: boolean<br>  setTheme: (theme: Theme) =&gt; void<br>  toggleTheme: () =&gt; void<br>}</p>
+<p>export const useThemeStore = create&lt;ThemeState&gt;()(<br>  persist(<br>    (set, get) =&gt; ({<br>      theme: &#39;system&#39;,<br>      isDark: false,</p>
+<pre><code>  setTheme: (theme) =&amp;gt; {
+    const root = document.documentElement
+    const isDark = theme === &amp;#39;dark&amp;#39; || 
+      (theme === &amp;#39;system&amp;#39; &amp;amp;&amp;amp; window.matchMedia(&amp;#39;(prefers-color-scheme: dark)&amp;#39;).matches)
+    
+    root.classList.toggle(&amp;#39;dark&amp;#39;, isDark)
+    set({ theme, isDark })
+  },
+  
+  toggleTheme: () =&amp;gt; {
+    const current = get().theme
+    const newTheme = current === &amp;#39;dark&amp;#39; ? &amp;#39;light&amp;#39; : &amp;#39;dark&amp;#39;
+    get().setTheme(newTheme)
+  },
+}),
+{
+  name: &amp;#39;biya-theme-storage&amp;#39;,
+  storage: createJSONStorage(() =&amp;gt; localStorage),
+}
+</code></pre>
+<p>  )<br>)</p>
+<p>export const selectTheme = (state: ThemeState) =&gt; state.theme<br>export const selectIsDark = (state: ThemeState) =&gt; state.isDark<br></code></pre></p>
+<p><strong>创建 components/ThemeToggle.tsx</strong>:</p>
+<pre><code class="language-typescript">&#39;use client&#39;
+
+<p>import { Moon, Sun } from &#39;lucide-react&#39;<br>import { useThemeStore } from &#39;../store/theme-store&#39;</p>
+<p>export function ThemeToggle() {<br>  const { isDark, toggleTheme } = useThemeStore()</p>
+<p>  return (<br>    &lt;button<br>      onClick={toggleTheme}<br>      className=&quot;rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors&quot;<br>      aria-label=&quot;Toggle theme&quot;<br>    &gt;<br>      {isDark ? (<br>        &lt;Sun className=&quot;h-5 w-5 text-gray-600 dark:text-gray-400&quot; /&gt;<br>      ) : (<br>        &lt;Moon className=&quot;h-5 w-5 text-gray-600 dark:text-gray-400&quot; /&gt;<br>      )}<br>    &lt;/button&gt;<br>  )<br>}<br></code></pre></p>
+<p><strong>创建 components/ThemeScript.tsx</strong>:</p>
+<pre><code class="language-typescript">export function ThemeScript() {
+  const themeScript = `
+    (function() {
+      const theme = localStorage.getItem(&#39;biya-theme-storage&#39;)
+      if (theme) {
+        const { state } = JSON.parse(theme)
+        const isDark = state.theme === &#39;dark&#39; || 
+          (state.theme === &#39;system&#39; &amp;&amp; window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches)
+        
+<pre><code>    if (isDark) {
+      document.documentElement.classList.add(&amp;#39;dark&amp;#39;)
+    }
+  }
+})()
+</code></pre>
+<p>  `</p>
+<p>  return (<br>    &lt;script<br>      dangerouslySetInnerHTML={{ __html: themeScript }}<br>      suppressHydrationWarning<br>    /&gt;<br>  )<br>}<br></code></pre></p>
+<p><strong>创建 index.ts</strong>:</p>
+<pre><code class="language-typescript">export * from &#39;./store/theme-store&#39;
+export * from &#39;./components/ThemeToggle&#39;
+export * from &#39;./components/ThemeScript&#39;
+</code></pre>
+<p><strong>创建 tsconfig.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;composite&quot;: true,
+    &quot;declaration&quot;: true
+  },
+  &quot;include&quot;: [&quot;**/*.ts&quot;, &quot;**/*.tsx&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;]
+}
+</code></pre>
+<hr>
+<h3 id="步骤-2-3-创建-biya-wallet">步骤 2.3：创建 @biya/wallet</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin\packages\wallet
+</code></pre>
+<p><strong>创建 package.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/wallet&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;main&quot;: &quot;./index.ts&quot;,
+  &quot;types&quot;: &quot;./index.ts&quot;,
+  &quot;peerDependencies&quot;: {
+    &quot;react&quot;: &quot;^19.0.0&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;zustand&quot;: &quot;^5.0.8&quot;
+  }
+}
+</code></pre>
+<p><strong>创建目录</strong>:</p>
+<pre><code class="language-bash">mkdir -p store
+mkdir -p components
+</code></pre>
+<p><strong>创建 store/wallet-store.ts</strong>:</p>
+<pre><code class="language-typescript">import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+<p>interface WalletState {<br>  address: string | null<br>  injectiveAddress: string | null<br>  chainId: number | null<br>  isConnected: boolean<br>  isConnecting: boolean<br>  balance: string | null</p>
+<p>  setAddress: (address: string | null) =&gt; void<br>  setInjectiveAddress: (address: string | null) =&gt; void<br>  setChainId: (chainId: number | null) =&gt; void<br>  setConnected: (connected: boolean) =&gt; void<br>  setConnecting: (connecting: boolean) =&gt; void<br>  setBalance: (balance: string | null) =&gt; void<br>  disconnect: () =&gt; void<br>  reset: () =&gt; void<br>}</p>
+<p>export const useWalletStore = create&lt;WalletState&gt;()(<br>  persist(<br>    (set) =&gt; ({<br>      address: null,<br>      injectiveAddress: null,<br>      chainId: null,<br>      isConnected: false,<br>      isConnecting: false,<br>      balance: null,</p>
+<pre><code>  setAddress: (address) =&amp;gt; set({ address, isConnected: !!address }),
+  setInjectiveAddress: (injectiveAddress) =&amp;gt; set({ injectiveAddress }),
+  setChainId: (chainId) =&amp;gt; set({ chainId }),
+  setConnected: (isConnected) =&amp;gt; set({ isConnected }),
+  setConnecting: (isConnecting) =&amp;gt; set({ isConnecting }),
+  setBalance: (balance) =&amp;gt; set({ balance }),
+  
+  disconnect: () =&amp;gt; set({
+    address: null,
+    injectiveAddress: null,
+    isConnected: false,
+    balance: null,
+  }),
+  
+  reset: () =&amp;gt; set({
+    address: null,
+    injectiveAddress: null,
+    chainId: null,
+    isConnected: false,
+    isConnecting: false,
+    balance: null,
+  }),
+}),
+{
+  name: &amp;#39;biya-wallet-storage&amp;#39;,
+  storage: createJSONStorage(() =&amp;gt; localStorage),
+  partialize: (state) =&amp;gt; ({
+    address: state.address,
+    injectiveAddress: state.injectiveAddress,
+    chainId: state.chainId,
+  }),
+}
+</code></pre>
+<p>  )<br>)</p>
+<p>export const selectAddress = (state: WalletState) =&gt; state.address<br>export const selectIsConnected = (state: WalletState) =&gt; state.isConnected<br></code></pre></p>
+<p><strong>创建 index.ts</strong>:</p>
+<pre><code class="language-typescript">export * from &#39;./store/wallet-store&#39;
+</code></pre>
+<p><strong>创建 tsconfig.json</strong>（同上）</p>
+<hr>
+<h3 id="步骤-2-4-安装共享包依赖">步骤 2.4：安装共享包依赖</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="安装所有依赖">安装所有依赖</h1>
+<p>npm install</p>
+<h1 id="或使用-pnpm">或使用 pnpm</h1>
+<p>pnpm install<br></code></pre></p>
+<hr>
+<h2 id="阶段-3-迁移主应用">🏠 阶段 3：迁移主应用</h2>
+<h3 id="步骤-3-1-移动-biya-helix-app-到-apps-helix">步骤 3.1：移动 biya-helix-app 到 apps/helix</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="复制整个项目">复制整个项目</h1>
+<p>cp -r biya-helix-app apps/helix</p>
+<h1 id="或者使用-powershell">或者使用 PowerShell</h1>
+<h1 id="copy-item-path-biya-helix-app-destination-apps-helix-recurse">Copy-Item -Path &quot;biya-helix-app&quot; -Destination &quot;apps\helix&quot; -Recurse</h1>
+<p></code></pre></p>
+<hr>
+<h3 id="步骤-3-2-更新-apps-helix-package-json">步骤 3.2：更新 apps/helix/package.json</h3>
+<p>修改 <code>name</code> 和添加共享包依赖:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/helix&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start&quot;,
+    &quot;lint&quot;: &quot;next lint&quot;,
+    &quot;type-check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@biya/shared&quot;: &quot;*&quot;,
+    &quot;@biya/theme&quot;: &quot;*&quot;,
+    &quot;@biya/i18n&quot;: &quot;*&quot;,
+    &quot;next&quot;: &quot;15.5.4&quot;,
+    &quot;react&quot;: &quot;19.1.0&quot;,
+    &quot;react-dom&quot;: &quot;19.1.0&quot;,
+    &quot;next-intl&quot;: &quot;^4.4.0&quot;,
+    &quot;zustand&quot;: &quot;^5.0.8&quot;,
+    &quot;clsx&quot;: &quot;^2.1.1&quot;,
+    &quot;tailwind-merge&quot;: &quot;^3.3.1&quot;,
+    &quot;lucide-react&quot;: &quot;^0.548.0&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/node&quot;: &quot;^20&quot;,
+    &quot;@types/react&quot;: &quot;^19&quot;,
+    &quot;@types/react-dom&quot;: &quot;^19&quot;,
+    &quot;typescript&quot;: &quot;^5&quot;,
+    &quot;eslint&quot;: &quot;^9&quot;,
+    &quot;eslint-config-next&quot;: &quot;15.5.4&quot;,
+    &quot;@tailwindcss/postcss&quot;: &quot;^4&quot;,
+    &quot;tailwindcss&quot;: &quot;^4&quot;
+  }
+}
+</code></pre>
+<hr>
+<h3 id="步骤-3-3-更新-apps-helix-tsconfig-json">步骤 3.3：更新 apps/helix/tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./*&quot;],
+      &quot;@biya/shared&quot;: [&quot;../../packages/shared&quot;],
+      &quot;@biya/theme&quot;: [&quot;../../packages/theme&quot;],
+      &quot;@biya/i18n&quot;: [&quot;../../packages/i18n&quot;]
+    },
+    &quot;plugins&quot;: [
+      {
+        &quot;name&quot;: &quot;next&quot;
+      }
+    ]
+  },
+  &quot;include&quot;: [
+    &quot;next-env.d.ts&quot;,
+    &quot;**/*.ts&quot;,
+    &quot;**/*.tsx&quot;,
+    &quot;.next/types/**/*.ts&quot;
+  ],
+  &quot;exclude&quot;: [
+    &quot;node_modules&quot;
+  ]
+}
+</code></pre>
+<hr>
+<h3 id="步骤-3-4-迁移通用组件到-biya-shared">步骤 3.4：迁移通用组件到 @biya/shared</h3>
+<pre><code class="language-bash"># 从 apps/helix/components 迁移到 packages/shared/components
+
+<h1 id="例如-迁移-button-tsx">例如，迁移 Button.tsx</h1>
+<h1 id="如果-apps-helix-components-button-tsx-存在">如果 apps/helix/components/Button.tsx 存在</h1>
+<h1 id="移动到-packages-shared-components-ui-button-tsx-已创建">移动到 packages/shared/components/ui/Button.tsx（已创建）</h1>
+<p></code></pre></p>
+<p><strong>更新 apps/helix 中的导入</strong>:</p>
+<pre><code class="language-typescript">// 之前
+import Button from &#39;@/components/Button&#39;
+
+<p>// 之后<br>import { Button } from &#39;@biya/shared&#39;<br></code></pre></p>
+<hr>
+<h3 id="步骤-3-5-更新主题相关代码">步骤 3.5：更新主题相关代码</h3>
+<p><strong>替换 context/ThemeContext.tsx</strong>:</p>
+<pre><code class="language-typescript">// apps/helix/app/[locale]/layout.tsx
+import { ThemeScript } from &#39;@biya/theme&#39;
+
+<p>export default function RootLayout({ children }) {<br>  return (<br>    &lt;html suppressHydrationWarning&gt;<br>      &lt;head&gt;<br>        &lt;ThemeScript /&gt;<br>      &lt;/head&gt;<br>      &lt;body&gt;{children}&lt;/body&gt;<br>    &lt;/html&gt;<br>  )<br>}<br></code></pre></p>
+<p><strong>更新组件使用主题</strong>:</p>
+<pre><code class="language-typescript">// 之前
+import { useTheme } from &#39;@/context/ThemeContext&#39;
+
+<p>// 之后<br>import { useThemeStore } from &#39;@biya/theme&#39;</p>
+<p>function Component() {<br>  const { isDark, toggleTheme } = useThemeStore()<br>  // ...<br>}<br></code></pre></p>
+<hr>
+<h3 id="步骤-3-6-测试-helix-应用">步骤 3.6：测试 Helix 应用</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="安装依赖-如果还没有">安装依赖（如果还没有）</h1>
+<p>npm install</p>
+<h1 id="启动-helix-应用">启动 Helix 应用</h1>
+<p>npm run dev:helix</p>
+<h1 id="在浏览器中访问-http-localhost-3000">在浏览器中访问 <a href="http://localhost:3000">http://localhost:3000</a></h1>
+<p></code></pre></p>
+<p><strong>验证清单</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> 应用能正常启动</li>
+<li><input disabled="" type="checkbox"> 页面渲染正常</li>
+<li><input disabled="" type="checkbox"> 主题切换工作正常</li>
+<li><input disabled="" type="checkbox"> 国际化工作正常</li>
+<li><input disabled="" type="checkbox"> 无 TypeScript 错误</li>
+</ul>
+<hr>
+<h2 id="阶段-4-分离-bridge-应用">🌉 阶段 4：分离 Bridge 应用</h2>
+<h3 id="步骤-4-1-创建-bridge-应用目录">步骤 4.1：创建 Bridge 应用目录</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin\apps
+mkdir bridge
+cd bridge
+</code></pre>
+<hr>
+<h3 id="步骤-4-2-创建-bridge-package-json">步骤 4.2：创建 Bridge package.json</h3>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/bridge&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;next dev -p 3001&quot;,
+    &quot;build&quot;: &quot;next build&quot;,
+    &quot;start&quot;: &quot;next start -p 3001&quot;,
+    &quot;lint&quot;: &quot;next lint&quot;,
+    &quot;type-check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@biya/shared&quot;: &quot;*&quot;,
+    &quot;@biya/theme&quot;: &quot;*&quot;,
+    &quot;@biya/i18n&quot;: &quot;*&quot;,
+    &quot;@biya/wallet&quot;: &quot;*&quot;,
+    &quot;@0xsquid/sdk&quot;: &quot;^2.10.2&quot;,
+    &quot;@0xsquid/squid-types&quot;: &quot;^0.1.191&quot;,
+    &quot;@axelar-network/axelarjs-sdk&quot;: &quot;^0.17.9&quot;,
+    &quot;@injectivelabs/exceptions&quot;: &quot;1.16.7&quot;,
+    &quot;@injectivelabs/networks&quot;: &quot;1.16.7&quot;,
+    &quot;@injectivelabs/sdk-ts&quot;: &quot;1.16.7&quot;,
+    &quot;@injectivelabs/wallet-strategy&quot;: &quot;1.16.7&quot;,
+    &quot;@ethereumjs/tx&quot;: &quot;^4.1.1&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;^5.90.5&quot;,
+    &quot;bignumber.js&quot;: &quot;^9.1.2&quot;,
+    &quot;ethers&quot;: &quot;^6.15.0&quot;,
+    &quot;next&quot;: &quot;15.5.4&quot;,
+    &quot;react&quot;: &quot;19.1.0&quot;,
+    &quot;react-dom&quot;: &quot;19.1.0&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.65.0&quot;,
+    &quot;viem&quot;: &quot;^2.38.5&quot;,
+    &quot;wagmi&quot;: &quot;^2.19.1&quot;,
+    &quot;zustand&quot;: &quot;^5.0.8&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/node&quot;: &quot;^20&quot;,
+    &quot;@types/react&quot;: &quot;^19&quot;,
+    &quot;@types/react-dom&quot;: &quot;^19&quot;,
+    &quot;typescript&quot;: &quot;^5&quot;
+  }
+}
+</code></pre>
+<hr>
+<h3 id="步骤-4-3-复制-bridge-相关代码">步骤 4.3：复制 Bridge 相关代码</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="从-apps-helix-复制到-apps-bridge">从 apps/helix 复制到 apps/bridge</h1>
+<h1 id="复制-bridge-页面">复制 Bridge 页面</h1>
+<p>cp -r apps/helix/app/[locale]/bridge apps/bridge/app/[locale]/</p>
+<h1 id="复制-bridge-组件">复制 Bridge 组件</h1>
+<p>mkdir -p apps/bridge/components/bridge<br>cp -r apps/helix/components/bridge/* apps/bridge/components/bridge/</p>
+<h1 id="复制-bridge-context">复制 Bridge Context</h1>
+<p>mkdir -p apps/bridge/context/bridge<br>cp -r apps/helix/context/bridge/* apps/bridge/context/bridge/</p>
+<h1 id="复制-bridge-业务逻辑">复制 Bridge 业务逻辑</h1>
+<p>mkdir -p apps/bridge/lib/bridge<br>cp -r apps/helix/lib/bridge/* apps/bridge/lib/bridge/</p>
+<h1 id="复制-bridge-翻译">复制 Bridge 翻译</h1>
+<p>mkdir -p apps/bridge/messages</p>
+<h1 id="从-apps-helix-messages-提取-bridge-相关翻译">从 apps/helix/messages 提取 bridge 相关翻译</h1>
+<h1 id="复制-bridge-图片">复制 Bridge 图片</h1>
+<p>mkdir -p apps/bridge/public/images/chains<br>cp -r apps/helix/public/images/chains/* apps/bridge/public/images/chains/<br></code></pre></p>
+<hr>
+<h3 id="步骤-4-4-创建-bridge-next-config-ts">步骤 4.4：创建 Bridge next.config.ts</h3>
+<pre><code class="language-typescript">import type { NextConfig } from &#39;next&#39;
+import createNextIntlPlugin from &#39;next-intl/plugin&#39;
+import path from &#39;path&#39;
+
+<p>const withNextIntl = createNextIntlPlugin(&#39;./i18n/request.ts&#39;)</p>
+<p>const nextConfig: NextConfig = {<br>  reactStrictMode: true,</p>
+<p>  experimental: {<br>    optimizePackageImports: [<br>      &#39;@biya/shared&#39;,<br>      &#39;@biya/theme&#39;,<br>      &#39;@biya/wallet&#39;,<br>      &#39;lucide-react&#39;<br>    ],<br>  },</p>
+<p>  webpack: (config, { isServer }) =&gt; {<br>    // Vendor 别名<br>    config.resolve.alias = {<br>      ...config.resolve.alias,<br>      &#39;@injectivelabs/core-proto-ts&#39;: path.resolve(<br>        __dirname,<br>        &#39;../../vendor/injective/core-proto-ts&#39;<br>      ),<br>    }</p>
+<pre><code>// Node.js polyfills
+if (!isServer) {
+  config.resolve.fallback = {
+    ...config.resolve.fallback,
+    crypto: require.resolve(&amp;#39;crypto-browserify&amp;#39;),
+    stream: require.resolve(&amp;#39;stream-browserify&amp;#39;),
+    buffer: require.resolve(&amp;#39;buffer/&amp;#39;),
+    util: require.resolve(&amp;#39;util/&amp;#39;),
+    process: require.resolve(&amp;#39;process/browser&amp;#39;),
+  }
+}
+
+return config
+</code></pre>
+<p>  },</p>
+<p>  transpilePackages: [<br>    &#39;@injectivelabs/sdk-ts&#39;,<br>    &#39;@injectivelabs/wallet-strategy&#39;,<br>    &#39;@0xsquid/sdk&#39;,<br>  ],<br>}</p>
+<p>export default withNextIntl(nextConfig)<br></code></pre></p>
+<hr>
+<h3 id="步骤-4-5-创建-bridge-tsconfig-json">步骤 4.5：创建 Bridge tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./*&quot;],
+      &quot;@biya/shared&quot;: [&quot;../../packages/shared&quot;],
+      &quot;@biya/theme&quot;: [&quot;../../packages/theme&quot;],
+      &quot;@biya/i18n&quot;: [&quot;../../packages/i18n&quot;],
+      &quot;@biya/wallet&quot;: [&quot;../../packages/wallet&quot;]
+    },
+    &quot;plugins&quot;: [
+      {
+        &quot;name&quot;: &quot;next&quot;
+      }
+    ]
+  },
+  &quot;include&quot;: [
+    &quot;next-env.d.ts&quot;,
+    &quot;**/*.ts&quot;,
+    &quot;**/*.tsx&quot;,
+    &quot;.next/types/**/*.ts&quot;
+  ],
+  &quot;exclude&quot;: [
+    &quot;node_modules&quot;
+  ]
+}
+</code></pre>
+<hr>
+<h3 id="步骤-4-6-创建-bridge-主页面">步骤 4.6：创建 Bridge 主页面</h3>
+<p><strong>apps/bridge/app/[locale]/page.tsx</strong>:</p>
+<pre><code class="language-typescript">import { getTranslations } from &#39;next-intl/server&#39;
+import BridgeFromV2 from &#39;@/components/bridge/BridgeFromV2&#39;
+
+<p>export default async function BridgePage() {<br>  const t = await getTranslations(&#39;bridge&#39;)</p>
+<p>  return (<br>    &lt;div className=&quot;min-h-screen py-12 px-4&quot;&gt;<br>      &lt;div className=&quot;max-w-2xl mx-auto&quot;&gt;<br>        &lt;div className=&quot;mb-8 text-center&quot;&gt;<br>          &lt;h1 className=&quot;text-4xl font-bold mb-4&quot;&gt;<br>            {t(&#39;title&#39;)}<br>          &lt;/h1&gt;<br>          &lt;p className=&quot;text-gray-400 text-lg&quot;&gt;<br>            {t(&#39;subtitle&#39;)}<br>          &lt;/p&gt;<br>        &lt;/div&gt;<br>        &lt;BridgeFromV2 /&gt;<br>      &lt;/div&gt;<br>    &lt;/div&gt;<br>  )<br>}<br></code></pre></p>
+<hr>
+<h3 id="步骤-4-7-创建-bridge-layout">步骤 4.7：创建 Bridge Layout</h3>
+<p><strong>apps/bridge/app/[locale]/layout.tsx</strong>:</p>
+<pre><code class="language-typescript">import type { Metadata } from &#39;next&#39;
+import { NextIntlClientProvider } from &#39;next-intl&#39;
+import { getMessages } from &#39;next-intl/server&#39;
+import { ThemeScript } from &#39;@biya/theme&#39;
+import { BridgeProviders } from &#39;@/context/bridge/BridgeProviders&#39;
+import &#39;../globals.css&#39;
+
+<p>export const metadata: Metadata = {<br>  title: &#39;Biya Bridge - Cross-Chain Asset Transfer&#39;,<br>  description: &#39;Transfer assets between Ethereum, BSC, and Injective&#39;,<br>}</p>
+<p>export default async function RootLayout({<br>  children,<br>  params: { locale }<br>}: {<br>  children: React.ReactNode<br>  params: { locale: string }<br>}) {<br>  const messages = await getMessages()</p>
+<p>  return (<br>    &lt;html lang={locale} suppressHydrationWarning&gt;<br>      &lt;head&gt;<br>        &lt;ThemeScript /&gt;<br>      &lt;/head&gt;<br>      &lt;body&gt;<br>        &lt;NextIntlClientProvider messages={messages}&gt;<br>          &lt;BridgeProviders&gt;<br>            {children}<br>          &lt;/BridgeProviders&gt;<br>        &lt;/NextIntlClientProvider&gt;<br>      &lt;/body&gt;<br>    &lt;/html&gt;<br>  )<br>}<br></code></pre></p>
+<hr>
+<h3 id="步骤-4-8-测试-bridge-应用">步骤 4.8：测试 Bridge 应用</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="安装依赖">安装依赖</h1>
+<p>npm install</p>
+<h1 id="启动-bridge-应用-端口-3001">启动 Bridge 应用（端口 3001）</h1>
+<p>npm run dev:bridge</p>
+<h1 id="在浏览器中访问-http-localhost-3001">在浏览器中访问 <a href="http://localhost:3001">http://localhost:3001</a></h1>
+<p></code></pre></p>
+<hr>
+<h2 id="阶段-5-配置和优化">⚙️ 阶段 5：配置和优化</h2>
+<h3 id="步骤-5-1-配置-vercel-部署">步骤 5.1：配置 Vercel 部署</h3>
+<p><strong>apps/helix/vercel.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;buildCommand&quot;: &quot;cd ../.. &amp;&amp; npm run build:helix&quot;,
+  &quot;outputDirectory&quot;: &quot;.next&quot;,
+  &quot;framework&quot;: &quot;nextjs&quot;,
+  &quot;installCommand&quot;: &quot;npm install&quot;,
+  &quot;devCommand&quot;: &quot;npm run dev&quot;,
+  &quot;ignoreCommand&quot;: &quot;node ../../scripts/vercel-ignore-helix.js&quot;
+}
+</code></pre>
+<p><strong>apps/bridge/vercel.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;buildCommand&quot;: &quot;cd ../.. &amp;&amp; npm run build:bridge&quot;,
+  &quot;outputDirectory&quot;: &quot;.next&quot;,
+  &quot;framework&quot;: &quot;nextjs&quot;,
+  &quot;installCommand&quot;: &quot;npm install&quot;,
+  &quot;devCommand&quot;: &quot;npm run dev -- -p 3001&quot;,
+  &quot;ignoreCommand&quot;: &quot;node ../../scripts/vercel-ignore-bridge.js&quot;
+}
+</code></pre>
+<hr>
+<h3 id="步骤-5-2-创建-vercel-忽略脚本">步骤 5.2：创建 Vercel 忽略脚本</h3>
+<p><strong>scripts/vercel-ignore-helix.js</strong>:</p>
+<pre><code class="language-javascript">const { execSync } = require(&#39;child_process&#39;)
+
+<p>const diff = execSync(&#39;git diff HEAD^ HEAD --name-only&#39;).toString().trim()<br>const changedFiles = diff.split(&#39;\n&#39;)</p>
+<p>const shouldBuild = changedFiles.some(file =&gt;<br>  file.startsWith(&#39;apps/helix/&#39;) ||<br>  file.startsWith(&#39;packages/&#39;)<br>)</p>
+<p>process.exit(shouldBuild ? 1 : 0)<br></code></pre></p>
+<p><strong>scripts/vercel-ignore-bridge.js</strong>:</p>
+<pre><code class="language-javascript">const { execSync } = require(&#39;child_process&#39;)
+
+<p>const diff = execSync(&#39;git diff HEAD^ HEAD --name-only&#39;).toString().trim()<br>const changedFiles = diff.split(&#39;\n&#39;)</p>
+<p>const shouldBuild = changedFiles.some(file =&gt;<br>  file.startsWith(&#39;apps/bridge/&#39;) ||<br>  file.startsWith(&#39;packages/shared/&#39;) ||<br>  file.startsWith(&#39;packages/theme/&#39;) ||<br>  file.startsWith(&#39;packages/wallet/&#39;)<br>)</p>
+<p>process.exit(shouldBuild ? 1 : 0)<br></code></pre></p>
+<hr>
+<h3 id="步骤-5-3-优化共享包">步骤 5.3：优化共享包</h3>
+<p><strong>添加更多通用组件到 @biya/shared</strong>:</p>
+<p>从 <code>apps/helix/components</code> 中识别可复用的组件，移动到 <code>packages/shared/components</code>:</p>
+<ul>
+<li>Card.tsx</li>
+<li>Input.tsx</li>
+<li>Modal.tsx</li>
+<li>Loading.tsx</li>
+<li>Header.tsx</li>
+<li>Footer.tsx</li>
+</ul>
+<hr>
+<h3 id="步骤-5-4-配置-eslint-和-prettier">步骤 5.4：配置 ESLint 和 Prettier</h3>
+<p><strong>根目录 .eslintrc.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;extends&quot;: [&quot;next/core-web-vitals&quot;],
+  &quot;ignorePatterns&quot;: [&quot;node_modules&quot;, &quot;.next&quot;, &quot;dist&quot;]
+}
+</code></pre>
+<p><strong>根目录 .prettierrc</strong>:</p>
+<pre><code class="language-json">{
+  &quot;semi&quot;: false,
+  &quot;singleQuote&quot;: true,
+  &quot;tabWidth&quot;: 2,
+  &quot;trailingComma&quot;: &quot;es5&quot;,
+  &quot;printWidth&quot;: 100
+}
+</code></pre>
+<hr>
+<h2 id="阶段-6-测试和验证">✅ 阶段 6：测试和验证</h2>
+<h3 id="步骤-6-1-运行完整测试">步骤 6.1：运行完整测试</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="清理所有构建">清理所有构建</h1>
+<p>npm run clean:build</p>
+<h1 id="安装依赖">安装依赖</h1>
+<p>npm install</p>
+<h1 id="类型检查">类型检查</h1>
+<p>npm run type-check</p>
+<h1 id="lint-检查">Lint 检查</h1>
+<p>npm run lint</p>
+<h1 id="构建所有应用">构建所有应用</h1>
+<p>npm run build</p>
+<h1 id="启动-helix">启动 Helix</h1>
+<p>npm run start:helix</p>
+<h1 id="启动-bridge-新终端">启动 Bridge（新终端）</h1>
+<p>npm run start:bridge<br></code></pre></p>
+<hr>
+<h3 id="步骤-6-2-功能测试清单">步骤 6.2：功能测试清单</h3>
+<h4 id="helix-应用">Helix 应用</h4>
+<ul>
+<li><input disabled="" type="checkbox"> 首页加载正常</li>
+<li><input disabled="" type="checkbox"> 导航菜单工作正常</li>
+<li><input disabled="" type="checkbox"> 主题切换（亮色/暗色）</li>
+<li><input disabled="" type="checkbox"> 语言切换（en/zh/ja/ko/es）</li>
+<li><input disabled="" type="checkbox"> 所有页面路由正常</li>
+<li><input disabled="" type="checkbox"> 无控制台错误</li>
+</ul>
+<h4 id="bridge-应用">Bridge 应用</h4>
+<ul>
+<li><input disabled="" type="checkbox"> Bridge 页面加载</li>
+<li><input disabled="" type="checkbox"> 钱包连接正常</li>
+<li><input disabled="" type="checkbox"> 网络选择正常</li>
+<li><input disabled="" type="checkbox"> 代币选择正常</li>
+<li><input disabled="" type="checkbox"> 金额输入正常</li>
+<li><input disabled="" type="checkbox"> 交易流程完整</li>
+<li><input disabled="" type="checkbox"> 主题切换工作</li>
+<li><input disabled="" type="checkbox"> 语言切换工作</li>
+</ul>
+<hr>
+<h3 id="步骤-6-3-性能检查">步骤 6.3：性能检查</h3>
+<pre><code class="language-bash"># 检查 Bundle 大小
+npm run build:helix
+npm run build:bridge
+
+<h1 id="查看构建输出-确保">查看构建输出，确保：</h1>
+<h1 id="共享包被正确打包">- 共享包被正确打包</h1>
+<h1 id="没有重复依赖">- 没有重复依赖</h1>
+<h1 id="bundle-大小合理">- Bundle 大小合理</h1>
+<p></code></pre></p>
+<hr>
+<h3 id="步骤-6-4-提交代码">步骤 6.4：提交代码</h3>
+<pre><code class="language-bash">cd D:\rwa\biya-coin
+
+<h1 id="添加所有更改">添加所有更改</h1>
+<p>git add .</p>
+<h1 id="提交">提交</h1>
+<p>git commit -m &quot;feat: migrate to Monorepo architecture</p>
+<ul>
+<li>Created Monorepo structure with apps/ and packages/</li>
+<li>Created shared packages: @biya/shared, @biya/theme, @biya/wallet</li>
+<li>Migrated biya-helix-app to apps/helix</li>
+<li>Separated Bridge functionality to apps/bridge</li>
+<li>Configured Vercel for independent deployment</li>
+<li>Added TypeScript path aliases for all packages<br>&quot;</li>
+</ul>
+<h1 id="推送到远程-如果需要">推送到远程（如果需要）</h1>
+<p>git push origin feature/monorepo-migration<br></code></pre></p>
+<hr>
+<h2 id="完整验证清单">📋 完整验证清单</h2>
+<h3 id="目录结构">目录结构</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>apps/helix</code> 存在且结构正确</li>
+<li><input disabled="" type="checkbox"> <code>apps/bridge</code> 存在且结构正确</li>
+<li><input disabled="" type="checkbox"> <code>packages/shared</code> 存在且包含通用组件</li>
+<li><input disabled="" type="checkbox"> <code>packages/theme</code> 存在且包含主题管理</li>
+<li><input disabled="" type="checkbox"> <code>packages/wallet</code> 存在且包含钱包管理</li>
+</ul>
+<h3 id="配置文件">配置文件</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 根 <code>package.json</code> 配置了 workspaces</li>
+<li><input disabled="" type="checkbox"> 根 <code>tsconfig.json</code> 配置了 paths</li>
+<li><input disabled="" type="checkbox"> 每个 app 有独立的 <code>next.config.ts</code></li>
+<li><input disabled="" type="checkbox"> 每个 package 有独立的 <code>package.json</code></li>
+</ul>
+<h3 id="功能测试">功能测试</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Helix 应用独立运行正常</li>
+<li><input disabled="" type="checkbox"> Bridge 应用独立运行正常</li>
+<li><input disabled="" type="checkbox"> 两个应用可以同时运行（不同端口）</li>
+<li><input disabled="" type="checkbox"> 主题切换在两个应用中同步</li>
+<li><input disabled="" type="checkbox"> 钱包连接状态在两个应用中共享（如果打开）</li>
+</ul>
+<h3 id="构建和部署">构建和部署</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>npm run build:helix</code> 成功</li>
+<li><input disabled="" type="checkbox"> <code>npm run build:bridge</code> 成功</li>
+<li><input disabled="" type="checkbox"> <code>npm run build</code> 成功（构建所有）</li>
+<li><input disabled="" type="checkbox"> Vercel 配置正确</li>
+<li><input disabled="" type="checkbox"> 可以独立部署每个应用</li>
+</ul>
+<hr>
+<h2 id="完成">🎉 完成！</h2>
+<p>恭喜！你已经成功将 <code>biya-helix-app</code> 迁移到 Monorepo 架构。</p>
+<hr>
+<h2 id="下一步">🚀 下一步</h2>
+<p>继续阅读：</p>
+<p><strong>→ <a href="./07-%E9%83%A8%E7%BD%B2%E6%96%B9%E6%A1%88.md">07-部署方案.md</a></strong></p>
+<p>了解如何在 Vercel 或自建服务器上部署 Monorepo 应用。</p>
+<hr>
+<h2 id="本章小结">📚 本章小结</h2>
+<h3 id="迁移步骤">迁移步骤</h3>
+<ol>
+<li><strong>准备工作</strong>: 备份代码、安装工具</li>
+<li><strong>创建结构</strong>: Monorepo 根目录和配置</li>
+<li><strong>创建共享包</strong>: shared、theme、wallet 等</li>
+<li><strong>迁移主应用</strong>: 移动 helix 到 apps/helix</li>
+<li><strong>分离 Bridge</strong>: 独立 Bridge 应用到 apps/bridge</li>
+<li><strong>配置优化</strong>: Vercel 配置、ESLint、Prettier</li>
+<li><strong>测试验证</strong>: 功能测试、性能检查</li>
+</ol>
+<h3 id="关键点">关键点</h3>
+<ul>
+<li><strong>渐进式迁移</strong>: 一步步完成，每步验证</li>
+<li><strong>保持独立</strong>: 每个应用可以独立运行和部署</li>
+<li><strong>代码复用</strong>: 共享包提高代码复用率</li>
+<li><strong>类型安全</strong>: 完整的 TypeScript 支持</li>
+</ul>
+<hr>
+<p><em>最后更新: 2025-10-31</em></p>
+
+</div>
+</body>
+</html>
+</div>
+</body>
+</html>

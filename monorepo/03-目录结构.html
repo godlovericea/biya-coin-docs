@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>03-目录结构</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#配置文件详解" class="toc-link">📂 配置文件详解</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📖 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#根目录配置" class="toc-link">🌳 根目录配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-package-json-根配置" class="toc-link">1. package.json（根配置）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-pnpm-workspace-yaml-pnpm-配置" class="toc-link">2. pnpm-workspace.yaml（pnpm 配置）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-gitignore" class="toc-link">3. .gitignore</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#typescript-配置" class="toc-link">📘 TypeScript 配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-tsconfig-json-根配置" class="toc-link">1. tsconfig.json（根配置）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-apps-helix-tsconfig-json" class="toc-link">2. apps/helix/tsconfig.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-apps-bridge-tsconfig-json" class="toc-link">3. apps/bridge/tsconfig.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-packages-shared-tsconfig-json" class="toc-link">4. packages/shared/tsconfig.json</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#next-js-配置" class="toc-link">⚙️ Next.js 配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-apps-helix-next-config-ts" class="toc-link">1. apps/helix/next.config.ts</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-apps-bridge-next-config-ts" class="toc-link">2. apps/bridge/next.config.ts</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#tailwind-css-配置" class="toc-link">🎨 Tailwind CSS 配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-apps-helix-tailwind-config-js" class="toc-link">1. apps/helix/tailwind.config.js</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-apps-bridge-tailwind-config-js" class="toc-link">2. apps/bridge/tailwind.config.js</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-共享-tailwind-配置-可选" class="toc-link">3. 共享 Tailwind 配置（可选）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#国际化配置" class="toc-link">🌍 国际化配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-packages-i18n-config-locales-ts" class="toc-link">1. packages/i18n/config/locales.ts</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-apps-helix-i18n-request-ts" class="toc-link">2. apps/helix/i18n/request.ts</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-apps-bridge-i18n-request-ts" class="toc-link">3. apps/bridge/i18n/request.ts</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-middleware-ts-根目录" class="toc-link">4. middleware.ts（根目录）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#部署配置" class="toc-link">🚀 部署配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-apps-helix-vercel-json" class="toc-link">1. apps/helix/vercel.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-apps-bridge-vercel-json" class="toc-link">2. apps/bridge/vercel.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-github-workflows-deploy-helix-yml" class="toc-link">3. .github/workflows/deploy-helix.yml</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-github-workflows-deploy-bridge-yml" class="toc-link">4. .github/workflows/deploy-bridge.yml</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#package-配置示例" class="toc-link">📦 Package 配置示例</a>
+    <li class="toc-item toc-level-3">
+      <a href="#packages-shared-package-json" class="toc-link">packages/shared/package.json</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#packages-theme-package-json" class="toc-link">packages/theme/package.json</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#配置检查清单" class="toc-link">📋 配置检查清单</a>
+    <li class="toc-item toc-level-3">
+      <a href="#根目录" class="toc-link">根目录</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#应用配置-apps" class="toc-link">应用配置（apps/*）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#共享包配置-packages" class="toc-link">共享包配置（packages/*）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#ci-cd" class="toc-link">CI/CD</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#下一步" class="toc-link">🚀 下一步</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#本章小结" class="toc-link">📚 本章小结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#核心配置" class="toc-link">核心配置</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#配置原则" class="toc-link">配置原则</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="配置文件详解">📂 配置文件详解</h1>
+<blockquote>
+<p><strong>核心内容</strong>: TypeScript、Next.js、Tailwind、Workspace 配置<br><strong>目标</strong>: 理解和配置 Monorepo 所有关键文件<br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="目录">📖 目录</h2>
+<ol>
+<li><a href="#%E6%A0%B9%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE">根目录配置</a></li>
+<li><a href="#typescript-%E9%85%8D%E7%BD%AE">TypeScript 配置</a></li>
+<li><a href="#nextjs-%E9%85%8D%E7%BD%AE">Next.js 配置</a></li>
+<li><a href="#tailwind-css-%E9%85%8D%E7%BD%AE">Tailwind CSS 配置</a></li>
+<li><a href="#%E5%9B%BD%E9%99%85%E5%8C%96%E9%85%8D%E7%BD%AE">国际化配置</a></li>
+<li><a href="#%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE">部署配置</a></li>
+</ol>
+<hr>
+<h2 id="根目录配置">🌳 根目录配置</h2>
+<h3 id="1-package-json-根配置">1. package.json（根配置）</h3>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;biya-coin&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;workspaces&quot;: [
+    &quot;apps/*&quot;,
+    &quot;packages/*&quot;
+  ],
+  &quot;scripts&quot;: {
+    &quot;// 开发模式&quot;: &quot;&quot;,
+    &quot;dev&quot;: &quot;npm run dev --workspaces --if-present&quot;,
+    &quot;dev:helix&quot;: &quot;npm run dev --workspace=apps/helix&quot;,
+    &quot;dev:bridge&quot;: &quot;npm run dev --workspace=apps/bridge&quot;,
+    &quot;dev:dex&quot;: &quot;npm run dev --workspace=apps/dex&quot;,
+    
+    &quot;// 构建&quot;: &quot;&quot;,
+    &quot;build&quot;: &quot;npm run build --workspaces --if-present&quot;,
+    &quot;build:helix&quot;: &quot;npm run build --workspace=apps/helix&quot;,
+    &quot;build:bridge&quot;: &quot;npm run build --workspace=apps/bridge&quot;,
+    &quot;build:dex&quot;: &quot;npm run build --workspace=apps/dex&quot;,
+    
+    &quot;// 启动&quot;: &quot;&quot;,
+    &quot;start:helix&quot;: &quot;npm run start --workspace=apps/helix&quot;,
+    &quot;start:bridge&quot;: &quot;npm run start --workspace=apps/bridge&quot;,
+    
+    &quot;// 测试&quot;: &quot;&quot;,
+    &quot;test&quot;: &quot;npm run test --workspaces --if-present&quot;,
+    &quot;lint&quot;: &quot;npm run lint --workspaces --if-present&quot;,
+    &quot;type-check&quot;: &quot;npm run type-check --workspaces --if-present&quot;,
+    
+    &quot;// 清理&quot;: &quot;&quot;,
+    &quot;clean&quot;: &quot;rm -rf node_modules apps/*/node_modules packages/*/node_modules&quot;,
+    &quot;clean:build&quot;: &quot;rm -rf apps/*/.next packages/*/dist&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/node&quot;: &quot;^20.0.0&quot;,
+    &quot;@types/react&quot;: &quot;^19.0.0&quot;,
+    &quot;@types/react-dom&quot;: &quot;^19.0.0&quot;,
+    &quot;typescript&quot;: &quot;^5.0.0&quot;,
+    &quot;eslint&quot;: &quot;^9.0.0&quot;,
+    &quot;prettier&quot;: &quot;^3.6.2&quot;
+  },
+  &quot;engines&quot;: {
+    &quot;node&quot;: &quot;&gt;=18.0.0&quot;,
+    &quot;npm&quot;: &quot;&gt;=9.0.0&quot;
+  }
+}
+</code></pre>
+<hr>
+<h3 id="2-pnpm-workspace-yaml-pnpm-配置">2. pnpm-workspace.yaml（pnpm 配置）</h3>
+<pre><code class="language-yaml">packages:
+  - &#39;apps/*&#39;
+  - &#39;packages/*&#39;
+
+# 可选：排除某些目录
+# exclude:
+#   - &#39;**/.next/**&#39;
+#   - &#39;**/dist/**&#39;
+</code></pre>
+<hr>
+<h3 id="3-gitignore">3. .gitignore</h3>
+<pre><code class="language-gitignore"># 依赖
+node_modules/
+.pnp
+.pnp.js
+
+# 构建产物
+.next/
+out/
+dist/
+build/
+
+# 缓存
+.turbo/
+.cache/
+
+# 环境变量
+.env
+.env*.local
+
+# 调试
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# 测试
+coverage/
+
+# Vercel
+.vercel
+</code></pre>
+<hr>
+<h2 id="typescript-配置">📘 TypeScript 配置</h2>
+<h3 id="1-tsconfig-json-根配置">1. tsconfig.json（根配置）</h3>
+<pre><code class="language-json">{
+  &quot;compilerOptions&quot;: {
+    // 编译选项
+    &quot;target&quot;: &quot;ES2022&quot;,
+    &quot;lib&quot;: [&quot;ES2022&quot;, &quot;DOM&quot;, &quot;DOM.Iterable&quot;],
+    &quot;module&quot;: &quot;ESNext&quot;,
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    
+    // 严格模式
+    &quot;strict&quot;: true,
+    &quot;strictNullChecks&quot;: true,
+    &quot;strictFunctionTypes&quot;: true,
+    &quot;noImplicitAny&quot;: true,
+    
+    // 模块解析
+    &quot;esModuleInterop&quot;: true,
+    &quot;allowSyntheticDefaultImports&quot;: true,
+    &quot;resolveJsonModule&quot;: true,
+    &quot;isolatedModules&quot;: true,
+    
+    // JSX
+    &quot;jsx&quot;: &quot;preserve&quot;,
+    &quot;jsxImportSource&quot;: &quot;react&quot;,
+    
+    // 路径
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@biya/shared&quot;: [&quot;./packages/shared&quot;],
+      &quot;@biya/shared/*&quot;: [&quot;./packages/shared/*&quot;],
+      &quot;@biya/theme&quot;: [&quot;./packages/theme&quot;],
+      &quot;@biya/theme/*&quot;: [&quot;./packages/theme/*&quot;],
+      &quot;@biya/i18n&quot;: [&quot;./packages/i18n&quot;],
+      &quot;@biya/i18n/*&quot;: [&quot;./packages/i18n/*&quot;],
+      &quot;@biya/wallet&quot;: [&quot;./packages/wallet&quot;],
+      &quot;@biya/wallet/*&quot;: [&quot;./packages/wallet/*&quot;],
+      &quot;@biya/auth&quot;: [&quot;./packages/auth&quot;],
+      &quot;@biya/auth/*&quot;: [&quot;./packages/auth/*&quot;]
+    },
+    
+    // 输出
+    &quot;skipLibCheck&quot;: true,
+    &quot;noEmit&quot;: true,
+    &quot;incremental&quot;: true,
+    
+    // 其他
+    &quot;allowJs&quot;: true,
+    &quot;forceConsistentCasingInFileNames&quot;: true
+  },
+  &quot;include&quot;: [
+    &quot;apps/**/*&quot;,
+    &quot;packages/**/*&quot;
+  ],
+  &quot;exclude&quot;: [
+    &quot;node_modules&quot;,
+    &quot;.next&quot;,
+    &quot;dist&quot;,
+    &quot;out&quot;
+  ]
+}
+</code></pre>
+<hr>
+<h3 id="2-apps-helix-tsconfig-json">2. apps/helix/tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./*&quot;],
+      &quot;@biya/shared&quot;: [&quot;../../packages/shared&quot;],
+      &quot;@biya/theme&quot;: [&quot;../../packages/theme&quot;],
+      &quot;@biya/i18n&quot;: [&quot;../../packages/i18n&quot;],
+      &quot;@biya/wallet&quot;: [&quot;../../packages/wallet&quot;],
+      &quot;@biya/auth&quot;: [&quot;../../packages/auth&quot;]
+    },
+    &quot;plugins&quot;: [
+      {
+        &quot;name&quot;: &quot;next&quot;
+      }
+    ]
+  },
+  &quot;include&quot;: [
+    &quot;next-env.d.ts&quot;,
+    &quot;**/*.ts&quot;,
+    &quot;**/*.tsx&quot;,
+    &quot;.next/types/**/*.ts&quot;
+  ],
+  &quot;exclude&quot;: [
+    &quot;node_modules&quot;
+  ]
+}
+</code></pre>
+<hr>
+<h3 id="3-apps-bridge-tsconfig-json">3. apps/bridge/tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./*&quot;],
+      &quot;@biya/shared&quot;: [&quot;../../packages/shared&quot;],
+      &quot;@biya/theme&quot;: [&quot;../../packages/theme&quot;],
+      &quot;@biya/i18n&quot;: [&quot;../../packages/i18n&quot;],
+      &quot;@biya/wallet&quot;: [&quot;../../packages/wallet&quot;]
+    },
+    &quot;plugins&quot;: [
+      {
+        &quot;name&quot;: &quot;next&quot;
+      }
+    ]
+  },
+  &quot;include&quot;: [
+    &quot;next-env.d.ts&quot;,
+    &quot;**/*.ts&quot;,
+    &quot;**/*.tsx&quot;,
+    &quot;.next/types/**/*.ts&quot;
+  ],
+  &quot;exclude&quot;: [
+    &quot;node_modules&quot;
+  ]
+}
+</code></pre>
+<hr>
+<h3 id="4-packages-shared-tsconfig-json">4. packages/shared/tsconfig.json</h3>
+<pre><code class="language-json">{
+  &quot;extends&quot;: &quot;../../tsconfig.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./*&quot;]
+    },
+    &quot;composite&quot;: true,
+    &quot;declaration&quot;: true,
+    &quot;declarationMap&quot;: true,
+    &quot;outDir&quot;: &quot;./dist&quot;
+  },
+  &quot;include&quot;: [
+    &quot;**/*.ts&quot;,
+    &quot;**/*.tsx&quot;
+  ],
+  &quot;exclude&quot;: [
+    &quot;node_modules&quot;,
+    &quot;dist&quot;
+  ]
+}
+</code></pre>
+<hr>
+<h2 id="next-js-配置">⚙️ Next.js 配置</h2>
+<h3 id="1-apps-helix-next-config-ts">1. apps/helix/next.config.ts</h3>
+<pre><code class="language-typescript">import type { NextConfig } from &#39;next&#39;
+import createNextIntlPlugin from &#39;next-intl/plugin&#39;
+
+const withNextIntl = createNextIntlPlugin(&#39;./i18n/request.ts&#39;)
+
+const nextConfig: NextConfig = {
+  // 严格模式
+  reactStrictMode: true,
+  
+  // 实验性特性
+  experimental: {
+    optimizePackageImports: [
+      &#39;@biya/shared&#39;,
+      &#39;@biya/theme&#39;,
+      &#39;@biya/i18n&#39;,
+      &#39;lucide-react&#39;
+    ],
+  },
+  
+  // 图片优化
+  images: {
+    remotePatterns: [
+      {
+        protocol: &#39;https&#39;,
+        hostname: &#39;**.example.com&#39;,
+      },
+    ],
+  },
+  
+  // TypeScript
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  
+  // ESLint
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  
+  // 国际化
+  // i18n 通过 next-intl 处理，不需要这里配置
+  
+  // 重定向
+  async redirects() {
+    return [
+      // 示例重定向
+    ]
+  },
+  
+  // 重写
+  async rewrites() {
+    return [
+      // 示例重写
+    ]
+  },
+  
+  // 环境变量
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+}
+
+export default withNextIntl(nextConfig)
+</code></pre>
+<hr>
+<h3 id="2-apps-bridge-next-config-ts">2. apps/bridge/next.config.ts</h3>
+<pre><code class="language-typescript">import type { NextConfig } from &#39;next&#39;
+import createNextIntlPlugin from &#39;next-intl/plugin&#39;
+import path from &#39;path&#39;
+
+const withNextIntl = createNextIntlPlugin(&#39;./i18n/request.ts&#39;)
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  
+  experimental: {
+    optimizePackageImports: [
+      &#39;@biya/shared&#39;,
+      &#39;@biya/theme&#39;,
+      &#39;@biya/i18n&#39;,
+      &#39;@biya/wallet&#39;,
+      &#39;lucide-react&#39;
+    ],
+  },
+  
+  // Webpack 配置（处理 vendor 包）
+  webpack: (config, { isServer }) =&gt; {
+    // 添加 vendor 别名
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      &#39;@injectivelabs/core-proto-ts&#39;: path.resolve(
+        __dirname,
+        &#39;../../vendor/injective/core-proto-ts&#39;
+      ),
+    }
+    
+    // Node.js polyfills
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: require.resolve(&#39;crypto-browserify&#39;),
+        stream: require.resolve(&#39;stream-browserify&#39;),
+        buffer: require.resolve(&#39;buffer/&#39;),
+        util: require.resolve(&#39;util/&#39;),
+        process: require.resolve(&#39;process/browser&#39;),
+      }
+    }
+    
+    return config
+  },
+  
+  // 转译包
+  transpilePackages: [
+    &#39;@injectivelabs/sdk-ts&#39;,
+    &#39;@injectivelabs/wallet-strategy&#39;,
+    &#39;@injectivelabs/wallet-ts&#39;,
+    &#39;@0xsquid/sdk&#39;,
+  ],
+}
+
+export default withNextIntl(nextConfig)
+</code></pre>
+<hr>
+<h2 id="tailwind-css-配置">🎨 Tailwind CSS 配置</h2>
+<h3 id="1-apps-helix-tailwind-config-js">1. apps/helix/tailwind.config.js</h3>
+<pre><code class="language-javascript">import type { Config } from &#39;tailwindcss&#39;
+
+const config: Config = {
+  // 内容路径
+  content: [
+    &#39;./app/**/*.{js,ts,jsx,tsx,mdx}&#39;,
+    &#39;./components/**/*.{js,ts,jsx,tsx,mdx}&#39;,
+    // 包含共享包
+    &#39;../../packages/shared/**/*.{js,ts,jsx,tsx}&#39;,
+    &#39;../../packages/theme/**/*.{js,ts,jsx,tsx}&#39;,
+  ],
+  
+  // 暗色模式
+  darkMode: &#39;class&#39;,
+  
+  theme: {
+    extend: {
+      colors: {
+        // 自定义颜色
+        primary: {
+          50: &#39;#f0f9ff&#39;,
+          100: &#39;#e0f2fe&#39;,
+          200: &#39;#bae6fd&#39;,
+          300: &#39;#7dd3fc&#39;,
+          400: &#39;#38bdf8&#39;,
+          500: &#39;#0ea5e9&#39;,
+          600: &#39;#0284c7&#39;,
+          700: &#39;#0369a1&#39;,
+          800: &#39;#075985&#39;,
+          900: &#39;#0c4a6e&#39;,
+          950: &#39;#082f49&#39;,
+        },
+        // 从 @biya/theme 导入
+        background: &#39;var(--background)&#39;,
+        foreground: &#39;var(--foreground)&#39;,
+      },
+      
+      fontFamily: {
+        sans: [&#39;var(--font-geist-sans)&#39;],
+        mono: [&#39;var(--font-geist-mono)&#39;],
+      },
+      
+      borderRadius: {
+        lg: &#39;var(--radius)&#39;,
+        md: &#39;calc(var(--radius) - 2px)&#39;,
+        sm: &#39;calc(var(--radius) - 4px)&#39;,
+      },
+      
+      keyframes: {
+        &#39;fade-in&#39;: {
+          &#39;0%&#39;: { opacity: &#39;0&#39; },
+          &#39;100%&#39;: { opacity: &#39;1&#39; },
+        },
+        &#39;slide-up&#39;: {
+          &#39;0%&#39;: { transform: &#39;translateY(10px)&#39;, opacity: &#39;0&#39; },
+          &#39;100%&#39;: { transform: &#39;translateY(0)&#39;, opacity: &#39;1&#39; },
+        },
+      },
+      
+      animation: {
+        &#39;fade-in&#39;: &#39;fade-in 0.3s ease-out&#39;,
+        &#39;slide-up&#39;: &#39;slide-up 0.3s ease-out&#39;,
+      },
+    },
+  },
+  
+  plugins: [],
+}
+
+export default config
+</code></pre>
+<hr>
+<h3 id="2-apps-bridge-tailwind-config-js">2. apps/bridge/tailwind.config.js</h3>
+<pre><code class="language-javascript">import type { Config } from &#39;tailwindcss&#39;
+
+const config: Config = {
+  content: [
+    &#39;./app/**/*.{js,ts,jsx,tsx,mdx}&#39;,
+    &#39;./components/**/*.{js,ts,jsx,tsx,mdx}&#39;,
+    &#39;../../packages/shared/**/*.{js,ts,jsx,tsx}&#39;,
+    &#39;../../packages/theme/**/*.{js,ts,jsx,tsx}&#39;,
+    &#39;../../packages/wallet/**/*.{js,ts,jsx,tsx}&#39;,
+  ],
+  
+  darkMode: &#39;class&#39;,
+  
+  theme: {
+    extend: {
+      colors: {
+        // Bridge 特定颜色
+        bridge: {
+          from: &#39;#3b82f6&#39;,
+          to: &#39;#8b5cf6&#39;,
+        },
+        ethereum: &#39;#627eea&#39;,
+        injective: &#39;#00d2ff&#39;,
+        bsc: &#39;#f3ba2f&#39;,
+        
+        // 共享颜色
+        background: &#39;var(--background)&#39;,
+        foreground: &#39;var(--foreground)&#39;,
+      },
+      
+      backgroundImage: {
+        &#39;gradient-radial&#39;: &#39;radial-gradient(var(--tw-gradient-stops))&#39;,
+        &#39;gradient-bridge&#39;: &#39;linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)&#39;,
+      },
+    },
+  },
+  
+  plugins: [],
+}
+
+export default config
+</code></pre>
+<hr>
+<h3 id="3-共享-tailwind-配置-可选">3. 共享 Tailwind 配置（可选）</h3>
+<pre><code class="language-javascript">// packages/config/tailwind-config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // 共享颜色定义
+        brand: {
+          50: &#39;#f0f9ff&#39;,
+          // ...
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+
+// apps/*/tailwind.config.js 中使用
+import sharedConfig from &#39;../../packages/config/tailwind-config&#39;
+
+export default {
+  ...sharedConfig,
+  content: [
+    // ...
+  ],
+}
+</code></pre>
+<hr>
+<h2 id="国际化配置">🌍 国际化配置</h2>
+<h3 id="1-packages-i18n-config-locales-ts">1. packages/i18n/config/locales.ts</h3>
+<pre><code class="language-typescript">export const locales = [&#39;en&#39;, &#39;zh&#39;, &#39;ja&#39;, &#39;ko&#39;, &#39;es&#39;] as const
+export type Locale = (typeof locales)[number]
+
+export const defaultLocale: Locale = &#39;en&#39;
+
+export const localeNames: Record&lt;Locale, string&gt; = {
+  en: &#39;English&#39;,
+  zh: &#39;中文&#39;,
+  ja: &#39;日本語&#39;,
+  ko: &#39;한국어&#39;,
+  es: &#39;Español&#39;,
+}
+
+export const localeFlags: Record&lt;Locale, string&gt; = {
+  en: &#39;🇺🇸&#39;,
+  zh: &#39;🇨🇳&#39;,
+  ja: &#39;🇯🇵&#39;,
+  ko: &#39;🇰🇷&#39;,
+  es: &#39;🇪🇸&#39;,
+}
+</code></pre>
+<hr>
+<h3 id="2-apps-helix-i18n-request-ts">2. apps/helix/i18n/request.ts</h3>
+<pre><code class="language-typescript">import { getRequestConfig } from &#39;next-intl/server&#39;
+import { notFound } from &#39;next/navigation&#39;
+import { locales } from &#39;@biya/i18n/config/locales&#39;
+
+export default getRequestConfig(async ({ locale }) =&gt; {
+  // 验证 locale
+  if (!locales.includes(locale as any)) {
+    notFound()
+  }
+
+  return {
+    messages: (await import(`../messages/${locale}.json`)).default,
+    timeZone: &#39;Asia/Shanghai&#39;,
+    now: new Date(),
+  }
+})
+</code></pre>
+<hr>
+<h3 id="3-apps-bridge-i18n-request-ts">3. apps/bridge/i18n/request.ts</h3>
+<pre><code class="language-typescript">import { getRequestConfig } from &#39;next-intl/server&#39;
+import { notFound } from &#39;next/navigation&#39;
+import { locales, mergeTranslations } from &#39;@biya/i18n&#39;
+
+export default getRequestConfig(async ({ locale }) =&gt; {
+  if (!locales.includes(locale as any)) {
+    notFound()
+  }
+
+  // 合并分层翻译
+  const baseMessages = mergeTranslations(locale, [
+    &#39;common&#39;,   // 通用
+    &#39;wallet&#39;,   // 钱包
+    &#39;bridge&#39;,   // 桥接领域
+  ])
+  
+  // 应用特定翻译
+  const appMessages = (await import(`../messages/${locale}.json`)).default
+  
+  return {
+    messages: {
+      ...baseMessages,
+      ...appMessages,
+    },
+    timeZone: &#39;Asia/Shanghai&#39;,
+    now: new Date(),
+  }
+})
+</code></pre>
+<hr>
+<h3 id="4-middleware-ts-根目录">4. middleware.ts（根目录）</h3>
+<pre><code class="language-typescript">import createMiddleware from &#39;next-intl/middleware&#39;
+import { locales, defaultLocale } from &#39;./packages/i18n/config/locales&#39;
+
+export default createMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: &#39;as-needed&#39;,
+})
+
+export const config = {
+  // 匹配所有路径，除了 api、_next、静态文件
+  matcher: [
+    &#39;/((?!api|_next|_vercel|.*\\..*).*)&#39;,
+  ],
+}
+</code></pre>
+<hr>
+<h2 id="部署配置">🚀 部署配置</h2>
+<h3 id="1-apps-helix-vercel-json">1. apps/helix/vercel.json</h3>
+<pre><code class="language-json">{
+  &quot;buildCommand&quot;: &quot;cd ../.. &amp;&amp; npm run build:helix&quot;,
+  &quot;outputDirectory&quot;: &quot;.next&quot;,
+  &quot;framework&quot;: &quot;nextjs&quot;,
+  &quot;installCommand&quot;: &quot;npm install&quot;,
+  &quot;devCommand&quot;: &quot;npm run dev&quot;,
+  &quot;env&quot;: {
+    &quot;NEXT_PUBLIC_API_URL&quot;: &quot;@api-url&quot;,
+    &quot;NEXT_PUBLIC_SITE_URL&quot;: &quot;@site-url&quot;
+  },
+  &quot;regions&quot;: [&quot;hnd1&quot;, &quot;sfo1&quot;],
+  &quot;headers&quot;: [
+    {
+      &quot;source&quot;: &quot;/(.*)&quot;,
+      &quot;headers&quot;: [
+        {
+          &quot;key&quot;: &quot;X-Frame-Options&quot;,
+          &quot;value&quot;: &quot;DENY&quot;
+        },
+        {
+          &quot;key&quot;: &quot;X-Content-Type-Options&quot;,
+          &quot;value&quot;: &quot;nosniff&quot;
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+<hr>
+<h3 id="2-apps-bridge-vercel-json">2. apps/bridge/vercel.json</h3>
+<pre><code class="language-json">{
+  &quot;buildCommand&quot;: &quot;cd ../.. &amp;&amp; npm run build:bridge&quot;,
+  &quot;outputDirectory&quot;: &quot;.next&quot;,
+  &quot;framework&quot;: &quot;nextjs&quot;,
+  &quot;installCommand&quot;: &quot;npm install&quot;,
+  &quot;devCommand&quot;: &quot;npm run dev -- -p 3001&quot;,
+  &quot;env&quot;: {
+    &quot;NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID&quot;: &quot;@wallet-connect-project-id&quot;,
+    &quot;NEXT_PUBLIC_ALCHEMY_KEY&quot;: &quot;@alchemy-key&quot;
+  },
+  &quot;regions&quot;: [&quot;hnd1&quot;, &quot;sfo1&quot;]
+}
+</code></pre>
+<hr>
+<h3 id="3-github-workflows-deploy-helix-yml">3. .github/workflows/deploy-helix.yml</h3>
+<pre><code class="language-yaml">name: Deploy Helix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - &#39;apps/helix/**&#39;
+      - &#39;packages/**&#39;
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: &#39;18&#39;
+          cache: &#39;npm&#39;
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build Helix
+        run: npm run build:helix
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_HELIX }}
+          working-directory: ./apps/helix
+          vercel-args: &#39;--prod&#39;
+</code></pre>
+<hr>
+<h3 id="4-github-workflows-deploy-bridge-yml">4. .github/workflows/deploy-bridge.yml</h3>
+<pre><code class="language-yaml">name: Deploy Bridge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - &#39;apps/bridge/**&#39;
+      - &#39;packages/shared/**&#39;
+      - &#39;packages/theme/**&#39;
+      - &#39;packages/i18n/**&#39;
+      - &#39;packages/wallet/**&#39;
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: &#39;18&#39;
+          cache: &#39;npm&#39;
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build Bridge
+        run: npm run build:bridge
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_BRIDGE }}
+          working-directory: ./apps/bridge
+          vercel-args: &#39;--prod&#39;
+</code></pre>
+<hr>
+<h2 id="package-配置示例">📦 Package 配置示例</h2>
+<h3 id="packages-shared-package-json">packages/shared/package.json</h3>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/shared&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;main&quot;: &quot;./index.ts&quot;,
+  &quot;types&quot;: &quot;./index.ts&quot;,
+  &quot;exports&quot;: {
+    &quot;.&quot;: {
+      &quot;types&quot;: &quot;./index.ts&quot;,
+      &quot;default&quot;: &quot;./index.ts&quot;
+    },
+    &quot;./components&quot;: {
+      &quot;types&quot;: &quot;./components/index.ts&quot;,
+      &quot;default&quot;: &quot;./components/index.ts&quot;
+    },
+    &quot;./components/*&quot;: {
+      &quot;types&quot;: &quot;./components/*.tsx&quot;,
+      &quot;default&quot;: &quot;./components/*.tsx&quot;
+    },
+    &quot;./hooks&quot;: {
+      &quot;types&quot;: &quot;./hooks/index.ts&quot;,
+      &quot;default&quot;: &quot;./hooks/index.ts&quot;
+    },
+    &quot;./utils&quot;: {
+      &quot;types&quot;: &quot;./utils/index.ts&quot;,
+      &quot;default&quot;: &quot;./utils/index.ts&quot;
+    }
+  },
+  &quot;scripts&quot;: {
+    &quot;type-check&quot;: &quot;tsc --noEmit&quot;,
+    &quot;lint&quot;: &quot;eslint .&quot;
+  },
+  &quot;peerDependencies&quot;: {
+    &quot;react&quot;: &quot;^19.0.0&quot;,
+    &quot;react-dom&quot;: &quot;^19.0.0&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;clsx&quot;: &quot;^2.1.1&quot;,
+    &quot;tailwind-merge&quot;: &quot;^3.3.1&quot;,
+    &quot;lucide-react&quot;: &quot;^0.548.0&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/react&quot;: &quot;^19.0.0&quot;,
+    &quot;typescript&quot;: &quot;^5.0.0&quot;
+  }
+}
+</code></pre>
+<hr>
+<h3 id="packages-theme-package-json">packages/theme/package.json</h3>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;@biya/theme&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;main&quot;: &quot;./index.ts&quot;,
+  &quot;types&quot;: &quot;./index.ts&quot;,
+  &quot;exports&quot;: {
+    &quot;.&quot;: {
+      &quot;types&quot;: &quot;./index.ts&quot;,
+      &quot;default&quot;: &quot;./index.ts&quot;
+    },
+    &quot;./store&quot;: {
+      &quot;types&quot;: &quot;./store/theme-store.ts&quot;,
+      &quot;default&quot;: &quot;./store/theme-store.ts&quot;
+    },
+    &quot;./components&quot;: {
+      &quot;types&quot;: &quot;./components/index.ts&quot;,
+      &quot;default&quot;: &quot;./components/index.ts&quot;
+    }
+  },
+  &quot;scripts&quot;: {
+    &quot;type-check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;peerDependencies&quot;: {
+    &quot;react&quot;: &quot;^19.0.0&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;zustand&quot;: &quot;^5.0.8&quot;
+  }
+}
+</code></pre>
+<hr>
+<h2 id="配置检查清单">📋 配置检查清单</h2>
+<h3 id="根目录">根目录</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>package.json</code> - Workspaces 配置</li>
+<li><input disabled="" type="checkbox"> <code>pnpm-workspace.yaml</code> - pnpm 配置（如使用 pnpm）</li>
+<li><input disabled="" type="checkbox"> <code>tsconfig.json</code> - TypeScript 根配置</li>
+<li><input disabled="" type="checkbox"> <code>.gitignore</code> - Git 忽略文件</li>
+<li><input disabled="" type="checkbox"> <code>.eslintrc.js</code> - ESLint 配置</li>
+<li><input disabled="" type="checkbox"> <code>.prettierrc</code> - Prettier 配置</li>
+</ul>
+<h3 id="应用配置-apps">应用配置（apps/*）</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>package.json</code> - 应用依赖和脚本</li>
+<li><input disabled="" type="checkbox"> <code>next.config.ts</code> - Next.js 配置</li>
+<li><input disabled="" type="checkbox"> <code>tsconfig.json</code> - TypeScript 配置</li>
+<li><input disabled="" type="checkbox"> <code>tailwind.config.js</code> - Tailwind 配置</li>
+<li><input disabled="" type="checkbox"> <code>vercel.json</code> - Vercel 部署配置</li>
+<li><input disabled="" type="checkbox"> <code>i18n/request.ts</code> - 国际化配置</li>
+</ul>
+<h3 id="共享包配置-packages">共享包配置（packages/*）</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>package.json</code> - 包配置和导出</li>
+<li><input disabled="" type="checkbox"> <code>tsconfig.json</code> - TypeScript 配置</li>
+<li><input disabled="" type="checkbox"> <code>index.ts</code> - 统一导出</li>
+</ul>
+<h3 id="ci-cd">CI/CD</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>.github/workflows/*.yml</code> - GitHub Actions</li>
+<li><input disabled="" type="checkbox"> Vercel 项目配置</li>
+<li><input disabled="" type="checkbox"> 环境变量设置</li>
+</ul>
+<hr>
+<h2 id="下一步">🚀 下一步</h2>
+<p>配置文件已明确，继续阅读：</p>
+<p><strong>→ <a href="./04-%E5%85%B1%E4%BA%AB%E5%8C%85%E8%AE%BE%E8%AE%A1.md">04-共享包设计.md</a></strong></p>
+<p>了解如何设计和实现共享包（shared、theme、i18n、wallet、auth）。</p>
+<hr>
+<h2 id="本章小结">📚 本章小结</h2>
+<h3 id="核心配置">核心配置</h3>
+<ol>
+<li><strong>Workspace</strong>: package.json + pnpm-workspace.yaml</li>
+<li><strong>TypeScript</strong>: 根配置 + 应用配置 + 包配置</li>
+<li><strong>Next.js</strong>: 应用特定配置 + Webpack 自定义</li>
+<li><strong>Tailwind</strong>: 共享配置 + 应用定制</li>
+<li><strong>国际化</strong>: next-intl + 分层翻译</li>
+<li><strong>部署</strong>: Vercel + GitHub Actions</li>
+</ol>
+<h3 id="配置原则">配置原则</h3>
+<ol>
+<li><strong>根配置</strong>: 通用设置，被继承</li>
+<li><strong>应用配置</strong>: 基于根配置扩展</li>
+<li><strong>包配置</strong>: 独立但兼容</li>
+<li><strong>环境变量</strong>: 分层管理</li>
+</ol>
+<hr>
+<p><em>最后更新: 2025-10-31</em></p>
+
+</div>
+</body>
+</html>

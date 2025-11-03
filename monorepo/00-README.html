@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>00-README</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#biya-coin-monorepo-完整实施指南" class="toc-link">🏗️ Biya Coin Monorepo 完整实施指南</a>
+    <li class="toc-item toc-level-2">
+      <a href="#文档导航" class="toc-link">📖 文档导航</a>
+    <li class="toc-item toc-level-3">
+      <a href="#核心文档-按顺序阅读-已完成" class="toc-link">核心文档（按顺序阅读）✅ 已完成</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#快速开始-5分钟版" class="toc-link">🎯 快速开始（5分钟版）</a>
+    <li class="toc-item toc-level-3">
+      <a href="#如果你只有-5-分钟" class="toc-link">如果你只有 5 分钟</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#如果你有-1-小时" class="toc-link">如果你有 1 小时</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#如果你有-1-天" class="toc-link">如果你有 1 天</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#核心优势" class="toc-link">🌟 核心优势</a>
+    <li class="toc-item toc-level-3">
+      <a href="#为什么选择-monorepo" class="toc-link">为什么选择 Monorepo？</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#项目概览" class="toc-link">📊 项目概览</a>
+    <li class="toc-item toc-level-3">
+      <a href="#当前状态" class="toc-link">当前状态</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#目标状态" class="toc-link">目标状态</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#技术栈" class="toc-link">🛠️ 技术栈</a>
+    <li class="toc-item toc-level-3">
+      <a href="#核心框架" class="toc-link">核心框架</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#包管理-二选一" class="toc-link">包管理（二选一）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#状态管理" class="toc-link">状态管理</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#国际化" class="toc-link">国际化</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#部署-二选一" class="toc-link">部署（二选一）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#实施时间线" class="toc-link">📈 实施时间线</a>
+    <li class="toc-item toc-level-3">
+      <a href="#第-1-周-基础架构" class="toc-link">第 1 周：基础架构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#第-2-周-共享包" class="toc-link">第 2 周：共享包</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#第-3-周-应用迁移" class="toc-link">第 3 周：应用迁移</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#第-4-周-部署优化" class="toc-link">第 4 周：部署优化</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#核心决策" class="toc-link">💡 核心决策</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-包管理器-pnpm-推荐" class="toc-link">1. 包管理器：pnpm（推荐）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-架构-monorepo-强烈推荐" class="toc-link">2. 架构：Monorepo（强烈推荐）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-代码共享-workspace-共享包-推荐" class="toc-link">3. 代码共享：Workspace 共享包（推荐）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-部署-vercel-推荐" class="toc-link">4. 部署：Vercel（推荐）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#检查清单" class="toc-link">📋 检查清单</a>
+    <li class="toc-item toc-level-3">
+      <a href="#开始前确认" class="toc-link">开始前确认</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#实施前阅读" class="toc-link">实施前阅读</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#实施完成确认" class="toc-link">实施完成确认</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#获取帮助" class="toc-link">🆘 获取帮助</a>
+    <li class="toc-item toc-level-3">
+      <a href="#遇到问题" class="toc-link">遇到问题？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#常见问题快速链接" class="toc-link">常见问题快速链接</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#相关资源" class="toc-link">📚 相关资源</a>
+    <li class="toc-item toc-level-3">
+      <a href="#官方文档" class="toc-link">官方文档</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#推荐阅读" class="toc-link">推荐阅读</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#下一步行动" class="toc-link">🎯 下一步行动</a>
+    <li class="toc-item toc-level-3">
+      <a href="#立即开始" class="toc-link">立即开始</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#文档版本" class="toc-link">📊 文档版本</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#贡献" class="toc-link">🤝 贡献</a>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="biya-coin-monorepo-完整实施指南">🏗️ Biya Coin Monorepo 完整实施指南</h1>
+<blockquote>
+<p><strong>目标</strong>: 将 biya-helix-app 重构为 Monorepo 架构<br><strong>时间</strong>: 2-3 天快速实施<br><strong>状态</strong>: ✅ <strong>文档已完成（9/9）</strong><br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="文档导航">📖 文档导航</h2>
+<h3 id="核心文档-按顺序阅读-已完成">核心文档（按顺序阅读）✅ 已完成</h3>
+<ol>
+<li><p><strong><a href="./01-%E6%8A%80%E6%9C%AF%E6%A0%88%E9%80%89%E5%9E%8B.md">01-技术栈选型.md</a></strong> ⭐ 必读</p>
+<ul>
+<li>包管理器全面对比（npm vs pnpm vs yarn）</li>
+<li>架构模式深度分析（Monorepo vs 微前端）</li>
+<li>Next.js 路由选型（App Router vs Pages Router）</li>
+<li>国际化方案对比（next-intl vs next-i18next）</li>
+<li>状态管理选型（Zustand vs Redux Toolkit）</li>
+</ul>
+</li>
+<li><p><strong><a href="./02-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1.md">02-架构设计.md</a></strong> ⭐ 必读</p>
+<ul>
+<li>Monorepo 核心概念和原理</li>
+<li>代码组织和模块划分策略</li>
+<li><strong>基于 biya-helix-app 的完整迁移方案</strong></li>
+<li><strong>详细的目标文件结构（300+ 行带注释）</strong></li>
+<li><strong>多语言分层架构设计</strong></li>
+</ul>
+</li>
+<li><p><strong><a href="./03-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.md">03-目录结构.md</a></strong> ⭐ 配置详解</p>
+<ul>
+<li>根目录配置（package.json、tsconfig.json、.gitignore）</li>
+<li>TypeScript 配置（根、应用、包三层配置）</li>
+<li>Next.js 配置（next.config.ts、Webpack 自定义）</li>
+<li>Tailwind CSS 配置（共享配置、应用定制）</li>
+<li>国际化配置（next-intl、middleware）</li>
+<li>部署配置（Vercel、GitHub Actions、GitLab CI）</li>
+</ul>
+</li>
+<li><p><strong><a href="./04-%E5%85%B1%E4%BA%AB%E5%8C%85%E8%AE%BE%E8%AE%A1.md">04-共享包设计.md</a></strong> ⭐ 包设计</p>
+<ul>
+<li><code>@biya/shared</code> - 基础共享包（Button、Hooks、工具函数）</li>
+<li><code>@biya/theme</code> - 主题管理（Zustand Store、防闪烁）</li>
+<li><code>@biya/i18n</code> - 国际化（分层翻译、合并工具）</li>
+<li><code>@biya/wallet</code> - 钱包管理（状态持久化）</li>
+<li><code>@biya/auth</code> - 认证管理（登录/登出）</li>
+</ul>
+</li>
+<li><p><strong><a href="./05-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86.md">05-状态管理.md</a></strong> ⭐ 状态管理</p>
+<ul>
+<li>Zustand 分层状态管理策略</li>
+<li>共享状态（theme、wallet、auth）</li>
+<li>应用特定状态（bridge、dex、helix）</li>
+<li>状态持久化（localStorage、sessionStorage、IndexedDB）</li>
+<li>性能优化（选择器、shallow 比较、useShallow）</li>
+</ul>
+</li>
+<li><p><strong><a href="./06-%E5%AE%9E%E6%96%BD%E6%AD%A5%E9%AA%A4.md">06-实施步骤.md</a></strong> ⭐⭐⭐ 最重要（实操）</p>
+<ul>
+<li>准备工作（代码备份、工具安装、状态检查）</li>
+<li>阶段 1：创建 Monorepo 结构</li>
+<li>阶段 2：创建共享包（完整代码示例）</li>
+<li>阶段 3：迁移主应用（helix）</li>
+<li>阶段 4：分离 Bridge 应用</li>
+<li>阶段 5：配置和优化</li>
+<li>阶段 6：测试和验证（完整清单）</li>
+</ul>
+</li>
+<li><p><strong><a href="./07-%E9%83%A8%E7%BD%B2%E6%96%B9%E6%A1%88.md">07-部署方案.md</a></strong> ⭐ 部署配置</p>
+<ul>
+<li>部署策略概览（独立部署原则）</li>
+<li>Vercel 部署（Dashboard + CLI，条件构建）</li>
+<li>自建服务器部署（Docker + Nginx + PM2）</li>
+<li>CI/CD 配置（GitHub Actions + GitLab CI）</li>
+<li>环境变量管理（分环境配置）</li>
+<li>性能优化（缓存、CDN、监控）</li>
+</ul>
+</li>
+<li><p><strong><a href="./08-FAQ%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.md">08-FAQ最佳实践.md</a></strong> ⭐ 问题解答</p>
+<ul>
+<li>常见问题 FAQ（10+ 个实际问题）</li>
+<li>开发最佳实践（命名约定、组件设计、类型安全）</li>
+<li>性能优化技巧（Bundle 优化、图片优化、缓存策略）</li>
+<li>调试和排错（常见错误、调试技巧）</li>
+<li>团队协作（Git 工作流、Code Review）</li>
+</ul>
+</li>
+<li><p><strong><a href="./09-%E5%85%B1%E4%BA%AB%E5%8C%85vs%E7%A7%81%E6%9C%8DNPM.md">09-共享包vs私服NPM.md</a></strong> ⭐ 方案对比 🆕</p>
+<ul>
+<li>Workspace 共享包 vs 私服 NPM 全面对比</li>
+<li>7 个维度详细分析（开发体验、版本管理、成本等）</li>
+<li>适用场景和决策树</li>
+<li>混合方案（Monorepo + 选择性发布）</li>
+<li><strong>针对 biya-coin 的明确建议</strong></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="快速开始-5分钟版">🎯 快速开始（5分钟版）</h2>
+<h3 id="如果你只有-5-分钟">如果你只有 5 分钟</h3>
+<pre><code class="language-bash"># 1. 配置 Workspace
+cd D:\rwa\biya-coin
+echo &#39;{&quot;workspaces&quot;: [&quot;apps/*&quot;, &quot;packages/*&quot;]}&#39; &gt; package.json
+
+# 2. 创建基础结构
+mkdir apps packages
+
+# 3. 移动现有应用
+mv biya-helix-app apps/helix
+
+# 4. 安装依赖
+npm install
+
+# 完成！现在你有了一个基础的 Monorepo
+</code></pre>
+<h3 id="如果你有-1-小时">如果你有 1 小时</h3>
+<p>阅读：</p>
+<ol>
+<li><a href="./01-%E6%8A%80%E6%9C%AF%E6%A0%88%E9%80%89%E5%9E%8B.md">01-技术栈选型.md</a> - 了解为什么选择 Monorepo</li>
+<li><a href="./03-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.md">03-目录结构.md</a> - 了解完整结构</li>
+<li><a href="./06-%E5%AE%9E%E6%96%BD%E6%AD%A5%E9%AA%A4.md">06-实施步骤.md</a> - 按步骤执行</li>
+</ol>
+<h3 id="如果你有-1-天">如果你有 1 天</h3>
+<p>完整阅读所有文档，开始实施第 1 周的任务。</p>
+<hr>
+<h2 id="核心优势">🌟 核心优势</h2>
+<h3 id="为什么选择-monorepo">为什么选择 Monorepo？</h3>
+<p>✅ <strong>代码复用</strong></p>
+<ul>
+<li>共享组件、Hooks、工具函数</li>
+<li>统一的 UI 设计系统</li>
+<li>避免重复代码</li>
+</ul>
+<p>✅ <strong>统一管理</strong></p>
+<ul>
+<li>一个仓库，所有应用</li>
+<li>统一的依赖版本</li>
+<li>统一的构建和部署</li>
+</ul>
+<p>✅ <strong>独立部署</strong></p>
+<ul>
+<li>Bridge、DEX、Helix 独立部署</li>
+<li>互不影响</li>
+<li>可以单独回滚</li>
+</ul>
+<p>✅ <strong>开发体验</strong></p>
+<ul>
+<li>一个命令启动所有应用</li>
+<li>代码跳转无缝</li>
+<li>类型检查完整</li>
+</ul>
+<p>✅ <strong>维护成本低</strong></p>
+<ul>
+<li>统一的技术栈</li>
+<li>统一的工具链</li>
+<li>统一的规范</li>
+</ul>
+<hr>
+<h2 id="项目概览">📊 项目概览</h2>
+<h3 id="当前状态">当前状态</h3>
+<pre><code>biya-coin/
+└── biya-helix-app/    # 单一应用
+</code></pre>
+<h3 id="目标状态">目标状态</h3>
+<pre><code>biya-coin/
+├── apps/              # 应用目录
+│   ├── bridge/        → https://bridge.biya.com
+│   ├── dex/           → https://dex.biya.com
+│   └── helix/         → https://biya.com
+└── packages/          # 共享包
+    ├── shared/        # 基础组件和工具
+    ├── theme/         # 主题管理
+    ├── i18n/          # 国际化
+    ├── wallet/        # 钱包管理
+    └── auth/          # 认证管理
+</code></pre>
+<hr>
+<h2 id="技术栈">🛠️ 技术栈</h2>
+<h3 id="核心框架">核心框架</h3>
+<ul>
+<li><strong>Next.js 15</strong> - App Router</li>
+<li><strong>React 19</strong> - UI 库</li>
+<li><strong>TypeScript 5</strong> - 类型系统</li>
+<li><strong>Tailwind CSS 4</strong> - 样式</li>
+</ul>
+<h3 id="包管理-二选一">包管理（二选一）</h3>
+<ul>
+<li><strong>pnpm</strong> - 推荐（性能最佳，节省空间）</li>
+<li><strong>npm workspaces</strong> - 备选（稳定，零学习成本）</li>
+</ul>
+<h3 id="状态管理">状态管理</h3>
+<ul>
+<li><strong>Zustand</strong> - 轻量级状态管理</li>
+</ul>
+<h3 id="国际化">国际化</h3>
+<ul>
+<li><strong>next-intl</strong> - Next.js i18n 方案</li>
+</ul>
+<h3 id="部署-二选一">部署（二选一）</h3>
+<ul>
+<li><strong>Vercel</strong> - 推荐（零运维，自动部署）</li>
+<li><strong>Docker + Nginx</strong> - 备选（自建服务器）</li>
+</ul>
+<hr>
+<h2 id="实施时间线">📈 实施时间线</h2>
+<h3 id="第-1-周-基础架构">第 1 周：基础架构</h3>
+<ul>
+<li>Day 1-2: 创建 Monorepo 结构</li>
+<li>Day 3-4: 配置 Workspace 和构建</li>
+<li>Day 5: 测试和验证</li>
+</ul>
+<h3 id="第-2-周-共享包">第 2 周：共享包</h3>
+<ul>
+<li>Day 1-2: 创建 @biya/theme</li>
+<li>Day 3: 创建 @biya/i18n</li>
+<li>Day 4: 创建 @biya/shared</li>
+<li>Day 5: 测试和文档</li>
+</ul>
+<h3 id="第-3-周-应用迁移">第 3 周：应用迁移</h3>
+<ul>
+<li>Day 1-2: 迁移 Helix</li>
+<li>Day 3: 创建 Bridge</li>
+<li>Day 4: 创建 DEX</li>
+<li>Day 5: 集成测试</li>
+</ul>
+<h3 id="第-4-周-部署优化">第 4 周：部署优化</h3>
+<ul>
+<li>Day 1-2: 配置独立部署</li>
+<li>Day 3: 性能优化</li>
+<li>Day 4-5: 上线和监控</li>
+</ul>
+<hr>
+<h2 id="核心决策">💡 核心决策</h2>
+<h3 id="1-包管理器-pnpm-推荐">1. 包管理器：pnpm（推荐）</h3>
+<p><strong>理由</strong>：</p>
+<ul>
+<li>快 3-4 倍</li>
+<li>节省 60-90% 空间</li>
+<li>严格的依赖管理</li>
+<li>完美支持 Next.js</li>
+</ul>
+<p><strong>备选</strong>：npm workspaces（如果追求稳定）</p>
+<h3 id="2-架构-monorepo-强烈推荐">2. 架构：Monorepo（强烈推荐）</h3>
+<p><strong>理由</strong>：</p>
+<ul>
+<li>充分利用 Next.js 特性</li>
+<li>优秀的开发体验</li>
+<li>最佳性能</li>
+<li>维护成本低</li>
+</ul>
+<p><strong>不推荐</strong>：微前端（不适合 Next.js）</p>
+<h3 id="3-代码共享-workspace-共享包-推荐">3. 代码共享：Workspace 共享包（推荐）</h3>
+<p><strong>理由</strong>：</p>
+<ul>
+<li>即时同步：修改立即生效</li>
+<li>零配置：使用 npm workspaces 内置功能</li>
+<li>最佳 DX：调试、代码跳转无缝</li>
+<li>无需维护：不需要私服基础设施</li>
+</ul>
+<p><strong>不推荐</strong>：私服 NPM（除非需要跨仓库共享）</p>
+<p><strong>详细对比</strong>: 查看 <a href="./09-%E5%85%B1%E4%BA%AB%E5%8C%85vs%E7%A7%81%E6%9C%8DNPM.md">09-共享包vs私服NPM.md</a></p>
+<h3 id="4-部署-vercel-推荐">4. 部署：Vercel（推荐）</h3>
+<p><strong>理由</strong>：</p>
+<ul>
+<li>零运维</li>
+<li>5 分钟上线</li>
+<li>自动 HTTPS</li>
+<li>全球 CDN</li>
+</ul>
+<p><strong>备选</strong>：自建服务器（如果需要完全控制）</p>
+<hr>
+<h2 id="检查清单">📋 检查清单</h2>
+<h3 id="开始前确认">开始前确认</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 已安装 Node.js 18+</li>
+<li><input disabled="" type="checkbox"> 已安装 Git</li>
+<li><input disabled="" type="checkbox"> 了解 Next.js 基础</li>
+<li><input disabled="" type="checkbox"> 了解 TypeScript</li>
+<li><input disabled="" type="checkbox"> （可选）已安装 pnpm</li>
+</ul>
+<h3 id="实施前阅读">实施前阅读</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <a href="./01-%E6%8A%80%E6%9C%AF%E6%A0%88%E9%80%89%E5%9E%8B.md">01-技术栈选型.md</a></li>
+<li><input disabled="" type="checkbox"> <a href="./02-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1.md">02-架构设计.md</a></li>
+<li><input disabled="" type="checkbox"> <a href="./03-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.md">03-目录结构.md</a></li>
+<li><input disabled="" type="checkbox"> <a href="./06-%E5%AE%9E%E6%96%BD%E6%AD%A5%E9%AA%A4.md">06-实施步骤.md</a></li>
+</ul>
+<h3 id="实施完成确认">实施完成确认</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Monorepo 结构已创建</li>
+<li><input disabled="" type="checkbox"> 共享包已创建</li>
+<li><input disabled="" type="checkbox"> 应用已迁移</li>
+<li><input disabled="" type="checkbox"> 本地测试通过</li>
+<li><input disabled="" type="checkbox"> 已配置部署</li>
+<li><input disabled="" type="checkbox"> 已上线运行</li>
+</ul>
+<hr>
+<h2 id="获取帮助">🆘 获取帮助</h2>
+<h3 id="遇到问题">遇到问题？</h3>
+<ol>
+<li><strong>先查阅</strong> <a href="./08-FAQ%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.md">08-FAQ最佳实践.md</a></li>
+<li><strong>检查配置</strong> 确保 package.json、tsconfig.json 正确</li>
+<li><strong>清理重装</strong><pre><code class="language-bash">rm -rf node_modules
+npm install
+</code></pre>
+</li>
+</ol>
+<h3 id="常见问题快速链接">常见问题快速链接</h3>
+<ul>
+<li><a href="./01-%E6%8A%80%E6%9C%AF%E6%A0%88%E9%80%89%E5%9E%8B.md#%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8%E5%AF%B9%E6%AF%94">为什么选择 pnpm？</a></li>
+<li><a href="./01-%E6%8A%80%E6%9C%AF%E6%A0%88%E9%80%89%E5%9E%8B.md#%E6%9E%B6%E6%9E%84%E5%AF%B9%E6%AF%94">Monorepo vs 微前端？</a></li>
+<li><a href="./07-%E9%83%A8%E7%BD%B2%E6%96%B9%E6%A1%88.md#%E7%8B%AC%E7%AB%8B%E9%83%A8%E7%BD%B2">如何独立部署？</a></li>
+<li><a href="./05-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86.md">状态如何管理？</a></li>
+</ul>
+<hr>
+<h2 id="相关资源">📚 相关资源</h2>
+<h3 id="官方文档">官方文档</h3>
+<ul>
+<li><a href="https://nextjs.org/docs">Next.js 官方文档</a></li>
+<li><a href="https://pnpm.io/workspaces">pnpm Workspace</a></li>
+<li><a href="https://docs.npmjs.com/cli/v8/using-npm/workspaces">npm Workspaces</a></li>
+<li><a href="https://docs.pmnd.rs/zustand">Zustand 文档</a></li>
+</ul>
+<h3 id="推荐阅读">推荐阅读</h3>
+<ul>
+<li><a href="https://monorepo.tools/">Monorepo 最佳实践</a></li>
+<li><a href="https://turbo.build/repo/docs">Turborepo 文档</a></li>
+</ul>
+<hr>
+<h2 id="下一步行动">🎯 下一步行动</h2>
+<h3 id="立即开始">立即开始</h3>
+<ol>
+<li><p><strong>阅读技术选型</strong></p>
+<pre><code>打开 01-技术栈选型.md
+了解为什么选择这些技术
+</code></pre>
+</li>
+<li><p><strong>了解架构设计</strong></p>
+<pre><code>打开 02-架构设计.md
+理解 Monorepo 核心概念
+</code></pre>
+</li>
+<li><p><strong>查看目录结构</strong></p>
+<pre><code>打开 03-目录结构.md
+了解最终的项目结构
+</code></pre>
+</li>
+<li><p><strong>开始实施</strong></p>
+<pre><code>打开 06-实施步骤.md
+按步骤开始执行
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="文档版本">📊 文档版本</h2>
+<ul>
+<li><strong>版本</strong>: 1.0.0</li>
+<li><strong>创建日期</strong>: 2025-10-31</li>
+<li><strong>最后更新</strong>: 2025-10-31</li>
+<li><strong>状态</strong>: 稳定版</li>
+</ul>
+<hr>
+<h2 id="贡献">🤝 贡献</h2>
+<p>如果在实施过程中发现问题或有改进建议，欢迎：</p>
+<ul>
+<li>更新相关文档</li>
+<li>补充实际案例</li>
+<li>分享最佳实践</li>
+</ul>
+<hr>
+<p><strong>准备好了吗？从 <a href="./01-%E6%8A%80%E6%9C%AF%E6%A0%88%E9%80%89%E5%9E%8B.md">01-技术栈选型.md</a> 开始吧！</strong> 🚀</p>
+
+</div>
+</body>
+</html>

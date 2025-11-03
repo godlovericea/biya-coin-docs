@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>07-部署方案</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#部署方案" class="toc-link">🚀 部署方案</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📖 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#部署策略概览" class="toc-link">🎯 部署策略概览</a>
+    <li class="toc-item toc-level-3">
+      <a href="#独立部署原则" class="toc-link">独立部署原则</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#部署方案对比" class="toc-link">部署方案对比</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#vercel-部署" class="toc-link">☁️ Vercel 部署</a>
+    <li class="toc-item toc-level-3">
+      <a href="#方案-1-手动部署-推荐用于测试" class="toc-link">方案 1：手动部署（推荐用于测试）</a>
+    <li class="toc-item toc-level-4">
+      <a href="#步骤-1-安装-vercel-cli" class="toc-link">步骤 1：安装 Vercel CLI</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#步骤-2-部署-helix-应用" class="toc-link">步骤 2：部署 Helix 应用</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#步骤-3-部署-bridge-应用" class="toc-link">步骤 3：部署 Bridge 应用</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#方案-2-通过-vercel-dashboard-部署-推荐用于生产" class="toc-link">方案 2：通过 Vercel Dashboard 部署（推荐用于生产）</a>
+    <li class="toc-item toc-level-4">
+      <a href="#步骤-1-导入项目" class="toc-link">步骤 1：导入项目</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#步骤-2-配置-helix-项目" class="toc-link">步骤 2：配置 Helix 项目</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#步骤-3-配置-bridge-项目" class="toc-link">步骤 3：配置 Bridge 项目</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-创建条件构建脚本" class="toc-link">步骤 4：创建条件构建脚本</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-配置域名" class="toc-link">步骤 5：配置域名</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-6-配置环境变量" class="toc-link">步骤 6：配置环境变量</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#自建服务器部署" class="toc-link">🖥️ 自建服务器部署</a>
+    <li class="toc-item toc-level-3">
+      <a href="#方案-docker-nginx-pm2" class="toc-link">方案：Docker + Nginx + PM2</a>
+    <li class="toc-item toc-level-4">
+      <a href="#架构图" class="toc-link">架构图</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-准备服务器" class="toc-link">步骤 1：准备服务器</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-克隆和构建项目" class="toc-link">步骤 2：克隆和构建项目</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-配置-pm2" class="toc-link">步骤 3：配置 PM2</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-配置-nginx" class="toc-link">步骤 4：配置 Nginx</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-配置-ssl-let-s-encrypt" class="toc-link">步骤 5：配置 SSL（Let&#39;s Encrypt）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-6-配置防火墙" class="toc-link">步骤 6：配置防火墙</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#ci-cd-配置" class="toc-link">🔄 CI/CD 配置</a>
+    <li class="toc-item toc-level-3">
+      <a href="#github-actions" class="toc-link">GitHub Actions</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#gitlab-ci-cd" class="toc-link">GitLab CI/CD</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#环境变量管理" class="toc-link">🔐 环境变量管理</a>
+    <li class="toc-item toc-level-3">
+      <a href="#开发环境" class="toc-link">开发环境</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#生产环境" class="toc-link">生产环境</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#环境变量最佳实践" class="toc-link">环境变量最佳实践</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#性能优化" class="toc-link">⚡ 性能优化</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-构建优化" class="toc-link">1. 构建优化</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-缓存策略" class="toc-link">2. 缓存策略</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-cdn-配置" class="toc-link">3. CDN 配置</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-监控和分析" class="toc-link">4. 监控和分析</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#部署清单" class="toc-link">📋 部署清单</a>
+    <li class="toc-item toc-level-3">
+      <a href="#vercel-部署清单" class="toc-link">Vercel 部署清单</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#自建服务器清单" class="toc-link">自建服务器清单</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#下一步" class="toc-link">🚀 下一步</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#本章小结" class="toc-link">📚 本章小结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#部署选项" class="toc-link">部署选项</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#关键配置" class="toc-link">关键配置</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="部署方案">🚀 部署方案</h1>
+<blockquote>
+<p><strong>核心内容</strong>: Monorepo 应用的部署策略和配置<br><strong>目标</strong>: 实现独立、高效、可靠的应用部署<br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="目录">📖 目录</h2>
+<ol>
+<li><a href="#%E9%83%A8%E7%BD%B2%E7%AD%96%E7%95%A5%E6%A6%82%E8%A7%88">部署策略概览</a></li>
+<li><a href="#vercel-%E9%83%A8%E7%BD%B2">Vercel 部署</a></li>
+<li><a href="#%E8%87%AA%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2">自建服务器部署</a></li>
+<li><a href="#cicd-%E9%85%8D%E7%BD%AE">CI/CD 配置</a></li>
+<li><a href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E7%AE%A1%E7%90%86">环境变量管理</a></li>
+<li><a href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96">性能优化</a></li>
+</ol>
+<hr>
+<h2 id="部署策略概览">🎯 部署策略概览</h2>
+<h3 id="独立部署原则">独立部署原则</h3>
+<pre><code>Monorepo 单仓库
+├── apps/helix       → Vercel Project 1 (helix.biya.com)
+├── apps/bridge      → Vercel Project 2 (bridge.biya.com)
+└── apps/dex         → Vercel Project 3 (dex.biya.com)
+
+✅ 一个 Git 仓库
+✅ 多个 Vercel 项目
+✅ 独立域名
+✅ 独立构建和部署
+</code></pre>
+<hr>
+<h3 id="部署方案对比">部署方案对比</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Vercel</th>
+<th>自建服务器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>设置难度</strong></td>
+<td>⭐ 简单</td>
+<td>⭐⭐⭐ 复杂</td>
+</tr>
+<tr>
+<td><strong>维护成本</strong></td>
+<td>⭐ 低</td>
+<td>⭐⭐⭐ 高</td>
+</tr>
+<tr>
+<td><strong>部署速度</strong></td>
+<td>⭐⭐⭐ 快</td>
+<td>⭐⭐ 中等</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>⭐⭐⭐ 优秀</td>
+<td>⭐⭐ 取决于配置</td>
+</tr>
+<tr>
+<td><strong>成本（小规模）</strong></td>
+<td>⭐⭐⭐ 免费</td>
+<td>⭐⭐ 服务器费用</td>
+</tr>
+<tr>
+<td><strong>成本（大规模）</strong></td>
+<td>⭐⭐ 按量付费</td>
+<td>⭐⭐⭐ 固定成本</td>
+</tr>
+<tr>
+<td><strong>灵活性</strong></td>
+<td>⭐⭐ 中等</td>
+<td>⭐⭐⭐ 完全控制</td>
+</tr>
+<tr>
+<td><strong>推荐度</strong></td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="vercel-部署">☁️ Vercel 部署</h2>
+<h3 id="方案-1-手动部署-推荐用于测试">方案 1：手动部署（推荐用于测试）</h3>
+<h4 id="步骤-1-安装-vercel-cli">步骤 1：安装 Vercel CLI</h4>
+<pre><code class="language-bash">npm install -g vercel
+</code></pre>
+<hr>
+<h4 id="步骤-2-部署-helix-应用">步骤 2：部署 Helix 应用</h4>
+<pre><code class="language-bash">cd D:\rwa\biya-coin\apps\helix
+
+# 登录 Vercel
+vercel login
+
+# 首次部署（会创建项目）
+vercel
+
+# 生产部署
+vercel --prod
+</code></pre>
+<p><strong>配置选项</strong>:</p>
+<ul>
+<li><strong>Set up and deploy</strong>: Yes</li>
+<li><strong>Which scope</strong>: 选择你的团队或个人账号</li>
+<li><strong>Link to existing project</strong>: No</li>
+<li><strong>Project name</strong>: biya-helix</li>
+<li><strong>Directory</strong>: <code>apps/helix</code> 或 <code>./</code>（如果已在该目录）</li>
+<li><strong>Override settings</strong>: Yes<ul>
+<li><strong>Build Command</strong>: <code>cd ../.. &amp;&amp; npm install &amp;&amp; npm run build:helix</code></li>
+<li><strong>Output Directory</strong>: <code>.next</code></li>
+<li><strong>Development Command</strong>: <code>npm run dev</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="步骤-3-部署-bridge-应用">步骤 3：部署 Bridge 应用</h4>
+<pre><code class="language-bash">cd D:\rwa\biya-coin\apps\bridge
+
+# 部署
+vercel
+
+# 生产部署
+vercel --prod
+</code></pre>
+<p><strong>配置选项</strong>（同上，项目名改为 <code>biya-bridge</code>）</p>
+<hr>
+<h3 id="方案-2-通过-vercel-dashboard-部署-推荐用于生产">方案 2：通过 Vercel Dashboard 部署（推荐用于生产）</h3>
+<h4 id="步骤-1-导入项目">步骤 1：导入项目</h4>
+<ol>
+<li>访问 <a href="https://vercel.com/new">Vercel Dashboard</a></li>
+<li>点击 <strong>Add New</strong> → <strong>Project</strong></li>
+<li>导入你的 Git 仓库（GitHub/GitLab/Bitbucket）</li>
+</ol>
+<hr>
+<h4 id="步骤-2-配置-helix-项目">步骤 2：配置 Helix 项目</h4>
+<p><strong>General Settings</strong>:</p>
+<ul>
+<li><strong>Project Name</strong>: <code>biya-helix</code></li>
+<li><strong>Framework Preset</strong>: <code>Next.js</code></li>
+<li><strong>Root Directory</strong>: <code>apps/helix</code></li>
+</ul>
+<p><strong>Build &amp; Development Settings</strong>:</p>
+<ul>
+<li><strong>Build Command</strong>: <code>cd ../.. &amp;&amp; npm install &amp;&amp; npm run build:helix</code></li>
+<li><strong>Output Directory</strong>: <code>.next</code></li>
+<li><strong>Install Command</strong>: <code>npm install</code></li>
+<li><strong>Development Command</strong>: <code>npm run dev</code></li>
+</ul>
+<p><strong>Environment Variables</strong>:</p>
+<pre><code>NEXT_PUBLIC_API_URL=https://api.biya.com
+NEXT_PUBLIC_SITE_URL=https://helix.biya.com
+</code></pre>
+<p><strong>Ignored Build Step</strong>:</p>
+<pre><code class="language-bash">node ../../scripts/vercel-ignore-helix.js
+</code></pre>
+<hr>
+<h4 id="步骤-3-配置-bridge-项目">步骤 3：配置 Bridge 项目</h4>
+<p>重复上述步骤，但使用以下配置：</p>
+<p><strong>General Settings</strong>:</p>
+<ul>
+<li><strong>Project Name</strong>: <code>biya-bridge</code></li>
+<li><strong>Root Directory</strong>: <code>apps/bridge</code></li>
+</ul>
+<p><strong>Build Command</strong>:</p>
+<pre><code class="language-bash">cd ../.. &amp;&amp; npm install &amp;&amp; npm run build:bridge
+</code></pre>
+<p><strong>Environment Variables</strong>:</p>
+<pre><code>NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
+NEXT_PUBLIC_ALCHEMY_KEY=your_alchemy_key
+NEXT_PUBLIC_ETHEREUM_CHAIN_ID=1
+NEXT_PUBLIC_INJECTIVE_CHAIN_ID=injective-1
+</code></pre>
+<p><strong>Ignored Build Step</strong>:</p>
+<pre><code class="language-bash">node ../../scripts/vercel-ignore-bridge.js
+</code></pre>
+<hr>
+<h3 id="步骤-4-创建条件构建脚本">步骤 4：创建条件构建脚本</h3>
+<p><strong>scripts/vercel-ignore-helix.js</strong>:</p>
+<pre><code class="language-javascript">#!/usr/bin/env node
+
+const { execSync } = require(&#39;child_process&#39;)
+
+try {
+  // 获取变更的文件
+  const diff = execSync(&#39;git diff HEAD^ HEAD --name-only&#39;).toString().trim()
+  
+  if (!diff) {
+    console.log(&#39;No changes detected&#39;)
+    process.exit(0)
+  }
+  
+  const changedFiles = diff.split(&#39;\n&#39;)
+  
+  // 检查是否需要构建
+  const shouldBuild = changedFiles.some(file =&gt; 
+    file.startsWith(&#39;apps/helix/&#39;) || 
+    file.startsWith(&#39;packages/shared/&#39;) ||
+    file.startsWith(&#39;packages/theme/&#39;) ||
+    file.startsWith(&#39;packages/i18n/&#39;)
+  )
+  
+  if (shouldBuild) {
+    console.log(&#39;✅ Changes detected in Helix or shared packages - Building&#39;)
+    process.exit(1) // 返回 1 表示需要构建
+  } else {
+    console.log(&#39;⏭️  No relevant changes - Skipping build&#39;)
+    process.exit(0) // 返回 0 表示跳过构建
+  }
+} catch (error) {
+  console.error(&#39;Error checking git diff:&#39;, error.message)
+  // 出错时默认构建
+  process.exit(1)
+}
+</code></pre>
+<p><strong>scripts/vercel-ignore-bridge.js</strong>:</p>
+<pre><code class="language-javascript">#!/usr/bin/env node
+
+const { execSync } = require(&#39;child_process&#39;)
+
+try {
+  const diff = execSync(&#39;git diff HEAD^ HEAD --name-only&#39;).toString().trim()
+  
+  if (!diff) {
+    console.log(&#39;No changes detected&#39;)
+    process.exit(0)
+  }
+  
+  const changedFiles = diff.split(&#39;\n&#39;)
+  
+  const shouldBuild = changedFiles.some(file =&gt; 
+    file.startsWith(&#39;apps/bridge/&#39;) || 
+    file.startsWith(&#39;packages/shared/&#39;) ||
+    file.startsWith(&#39;packages/theme/&#39;) ||
+    file.startsWith(&#39;packages/i18n/&#39;) ||
+    file.startsWith(&#39;packages/wallet/&#39;)
+  )
+  
+  if (shouldBuild) {
+    console.log(&#39;✅ Changes detected in Bridge or shared packages - Building&#39;)
+    process.exit(1)
+  } else {
+    console.log(&#39;⏭️  No relevant changes - Skipping build&#39;)
+    process.exit(0)
+  }
+} catch (error) {
+  console.error(&#39;Error checking git diff:&#39;, error.message)
+  process.exit(1)
+}
+</code></pre>
+<p><strong>别忘了添加执行权限</strong>:</p>
+<pre><code class="language-bash">chmod +x scripts/vercel-ignore-helix.js
+chmod +x scripts/vercel-ignore-bridge.js
+</code></pre>
+<hr>
+<h3 id="步骤-5-配置域名">步骤 5：配置域名</h3>
+<p>在 Vercel Dashboard 中：</p>
+<ol>
+<li>进入项目 → <strong>Settings</strong> → <strong>Domains</strong></li>
+<li>添加自定义域名：<ul>
+<li>Helix: <code>helix.biya.com</code></li>
+<li>Bridge: <code>bridge.biya.com</code></li>
+</ul>
+</li>
+<li>按照提示配置 DNS（CNAME 或 A 记录）</li>
+</ol>
+<hr>
+<h3 id="步骤-6-配置环境变量">步骤 6：配置环境变量</h3>
+<p>在 Vercel Dashboard 中：</p>
+<ol>
+<li>进入项目 → <strong>Settings</strong> → <strong>Environment Variables</strong></li>
+<li>添加变量（注意选择环境：Production/Preview/Development）</li>
+</ol>
+<p><strong>Helix 环境变量</strong>:</p>
+<pre><code>NEXT_PUBLIC_API_URL
+NEXT_PUBLIC_SITE_URL
+</code></pre>
+<p><strong>Bridge 环境变量</strong>:</p>
+<pre><code>NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID
+NEXT_PUBLIC_ALCHEMY_KEY
+NEXT_PUBLIC_ETHEREUM_CHAIN_ID
+NEXT_PUBLIC_INJECTIVE_CHAIN_ID
+NEXT_PUBLIC_NETWORK
+</code></pre>
+<hr>
+<h2 id="自建服务器部署">🖥️ 自建服务器部署</h2>
+<h3 id="方案-docker-nginx-pm2">方案：Docker + Nginx + PM2</h3>
+<h4 id="架构图">架构图</h4>
+<pre><code>Internet
+    ↓
+[Nginx] (反向代理)
+    ├─→ helix.biya.com:3000 (Helix App)
+    ├─→ bridge.biya.com:3001 (Bridge App)
+    └─→ dex.biya.com:3002 (DEX App)
+</code></pre>
+<hr>
+<h3 id="步骤-1-准备服务器">步骤 1：准备服务器</h3>
+<pre><code class="language-bash"># 更新系统
+sudo apt update &amp;&amp; sudo apt upgrade -y
+
+# 安装 Node.js 18+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# 安装 PM2
+sudo npm install -g pm2
+
+# 安装 Nginx
+sudo apt install -y nginx
+
+# 安装 Git
+sudo apt install -y git
+</code></pre>
+<hr>
+<h3 id="步骤-2-克隆和构建项目">步骤 2：克隆和构建项目</h3>
+<pre><code class="language-bash"># 克隆仓库
+cd /var/www
+sudo git clone https://github.com/your-org/biya-coin.git
+cd biya-coin
+
+# 安装依赖
+npm install
+
+# 构建所有应用
+npm run build
+
+# 或者只构建特定应用
+npm run build:helix
+npm run build:bridge
+</code></pre>
+<hr>
+<h3 id="步骤-3-配置-pm2">步骤 3：配置 PM2</h3>
+<p><strong>创建 ecosystem.config.js</strong>:</p>
+<pre><code class="language-javascript">module.exports = {
+  apps: [
+    {
+      name: &#39;helix&#39;,
+      cwd: &#39;/var/www/biya-coin/apps/helix&#39;,
+      script: &#39;node_modules/next/dist/bin/next&#39;,
+      args: &#39;start -p 3000&#39;,
+      instances: 2,
+      exec_mode: &#39;cluster&#39;,
+      env: {
+        NODE_ENV: &#39;production&#39;,
+        PORT: 3000,
+        NEXT_PUBLIC_API_URL: &#39;https://api.biya.com&#39;,
+      },
+    },
+    {
+      name: &#39;bridge&#39;,
+      cwd: &#39;/var/www/biya-coin/apps/bridge&#39;,
+      script: &#39;node_modules/next/dist/bin/next&#39;,
+      args: &#39;start -p 3001&#39;,
+      instances: 2,
+      exec_mode: &#39;cluster&#39;,
+      env: {
+        NODE_ENV: &#39;production&#39;,
+        PORT: 3001,
+        NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: &#39;your_id&#39;,
+      },
+    },
+  ],
+}
+</code></pre>
+<p><strong>启动应用</strong>:</p>
+<pre><code class="language-bash">cd /var/www/biya-coin
+
+# 启动所有应用
+pm2 start ecosystem.config.js
+
+# 保存配置
+pm2 save
+
+# 设置开机自启
+pm2 startup
+</code></pre>
+<hr>
+<h3 id="步骤-4-配置-nginx">步骤 4：配置 Nginx</h3>
+<p><strong>创建 /etc/nginx/sites-available/biya-helix</strong>:</p>
+<pre><code class="language-nginx">server {
+    listen 80;
+    server_name helix.biya.com;
+
+    # 强制 HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name helix.biya.com;
+
+    # SSL 证书（使用 Let&#39;s Encrypt）
+    ssl_certificate /etc/letsencrypt/live/helix.biya.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/helix.biya.com/privkey.pem;
+
+    # 安全头
+    add_header X-Frame-Options &quot;SAMEORIGIN&quot; always;
+    add_header X-Content-Type-Options &quot;nosniff&quot; always;
+    add_header X-XSS-Protection &quot;1; mode=block&quot; always;
+
+    # Gzip 压缩
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &#39;upgrade&#39;;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 静态文件缓存
+    location /_next/static {
+        proxy_pass http://localhost:3000;
+        add_header Cache-Control &quot;public, max-age=31536000, immutable&quot;;
+    }
+}
+</code></pre>
+<p><strong>创建 /etc/nginx/sites-available/biya-bridge</strong>（类似配置，改为 bridge.biya.com 和端口 3001）</p>
+<p><strong>启用站点</strong>:</p>
+<pre><code class="language-bash"># 创建符号链接
+sudo ln -s /etc/nginx/sites-available/biya-helix /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/biya-bridge /etc/nginx/sites-enabled/
+
+# 测试配置
+sudo nginx -t
+
+# 重启 Nginx
+sudo systemctl restart nginx
+</code></pre>
+<hr>
+<h3 id="步骤-5-配置-ssl-let-s-encrypt">步骤 5：配置 SSL（Let&#39;s Encrypt）</h3>
+<pre><code class="language-bash"># 安装 Certbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# 获取证书
+sudo certbot --nginx -d helix.biya.com
+sudo certbot --nginx -d bridge.biya.com
+
+# 自动续期
+sudo certbot renew --dry-run
+</code></pre>
+<hr>
+<h3 id="步骤-6-配置防火墙">步骤 6：配置防火墙</h3>
+<pre><code class="language-bash"># 允许 HTTP/HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# 允许 SSH
+sudo ufw allow 22/tcp
+
+# 启用防火墙
+sudo ufw enable
+</code></pre>
+<hr>
+<h2 id="ci-cd-配置">🔄 CI/CD 配置</h2>
+<h3 id="github-actions">GitHub Actions</h3>
+<p><strong>创建 .github/workflows/deploy-helix.yml</strong>:</p>
+<pre><code class="language-yaml">name: Deploy Helix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - &#39;apps/helix/**&#39;
+      - &#39;packages/shared/**&#39;
+      - &#39;packages/theme/**&#39;
+      - &#39;packages/i18n/**&#39;
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: &#39;18&#39;
+          cache: &#39;npm&#39;
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build Helix
+        run: npm run build:helix
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_HELIX }}
+          working-directory: ./apps/helix
+          vercel-args: &#39;--prod&#39;
+</code></pre>
+<p><strong>创建 .github/workflows/deploy-bridge.yml</strong>（类似配置）</p>
+<hr>
+<h3 id="gitlab-ci-cd">GitLab CI/CD</h3>
+<p><strong>创建 .gitlab-ci.yml</strong>:</p>
+<pre><code class="language-yaml">stages:
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: &#39;18&#39;
+
+# 缓存 node_modules
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - apps/*/node_modules/
+
+# Helix 构建
+build:helix:
+  stage: build
+  image: node:${NODE_VERSION}
+  only:
+    changes:
+      - apps/helix/**/*
+      - packages/**/*
+  script:
+    - npm ci
+    - npm run build:helix
+  artifacts:
+    paths:
+      - apps/helix/.next
+
+# Helix 部署
+deploy:helix:
+  stage: deploy
+  only:
+    changes:
+      - apps/helix/**/*
+      - packages/**/*
+  dependencies:
+    - build:helix
+  script:
+    - npm install -g vercel
+    - vercel --token $VERCEL_TOKEN --prod --cwd apps/helix
+
+# Bridge 构建和部署（类似配置）
+</code></pre>
+<hr>
+<h2 id="环境变量管理">🔐 环境变量管理</h2>
+<h3 id="开发环境">开发环境</h3>
+<p><strong>apps/helix/.env.local</strong>:</p>
+<pre><code class="language-bash">NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+</code></pre>
+<p><strong>apps/bridge/.env.local</strong>:</p>
+<pre><code class="language-bash">NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=dev_project_id
+NEXT_PUBLIC_ALCHEMY_KEY=dev_alchemy_key
+NEXT_PUBLIC_ETHEREUM_CHAIN_ID=11155111  # Sepolia
+NEXT_PUBLIC_INJECTIVE_CHAIN_ID=injective-888
+</code></pre>
+<hr>
+<h3 id="生产环境">生产环境</h3>
+<p><strong>方式 1：Vercel Dashboard</strong></p>
+<ul>
+<li>Settings → Environment Variables → Add</li>
+</ul>
+<p><strong>方式 2：Vercel CLI</strong></p>
+<pre><code class="language-bash">vercel env add NEXT_PUBLIC_API_URL production
+vercel env add NEXT_PUBLIC_SITE_URL production
+</code></pre>
+<p><strong>方式 3：自建服务器（使用 .env 文件）</strong></p>
+<pre><code class="language-bash"># /var/www/biya-coin/apps/helix/.env.production
+NEXT_PUBLIC_API_URL=https://api.biya.com
+NEXT_PUBLIC_SITE_URL=https://helix.biya.com
+</code></pre>
+<hr>
+<h3 id="环境变量最佳实践">环境变量最佳实践</h3>
+<ol>
+<li><strong>使用 NEXT_PUBLIC_ 前缀</strong>：客户端可访问的变量</li>
+<li><strong>敏感信息不使用前缀</strong>：服务端专用</li>
+<li><strong>版本控制</strong>：.env.example 提交到 Git，.env.local 不提交</li>
+<li><strong>分环境管理</strong>：development/preview/production</li>
+</ol>
+<hr>
+<h2 id="性能优化">⚡ 性能优化</h2>
+<h3 id="1-构建优化">1. 构建优化</h3>
+<p><strong>next.config.ts</strong>:</p>
+<pre><code class="language-typescript">const nextConfig: NextConfig = {
+  // 压缩
+  compress: true,
+  
+  // 图片优化
+  images: {
+    domains: [&#39;your-cdn.com&#39;],
+    formats: [&#39;image/avif&#39;, &#39;image/webp&#39;],
+  },
+  
+  // 实验性优化
+  experimental: {
+    optimizePackageImports: [
+      &#39;@biya/shared&#39;,
+      &#39;@biya/theme&#39;,
+      &#39;lucide-react&#39;,
+    ],
+  },
+  
+  // 生产 Source Map（可选）
+  productionBrowserSourceMaps: false,
+}
+</code></pre>
+<hr>
+<h3 id="2-缓存策略">2. 缓存策略</h3>
+<p><strong>Vercel 自动缓存</strong>:</p>
+<ul>
+<li><code>_next/static/*</code> → 永久缓存</li>
+<li>页面 → 根据 ISR 配置</li>
+</ul>
+<p><strong>自建服务器 Nginx 缓存</strong>:</p>
+<pre><code class="language-nginx">location /_next/static {
+    proxy_pass http://localhost:3000;
+    add_header Cache-Control &quot;public, max-age=31536000, immutable&quot;;
+}
+
+location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
+    expires 1y;
+    add_header Cache-Control &quot;public, immutable&quot;;
+}
+</code></pre>
+<hr>
+<h3 id="3-cdn-配置">3. CDN 配置</h3>
+<p><strong>Vercel</strong>:</p>
+<ul>
+<li>自动全球 CDN</li>
+</ul>
+<p><strong>自建服务器</strong>:</p>
+<ul>
+<li>使用 Cloudflare、AWS CloudFront 等</li>
+</ul>
+<hr>
+<h3 id="4-监控和分析">4. 监控和分析</h3>
+<p><strong>Vercel Analytics</strong>:</p>
+<pre><code class="language-typescript">// app/layout.tsx
+import { Analytics } from &#39;@vercel/analytics/react&#39;
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;
+        {children}
+        &lt;Analytics /&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<p><strong>自建监控</strong>:</p>
+<ul>
+<li>PM2 Plus</li>
+<li>Grafana + Prometheus</li>
+<li>Sentry（错误追踪）</li>
+</ul>
+<hr>
+<h2 id="部署清单">📋 部署清单</h2>
+<h3 id="vercel-部署清单">Vercel 部署清单</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 创建 Vercel 项目（Helix、Bridge）</li>
+<li><input disabled="" type="checkbox"> 配置 Root Directory</li>
+<li><input disabled="" type="checkbox"> 配置 Build Command</li>
+<li><input disabled="" type="checkbox"> 添加环境变量</li>
+<li><input disabled="" type="checkbox"> 配置 Ignored Build Step</li>
+<li><input disabled="" type="checkbox"> 添加自定义域名</li>
+<li><input disabled="" type="checkbox"> 配置 DNS</li>
+<li><input disabled="" type="checkbox"> 测试部署</li>
+</ul>
+<h3 id="自建服务器清单">自建服务器清单</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 服务器配置（Node.js、Nginx、PM2）</li>
+<li><input disabled="" type="checkbox"> 克隆代码仓库</li>
+<li><input disabled="" type="checkbox"> 安装依赖</li>
+<li><input disabled="" type="checkbox"> 构建应用</li>
+<li><input disabled="" type="checkbox"> 配置 PM2</li>
+<li><input disabled="" type="checkbox"> 配置 Nginx</li>
+<li><input disabled="" type="checkbox"> 配置 SSL 证书</li>
+<li><input disabled="" type="checkbox"> 配置防火墙</li>
+<li><input disabled="" type="checkbox"> 设置自动部署（CI/CD）</li>
+<li><input disabled="" type="checkbox"> 配置监控</li>
+</ul>
+<hr>
+<h2 id="下一步">🚀 下一步</h2>
+<p>部署方案已明确，继续阅读：</p>
+<p><strong>→ <a href="./08-FAQ%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.md">08-FAQ最佳实践.md</a></strong></p>
+<p>了解常见问题和最佳实践。</p>
+<hr>
+<h2 id="本章小结">📚 本章小结</h2>
+<h3 id="部署选项">部署选项</h3>
+<ol>
+<li><p><strong>Vercel</strong>（推荐）</p>
+<ul>
+<li>简单快速</li>
+<li>自动优化</li>
+<li>全球 CDN</li>
+<li>适合中小型项目</li>
+</ul>
+</li>
+<li><p><strong>自建服务器</strong></p>
+<ul>
+<li>完全控制</li>
+<li>固定成本</li>
+<li>需要维护</li>
+<li>适合大型项目或特殊需求</li>
+</ul>
+</li>
+</ol>
+<h3 id="关键配置">关键配置</h3>
+<ol>
+<li><strong>独立部署</strong>：每个应用独立配置</li>
+<li><strong>条件构建</strong>：只构建变更的应用</li>
+<li><strong>环境变量</strong>：分环境管理</li>
+<li><strong>CI/CD</strong>：自动化部署流程</li>
+<li><strong>性能优化</strong>：缓存、CDN、监控</li>
+</ol>
+<hr>
+<p><em>最后更新: 2025-10-31</em></p>
+
+</div>
+</body>
+</html>

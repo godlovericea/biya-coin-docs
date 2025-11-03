@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>08-FAQ最佳实践</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#faq-与最佳实践" class="toc-link">❓ FAQ 与最佳实践</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📖 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常见问题-faq" class="toc-link">🤔 常见问题 FAQ</a>
+    <li class="toc-item toc-level-3">
+      <a href="#q1-如何添加新的共享组件" class="toc-link">Q1: 如何添加新的共享组件？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q2-如何在应用间共享状态" class="toc-link">Q2: 如何在应用间共享状态？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q3-如何处理不同应用的特定依赖" class="toc-link">Q3: 如何处理不同应用的特定依赖？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q4-如何更新共享包的代码" class="toc-link">Q4: 如何更新共享包的代码？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q5-typescript-找不到共享包的类型" class="toc-link">Q5: TypeScript 找不到共享包的类型？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q6-如何处理循环依赖" class="toc-link">Q6: 如何处理循环依赖？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q7-如何在本地测试生产构建" class="toc-link">Q7: 如何在本地测试生产构建？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q8-如何调试共享包代码" class="toc-link">Q8: 如何调试共享包代码？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q9-workspace-依赖更新问题" class="toc-link">Q9: Workspace 依赖更新问题？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q10-如何处理不同应用的环境变量" class="toc-link">Q10: 如何处理不同应用的环境变量？</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#开发最佳实践" class="toc-link">✅ 开发最佳实践</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-项目结构" class="toc-link">1. 项目结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-命名约定" class="toc-link">2. 命名约定</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-导入顺序" class="toc-link">3. 导入顺序</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-组件设计" class="toc-link">4. 组件设计</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#5-状态管理" class="toc-link">5. 状态管理</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#6-类型安全" class="toc-link">6. 类型安全</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#7-错误处理" class="toc-link">7. 错误处理</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#8-性能优化" class="toc-link">8. 性能优化</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#性能优化技巧" class="toc-link">⚡ 性能优化技巧</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-bundle-大小优化" class="toc-link">1. Bundle 大小优化</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-图片优化" class="toc-link">2. 图片优化</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-代码分割" class="toc-link">3. 代码分割</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-缓存策略" class="toc-link">4. 缓存策略</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#调试和排错" class="toc-link">🐛 调试和排错</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-常见错误和解决方案" class="toc-link">1. 常见错误和解决方案</a>
+    <li class="toc-item toc-level-4">
+      <a href="#错误-1-module-not-found" class="toc-link">错误 1: Module not found</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#错误-2-hydration-错误" class="toc-link">错误 2: Hydration 错误</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#错误-3-共享包更新不生效" class="toc-link">错误 3: 共享包更新不生效</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-调试技巧" class="toc-link">2. 调试技巧</a>
+    <li class="toc-item toc-level-4">
+      <a href="#vs-code-断点调试" class="toc-link">VS Code 断点调试</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-devtools" class="toc-link">React DevTools</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#zustand-devtools" class="toc-link">Zustand DevTools</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#团队协作" class="toc-link">👥 团队协作</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-git-工作流" class="toc-link">1. Git 工作流</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-code-review-清单" class="toc-link">2. Code Review 清单</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-文档规范" class="toc-link">3. 文档规范</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-版本管理" class="toc-link">4. 版本管理</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#资源链接" class="toc-link">📚 资源链接</a>
+    <li class="toc-item toc-level-3">
+      <a href="#官方文档" class="toc-link">官方文档</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#工具" class="toc-link">工具</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#社区" class="toc-link">社区</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#结语" class="toc-link">🎉 结语</a>
+    <li class="toc-item toc-level-3">
+      <a href="#你已经学到了" class="toc-link">你已经学到了</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#下一步建议" class="toc-link">下一步建议</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#需要帮助" class="toc-link">需要帮助？</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="faq-与最佳实践">❓ FAQ 与最佳实践</h1>
+<blockquote>
+<p><strong>核心内容</strong>: 常见问题解答和开发最佳实践<br><strong>目标</strong>: 解决开发中的常见问题，提高开发效率<br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="目录">📖 目录</h2>
+<ol>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq">常见问题 FAQ</a></li>
+<li><a href="#%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5">开发最佳实践</a></li>
+<li><a href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7">性能优化技巧</a></li>
+<li><a href="#%E8%B0%83%E8%AF%95%E5%92%8C%E6%8E%92%E9%94%99">调试和排错</a></li>
+<li><a href="#%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C">团队协作</a></li>
+</ol>
+<hr>
+<h2 id="常见问题-faq">🤔 常见问题 FAQ</h2>
+<h3 id="q1-如何添加新的共享组件">Q1: 如何添加新的共享组件？</h3>
+<p><strong>A</strong>: 在 <code>packages/shared/components</code> 中添加，然后导出。</p>
+<pre><code class="language-typescript">// 1. 创建组件
+// packages/shared/components/ui/NewComponent.tsx
+export function NewComponent() {
+  return &lt;div&gt;New Component&lt;/div&gt;
+}
+
+// 2. 在 index.ts 中导出
+// packages/shared/components/ui/index.ts
+export * from &#39;./NewComponent&#39;
+
+// 3. 在应用中使用
+import { NewComponent } from &#39;@biya/shared&#39;
+</code></pre>
+<hr>
+<h3 id="q2-如何在应用间共享状态">Q2: 如何在应用间共享状态？</h3>
+<p><strong>A</strong>: 使用共享包中的 Zustand Store。</p>
+<pre><code class="language-typescript">// 1. 在共享包中创建 Store
+// packages/wallet/store/wallet-store.ts
+export const useWalletStore = create&lt;WalletState&gt;()(/* ... */)
+
+// 2. 在多个应用中使用同一个 Store
+// apps/helix/components/Header.tsx
+import { useWalletStore } from &#39;@biya/wallet&#39;
+
+// apps/bridge/components/WalletButton.tsx
+import { useWalletStore } from &#39;@biya/wallet&#39;
+
+// 状态会自动同步（如果两个应用在同一个浏览器标签组中）
+</code></pre>
+<hr>
+<h3 id="q3-如何处理不同应用的特定依赖">Q3: 如何处理不同应用的特定依赖？</h3>
+<p><strong>A</strong>: 在各自的 <code>package.json</code> 中添加。</p>
+<pre><code class="language-json">// apps/bridge/package.json
+{
+  &quot;dependencies&quot;: {
+    &quot;@biya/shared&quot;: &quot;*&quot;,           // 共享包
+    &quot;@injectivelabs/sdk-ts&quot;: &quot;1.16.7&quot;,  // Bridge 特定依赖
+    &quot;wagmi&quot;: &quot;^2.19.1&quot;                   // Bridge 特定依赖
+  }
+}
+
+// apps/dex/package.json
+{
+  &quot;dependencies&quot;: {
+    &quot;@biya/shared&quot;: &quot;*&quot;,           // 共享包
+    &quot;@0x/contract-wrappers&quot;: &quot;^13.0.0&quot;,  // DEX 特定依赖
+    &quot;web3&quot;: &quot;^4.0.0&quot;                     // DEX 特定依赖
+  }
+}
+</code></pre>
+<hr>
+<h3 id="q4-如何更新共享包的代码">Q4: 如何更新共享包的代码？</h3>
+<p><strong>A</strong>: 直接修改，应用会自动重新加载（开发模式）。</p>
+<pre><code class="language-bash"># 修改共享包代码
+# packages/shared/components/ui/Button.tsx
+
+# 应用会自动热重载，无需重启
+# 如果没有自动重载，尝试重启开发服务器
+npm run dev:helix
+</code></pre>
+<hr>
+<h3 id="q5-typescript-找不到共享包的类型">Q5: TypeScript 找不到共享包的类型？</h3>
+<p><strong>A</strong>: 检查 <code>tsconfig.json</code> 中的 <code>paths</code> 配置。</p>
+<pre><code class="language-json">// apps/helix/tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@biya/shared&quot;: [&quot;../../packages/shared&quot;],
+      &quot;@biya/shared/*&quot;: [&quot;../../packages/shared/*&quot;]
+    }
+  }
+}
+</code></pre>
+<p><strong>如果还是不行，尝试</strong>:</p>
+<pre><code class="language-bash"># 删除 .next 和 node_modules
+rm -rf .next node_modules
+
+# 重新安装
+npm install
+
+# 重启 TypeScript 服务器（VS Code）
+Ctrl+Shift+P → TypeScript: Restart TS Server
+</code></pre>
+<hr>
+<h3 id="q6-如何处理循环依赖">Q6: 如何处理循环依赖？</h3>
+<p><strong>A</strong>: 避免共享包之间的相互依赖。</p>
+<pre><code>❌ 不好：循环依赖
+@biya/shared → @biya/theme
+@biya/theme → @biya/shared
+
+✅ 好：单向依赖
+@biya/shared ← @biya/theme
+@biya/shared ← @biya/wallet
+@biya/shared ← @biya/auth
+</code></pre>
+<p><strong>如果必须共享</strong>:</p>
+<ul>
+<li>将共同依赖提取到 <code>@biya/shared</code></li>
+<li>或者使用事件系统解耦</li>
+</ul>
+<hr>
+<h3 id="q7-如何在本地测试生产构建">Q7: 如何在本地测试生产构建？</h3>
+<p><strong>A</strong>: 使用 <code>build</code> 和 <code>start</code> 命令。</p>
+<pre><code class="language-bash"># 构建应用
+npm run build:helix
+
+# 启动生产服务器
+npm run start:helix
+
+# 访问 http://localhost:3000
+</code></pre>
+<hr>
+<h3 id="q8-如何调试共享包代码">Q8: 如何调试共享包代码？</h3>
+<p><strong>A</strong>: 使用 Source Maps 和断点。</p>
+<pre><code class="language-typescript">// packages/shared/components/ui/Button.tsx
+export function Button() {
+  debugger  // 断点会在这里停止
+  console.log(&#39;Button rendered&#39;)
+  return &lt;button&gt;Click me&lt;/button&gt;
+}
+</code></pre>
+<p><strong>在 VS Code 中</strong>:</p>
+<ol>
+<li>在共享包代码中设置断点</li>
+<li>使用 &quot;Run and Debug&quot; → &quot;Next.js: debug full stack&quot;</li>
+<li>断点会正常工作</li>
+</ol>
+<hr>
+<h3 id="q9-workspace-依赖更新问题">Q9: Workspace 依赖更新问题？</h3>
+<p><strong>A</strong>: 使用正确的更新命令。</p>
+<pre><code class="language-bash"># npm workspaces
+npm install &lt;package&gt; --workspace=apps/helix
+npm install &lt;package&gt; --workspace=packages/shared
+
+# 更新所有 workspaces
+npm update --workspaces
+
+# pnpm
+pnpm add &lt;package&gt; --filter @biya/helix
+pnpm add &lt;package&gt; --filter @biya/shared
+</code></pre>
+<hr>
+<h3 id="q10-如何处理不同应用的环境变量">Q10: 如何处理不同应用的环境变量？</h3>
+<p><strong>A</strong>: 在各自目录下创建 <code>.env.local</code>。</p>
+<pre><code>apps/helix/.env.local
+apps/bridge/.env.local
+apps/dex/.env.local
+
+# 每个应用有独立的环境变量
+</code></pre>
+<hr>
+<h2 id="开发最佳实践">✅ 开发最佳实践</h2>
+<h3 id="1-项目结构">1. 项目结构</h3>
+<pre><code>✅ 好的结构
+packages/
+├── shared/        # 通用组件、工具
+├── theme/         # 主题管理
+├── i18n/          # 国际化
+├── wallet/        # 钱包管理
+└── auth/          # 认证管理
+
+❌ 不好的结构
+packages/
+├── core/          # 太宽泛
+└── utils/         # 所有工具混在一起
+</code></pre>
+<hr>
+<h3 id="2-命名约定">2. 命名约定</h3>
+<pre><code class="language-typescript">// ✅ 组件：PascalCase
+export function Button() {}
+export const UserProfile = () =&gt; {}
+
+// ✅ 文件名：与组件名一致
+Button.tsx
+UserProfile.tsx
+
+// ✅ Hooks：useXxx
+export function useDebounce() {}
+export function useWallet() {}
+
+// ✅ 工具函数：camelCase
+export function formatCurrency() {}
+export function validateEmail() {}
+
+// ✅ 常量：UPPER_SNAKE_CASE
+export const MAX_LENGTH = 100
+export const API_URL = &#39;https://api.example.com&#39;
+
+// ✅ 类型/接口：PascalCase
+export interface User {}
+export type Theme = &#39;light&#39; | &#39;dark&#39;
+</code></pre>
+<hr>
+<h3 id="3-导入顺序">3. 导入顺序</h3>
+<pre><code class="language-typescript">// ✅ 推荐的导入顺序
+// 1. React/Next.js
+import { useState, useEffect } from &#39;react&#39;
+import { useRouter } from &#39;next/navigation&#39;
+
+// 2. 第三方库
+import { create } from &#39;zustand&#39;
+import { clsx } from &#39;clsx&#39;
+
+// 3. 共享包（按字母顺序）
+import { Button, Card } from &#39;@biya/shared&#39;
+import { useAuthStore } from &#39;@biya/auth&#39;
+import { useThemeStore } from &#39;@biya/theme&#39;
+import { useWalletStore } from &#39;@biya/wallet&#39;
+
+// 4. 本地导入（按层级）
+import { Header } from &#39;@/components/layout/Header&#39;
+import { formatCurrency } from &#39;@/lib/utils&#39;
+import type { User } from &#39;@/types/user&#39;
+
+// 5. 样式
+import &#39;./styles.css&#39;
+</code></pre>
+<hr>
+<h3 id="4-组件设计">4. 组件设计</h3>
+<pre><code class="language-typescript">// ✅ 好的组件设计
+interface ButtonProps {
+  variant?: &#39;primary&#39; | &#39;secondary&#39;
+  size?: &#39;sm&#39; | &#39;md&#39; | &#39;lg&#39;
+  isLoading?: boolean
+  onClick?: () =&gt; void
+  children: React.ReactNode
+}
+
+export function Button({ 
+  variant = &#39;primary&#39;, 
+  size = &#39;md&#39;,
+  isLoading,
+  onClick,
+  children 
+}: ButtonProps) {
+  return (
+    &lt;button 
+      onClick={onClick}
+      disabled={isLoading}
+      className={cn(
+        &#39;button&#39;,
+        `button-${variant}`,
+        `button-${size}`
+      )}
+    &gt;
+      {isLoading ? &lt;Spinner /&gt; : children}
+    &lt;/button&gt;
+  )
+}
+
+// ❌ 不好的设计
+export function Button(props: any) {
+  return &lt;button {...props} /&gt;
+}
+</code></pre>
+<hr>
+<h3 id="5-状态管理">5. 状态管理</h3>
+<pre><code class="language-typescript">// ✅ 使用选择器优化性能
+const address = useWalletStore((state) =&gt; state.address)
+
+// ❌ 避免：订阅整个 Store
+const walletStore = useWalletStore()
+
+// ✅ 组合多个状态时使用 shallow
+import { shallow } from &#39;zustand/shallow&#39;
+
+const { address, balance } = useWalletStore(
+  (state) =&gt; ({
+    address: state.address,
+    balance: state.balance,
+  }),
+  shallow
+)
+</code></pre>
+<hr>
+<h3 id="6-类型安全">6. 类型安全</h3>
+<pre><code class="language-typescript">// ✅ 定义明确的类型
+interface User {
+  id: string
+  email: string
+  name: string
+}
+
+function getUser(): User {
+  return { id: &#39;1&#39;, email: &#39;user@example.com&#39;, name: &#39;User&#39; }
+}
+
+// ❌ 避免使用 any
+function getUser(): any {
+  return { id: &#39;1&#39;, email: &#39;user@example.com&#39;, name: &#39;User&#39; }
+}
+
+// ✅ 使用泛型
+function fetchData&lt;T&gt;(url: string): Promise&lt;T&gt; {
+  return fetch(url).then(res =&gt; res.json())
+}
+
+const user = await fetchData&lt;User&gt;(&#39;/api/user&#39;)
+</code></pre>
+<hr>
+<h3 id="7-错误处理">7. 错误处理</h3>
+<pre><code class="language-typescript">// ✅ 完整的错误处理
+async function fetchUser() {
+  try {
+    const response = await fetch(&#39;/api/user&#39;)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error(&#39;Failed to fetch user:&#39;, error)
+    // 上报错误到监控系统
+    reportError(error)
+    throw error
+  }
+}
+
+// ❌ 忽略错误
+async function fetchUser() {
+  const response = await fetch(&#39;/api/user&#39;)
+  return await response.json()
+}
+</code></pre>
+<hr>
+<h3 id="8-性能优化">8. 性能优化</h3>
+<pre><code class="language-typescript">// ✅ 使用 React.memo 优化组件
+export const UserCard = React.memo(({ user }: { user: User }) =&gt; {
+  return &lt;div&gt;{user.name}&lt;/div&gt;
+})
+
+// ✅ 使用 useCallback 缓存函数
+const handleClick = useCallback(() =&gt; {
+  console.log(&#39;Clicked&#39;)
+}, [])
+
+// ✅ 使用 useMemo 缓存计算结果
+const expensiveValue = useMemo(() =&gt; {
+  return computeExpensiveValue(data)
+}, [data])
+
+// ✅ 动态导入大组件
+const HeavyComponent = dynamic(() =&gt; import(&#39;./HeavyComponent&#39;), {
+  loading: () =&gt; &lt;Loading /&gt;,
+})
+</code></pre>
+<hr>
+<h2 id="性能优化技巧">⚡ 性能优化技巧</h2>
+<h3 id="1-bundle-大小优化">1. Bundle 大小优化</h3>
+<pre><code class="language-typescript">// next.config.ts
+const nextConfig = {
+  experimental: {
+    optimizePackageImports: [
+      &#39;@biya/shared&#39;,
+      &#39;lucide-react&#39;,
+      &#39;date-fns&#39;,
+    ],
+  },
+}
+
+// ✅ 按需导入
+import { Button } from &#39;@biya/shared&#39;
+import { Calendar } from &#39;lucide-react&#39;
+
+// ❌ 避免：导入整个库
+import * as Shared from &#39;@biya/shared&#39;
+import * as Icons from &#39;lucide-react&#39;
+</code></pre>
+<hr>
+<h3 id="2-图片优化">2. 图片优化</h3>
+<pre><code class="language-typescript">// ✅ 使用 Next.js Image 组件
+import Image from &#39;next/image&#39;
+
+&lt;Image
+  src=&quot;/logo.png&quot;
+  alt=&quot;Logo&quot;
+  width={200}
+  height={100}
+  priority  // 首屏图片
+/&gt;
+
+// ✅ 使用 WebP/AVIF 格式
+// next.config.ts
+images: {
+  formats: [&#39;image/avif&#39;, &#39;image/webp&#39;],
+}
+</code></pre>
+<hr>
+<h3 id="3-代码分割">3. 代码分割</h3>
+<pre><code class="language-typescript">// ✅ 路由级别的代码分割（自动）
+// app/about/page.tsx
+// 自动分割成单独的 chunk
+
+// ✅ 组件级别的动态导入
+const Chart = dynamic(() =&gt; import(&#39;./Chart&#39;), {
+  loading: () =&gt; &lt;Skeleton /&gt;,
+  ssr: false,  // 仅客户端渲染
+})
+
+// ✅ 条件导入
+if (isAdmin) {
+  const AdminPanel = (await import(&#39;./AdminPanel&#39;)).default
+  return &lt;AdminPanel /&gt;
+}
+</code></pre>
+<hr>
+<h3 id="4-缓存策略">4. 缓存策略</h3>
+<pre><code class="language-typescript">// ✅ 使用 Next.js 缓存
+// app/posts/[id]/page.tsx
+export async function generateStaticParams() {
+  const posts = await getPosts()
+  return posts.map((post) =&gt; ({ id: post.id }))
+}
+
+export const revalidate = 3600  // ISR: 1小时重新验证
+
+// ✅ React Query 缓存
+const { data } = useQuery({
+  queryKey: [&#39;user&#39;, id],
+  queryFn: () =&gt; fetchUser(id),
+  staleTime: 5 * 60 * 1000,  // 5分钟
+  cacheTime: 30 * 60 * 1000,  // 30分钟
+})
+</code></pre>
+<hr>
+<h2 id="调试和排错">🐛 调试和排错</h2>
+<h3 id="1-常见错误和解决方案">1. 常见错误和解决方案</h3>
+<h4 id="错误-1-module-not-found">错误 1: Module not found</h4>
+<pre><code>Error: Module not found: Can&#39;t resolve &#39;@biya/shared&#39;
+</code></pre>
+<p><strong>解决方案</strong>:</p>
+<pre><code class="language-bash"># 1. 检查 tsconfig.json paths
+# 2. 重新安装依赖
+npm install
+# 3. 重启开发服务器
+npm run dev
+</code></pre>
+<hr>
+<h4 id="错误-2-hydration-错误">错误 2: Hydration 错误</h4>
+<pre><code>Error: Hydration failed because the initial UI does not match what was rendered on the server
+</code></pre>
+<p><strong>解决方案</strong>:</p>
+<pre><code class="language-typescript">// ✅ 使用 suppressHydrationWarning
+&lt;html suppressHydrationWarning&gt;
+
+// ✅ 或者使用客户端组件
+&#39;use client&#39;
+
+// ✅ 或者使用 useEffect
+const [mounted, setMounted] = useState(false)
+useEffect(() =&gt; setMounted(true), [])
+if (!mounted) return null
+</code></pre>
+<hr>
+<h4 id="错误-3-共享包更新不生效">错误 3: 共享包更新不生效</h4>
+<p><strong>解决方案</strong>:</p>
+<pre><code class="language-bash"># 1. 清理构建缓存
+npm run clean:build
+
+# 2. 重启开发服务器
+npm run dev:helix
+
+# 3. 如果还不行，清理 node_modules
+npm run clean
+npm install
+</code></pre>
+<hr>
+<h3 id="2-调试技巧">2. 调试技巧</h3>
+<h4 id="vs-code-断点调试">VS Code 断点调试</h4>
+<p><strong>launch.json</strong>:</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: &quot;0.2.0&quot;,
+  &quot;configurations&quot;: [
+    {
+      &quot;name&quot;: &quot;Next.js: debug server-side&quot;,
+      &quot;type&quot;: &quot;node-terminal&quot;,
+      &quot;request&quot;: &quot;launch&quot;,
+      &quot;command&quot;: &quot;npm run dev&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Next.js: debug client-side&quot;,
+      &quot;type&quot;: &quot;chrome&quot;,
+      &quot;request&quot;: &quot;launch&quot;,
+      &quot;url&quot;: &quot;http://localhost:3000&quot;
+    }
+  ]
+}
+</code></pre>
+<hr>
+<h4 id="react-devtools">React DevTools</h4>
+<pre><code class="language-bash"># 安装 React DevTools 浏览器扩展
+# Chrome/Edge: React Developer Tools
+# Firefox: React DevTools
+
+# 在 Components 标签中：
+# - 查看组件树
+# - 检查 props 和 state
+# - 查看 Hooks
+</code></pre>
+<hr>
+<h4 id="zustand-devtools">Zustand DevTools</h4>
+<pre><code class="language-typescript">import { devtools } from &#39;zustand/middleware&#39;
+
+export const useWalletStore = create&lt;WalletState&gt;()(
+  devtools(
+    (set) =&gt; ({ /* ... */ }),
+    { name: &#39;WalletStore&#39; }
+  )
+)
+
+// 使用 Redux DevTools Extension 查看状态变化
+</code></pre>
+<hr>
+<h2 id="团队协作">👥 团队协作</h2>
+<h3 id="1-git-工作流">1. Git 工作流</h3>
+<pre><code class="language-bash"># 功能开发
+git checkout -b feature/wallet-integration
+# 开发...
+git add .
+git commit -m &quot;feat(wallet): add wallet connection&quot;
+git push origin feature/wallet-integration
+# 创建 Pull Request
+
+# Bug 修复
+git checkout -b fix/button-styling
+# 修复...
+git commit -m &quot;fix(shared): button hover state&quot;
+
+# Commit 规范
+feat: 新功能
+fix: 修复
+docs: 文档
+style: 格式
+refactor: 重构
+test: 测试
+chore: 构建/工具
+</code></pre>
+<hr>
+<h3 id="2-code-review-清单">2. Code Review 清单</h3>
+<p><strong>提交代码前检查</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> 代码符合项目规范</li>
+<li><input disabled="" type="checkbox"> 类型定义完整</li>
+<li><input disabled="" type="checkbox"> 添加必要的注释</li>
+<li><input disabled="" type="checkbox"> 删除 console.log 和 debugger</li>
+<li><input disabled="" type="checkbox"> 运行 lint 和 type-check</li>
+<li><input disabled="" type="checkbox"> 测试通过</li>
+<li><input disabled="" type="checkbox"> 更新相关文档</li>
+</ul>
+<p><strong>Review 代码时关注</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> 逻辑正确性</li>
+<li><input disabled="" type="checkbox"> 性能问题</li>
+<li><input disabled="" type="checkbox"> 安全问题</li>
+<li><input disabled="" type="checkbox"> 代码可读性</li>
+<li><input disabled="" type="checkbox"> 是否有更好的实现方式</li>
+</ul>
+<hr>
+<h3 id="3-文档规范">3. 文档规范</h3>
+<pre><code class="language-typescript">/**
+ * 格式化货币金额
+ * 
+ * @param value - 数字或字符串形式的金额
+ * @param currency - 货币代码（默认 &#39;USD&#39;）
+ * @returns 格式化后的货币字符串
+ * 
+ * @example
+ * ```ts
+ * formatCurrency(1234.56)  // &quot;$1,234.56&quot;
+ * formatCurrency(1234.56, &#39;EUR&#39;)  // &quot;€1,234.56&quot;
+ * ```
+ */
+export function formatCurrency(
+  value: number | string,
+  currency: string = &#39;USD&#39;
+): string {
+  // ...
+}
+</code></pre>
+<hr>
+<h3 id="4-版本管理">4. 版本管理</h3>
+<pre><code class="language-json">// 使用语义化版本
+{
+  &quot;version&quot;: &quot;1.2.3&quot;
+  //         │ │ └─ Patch: 向后兼容的 bug 修复
+  //         │ └─── Minor: 向后兼容的新功能
+  //         └───── Major: 不兼容的 API 变更
+}
+
+// package.json 依赖版本
+{
+  &quot;dependencies&quot;: {
+    &quot;react&quot;: &quot;19.1.0&quot;,        // 固定版本
+    &quot;next&quot;: &quot;^15.5.4&quot;,        // 兼容 Minor/Patch 更新
+    &quot;@biya/shared&quot;: &quot;*&quot;       // Workspace 内部依赖
+  }
+}
+</code></pre>
+<hr>
+<h2 id="资源链接">📚 资源链接</h2>
+<h3 id="官方文档">官方文档</h3>
+<ul>
+<li><a href="https://nextjs.org/docs">Next.js</a></li>
+<li><a href="https://react.dev/">React</a></li>
+<li><a href="https://www.typescriptlang.org/docs/">TypeScript</a></li>
+<li><a href="https://zustand-bear.github.io/zustand/">Zustand</a></li>
+<li><a href="https://tailwindcss.com/docs">Tailwind CSS</a></li>
+<li><a href="https://next-intl-docs.vercel.app/">next-intl</a></li>
+</ul>
+<h3 id="工具">工具</h3>
+<ul>
+<li><a href="https://docs.npmjs.com/cli/v8/using-npm/workspaces">npm Workspaces</a></li>
+<li><a href="https://pnpm.io/">pnpm</a></li>
+<li><a href="https://vercel.com/docs">Vercel</a></li>
+<li><a href="https://code.visualstudio.com/docs">VS Code</a></li>
+</ul>
+<h3 id="社区">社区</h3>
+<ul>
+<li><a href="https://github.com/vercel/next.js">Next.js GitHub</a></li>
+<li><a href="https://github.com/pmndrs/zustand">Zustand GitHub</a></li>
+<li><a href="https://stackoverflow.com/questions/tagged/next.js">Stack Overflow</a></li>
+</ul>
+<hr>
+<h2 id="结语">🎉 结语</h2>
+<p>恭喜你完成了整个 Monorepo 实施指南！</p>
+<h3 id="你已经学到了">你已经学到了</h3>
+<p>✅ Monorepo 架构设计和原理<br>✅ 技术栈选型（Next.js + Zustand + next-intl）<br>✅ 共享包设计和实现<br>✅ 状态管理策略<br>✅ 完整的迁移步骤<br>✅ 部署和 CI/CD 配置<br>✅ 最佳实践和常见问题</p>
+<h3 id="下一步建议">下一步建议</h3>
+<ol>
+<li><strong>立即行动</strong>: 按照 06-实施步骤.md 开始迁移</li>
+<li><strong>小步前进</strong>: 一个阶段一个阶段地完成</li>
+<li><strong>充分测试</strong>: 每个阶段都要验证功能</li>
+<li><strong>持续优化</strong>: 迁移完成后继续改进</li>
+</ol>
+<h3 id="需要帮助">需要帮助？</h3>
+<p>如果遇到问题：</p>
+<ol>
+<li>查看本文档的 FAQ 部分</li>
+<li>检查 TypeScript 和 lint 错误</li>
+<li>查阅官方文档</li>
+<li>在团队内部讨论</li>
+</ol>
+<hr>
+<p><strong>祝你迁移顺利！🚀</strong></p>
+<hr>
+<p><em>最后更新: 2025-10-31</em></p>
+
+</div>
+</body>
+</html>

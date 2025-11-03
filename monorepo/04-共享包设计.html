@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04-共享包设计</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#共享包设计" class="toc-link">📦 共享包设计</a>
+    <li class="toc-item toc-level-2">
+      <a href="#为什么选择-workspace-共享包" class="toc-link">🤔 为什么选择 Workspace 共享包？</a>
+    <li class="toc-item toc-level-3">
+      <a href="#本文档采用的方案" class="toc-link">本文档采用的方案</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#与私服-npm-的对比" class="toc-link">与私服 NPM 的对比</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📖 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#biya-shared-基础共享包" class="toc-link">🎨 @biya/shared - 基础共享包</a>
+    <li class="toc-item toc-level-3">
+      <a href="#包结构" class="toc-link">包结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心实现" class="toc-link">核心实现</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-button-组件" class="toc-link">1. Button 组件</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-usedebounce-hook" class="toc-link">2. useDebounce Hook</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#3-cn-工具函数" class="toc-link">3. cn 工具函数</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#4-格式化工具" class="toc-link">4. 格式化工具</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#5-统一导出" class="toc-link">5. 统一导出</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#biya-theme-主题管理包" class="toc-link">🎨 @biya/theme - 主题管理包</a>
+    <li class="toc-item toc-level-3">
+      <a href="#包结构" class="toc-link">包结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心实现" class="toc-link">核心实现</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-theme-store" class="toc-link">1. Theme Store</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-themeprovider" class="toc-link">2. ThemeProvider</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#3-themetoggle-组件" class="toc-link">3. ThemeToggle 组件</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#4-themescript-防闪烁" class="toc-link">4. ThemeScript（防闪烁）</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#biya-i18n-国际化包" class="toc-link">🌍 @biya/i18n - 国际化包</a>
+    <li class="toc-item toc-level-3">
+      <a href="#包结构" class="toc-link">包结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心实现" class="toc-link">核心实现</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-语言配置" class="toc-link">1. 语言配置</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-翻译合并工具" class="toc-link">2. 翻译合并工具</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#3-通用翻译" class="toc-link">3. 通用翻译</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#4-领域翻译-钱包" class="toc-link">4. 领域翻译（钱包）</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#biya-wallet-钱包管理包" class="toc-link">💰 @biya/wallet - 钱包管理包</a>
+    <li class="toc-item toc-level-3">
+      <a href="#包结构" class="toc-link">包结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心实现" class="toc-link">核心实现</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-wallet-store" class="toc-link">1. Wallet Store</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-walletbutton-组件" class="toc-link">2. WalletButton 组件</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#biya-auth-认证管理包" class="toc-link">🔐 @biya/auth - 认证管理包</a>
+    <li class="toc-item toc-level-3">
+      <a href="#包结构" class="toc-link">包结构</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心实现" class="toc-link">核心实现</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-auth-store" class="toc-link">1. Auth Store</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#使用示例" class="toc-link">📋 使用示例</a>
+    <li class="toc-item toc-level-3">
+      <a href="#在应用中使用共享包" class="toc-link">在应用中使用共享包</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#下一步" class="toc-link">🚀 下一步</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#本章小结" class="toc-link">📚 本章小结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#5-个核心共享包" class="toc-link">5 个核心共享包</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#设计原则" class="toc-link">设计原则</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="共享包设计">📦 共享包设计</h1>
+<blockquote>
+<p><strong>核心内容</strong>: shared、theme、i18n、wallet、auth 包的设计与实现<br><strong>目标</strong>: 创建可复用的高质量共享包<br><strong>方案</strong>: Workspace 共享包（Monorepo 内部共享）<br><strong>更新时间</strong>: 2025-10-31</p>
+</blockquote>
+<hr>
+<h2 id="为什么选择-workspace-共享包">🤔 为什么选择 Workspace 共享包？</h2>
+<h3 id="本文档采用的方案">本文档采用的方案</h3>
+<p>本文档介绍的是 <strong>Workspace 共享包</strong>（也称为 Monorepo 内部共享包）方案。</p>
+<pre><code>biya-coin/                    # Monorepo
+├── apps/
+│   ├── helix/                → 使用 @biya/shared
+│   └── bridge/               → 使用 @biya/shared
+└── packages/
+    └── shared/               ← Workspace 共享包
+</code></pre>
+<p><strong>特点</strong>:</p>
+<ul>
+<li>✅ 代码在同一仓库</li>
+<li>✅ 修改立即生效（热重载）</li>
+<li>✅ 无需发布流程</li>
+<li>✅ 零配置成本</li>
+</ul>
+<hr>
+<h3 id="与私服-npm-的对比">与私服 NPM 的对比</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Workspace 共享包</th>
+<th>私服 NPM</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>开发体验</strong></td>
+<td>⭐⭐⭐⭐⭐ 即时反馈</td>
+<td>⭐⭐⭐ 需要发布</td>
+</tr>
+<tr>
+<td><strong>设置难度</strong></td>
+<td>⭐⭐⭐⭐⭐ 5分钟</td>
+<td>⭐⭐ 1-2天</td>
+</tr>
+<tr>
+<td><strong>维护成本</strong></td>
+<td>⭐⭐⭐⭐⭐ 零成本</td>
+<td>⭐⭐ 需要运维</td>
+</tr>
+<tr>
+<td><strong>跨仓库共享</strong></td>
+<td>❌ 不支持</td>
+<td>✅ 支持</td>
+</tr>
+<tr>
+<td><strong>版本管理</strong></td>
+<td>⭐⭐ Git 管理</td>
+<td>⭐⭐⭐⭐⭐ 严格版本</td>
+</tr>
+</tbody></table>
+<p><strong>推荐使用 Workspace 共享包</strong>，因为 biya-coin 项目：</p>
+<ul>
+<li>✅ 所有应用在同一个 Monorepo</li>
+<li>✅ 需要快速迭代</li>
+<li>✅ 团队规模小</li>
+<li>✅ 无需跨仓库共享</li>
+</ul>
+<p><strong>如果你需要跨仓库共享或严格版本控制</strong>，请查看：</p>
+<ul>
+<li><strong><a href="./09-%E5%85%B1%E4%BA%AB%E5%8C%85vs%E7%A7%81%E6%9C%8DNPM.md">09-共享包vs私服NPM.md</a></strong> - 详细对比分析</li>
+</ul>
+<hr>
+<h2 id="目录">📖 目录</h2>
+<ol>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9-workspace-%E5%85%B1%E4%BA%AB%E5%8C%85">为什么选择 Workspace 共享包？</a></li>
+<li><a href="#biyashared---%E5%9F%BA%E7%A1%80%E5%85%B1%E4%BA%AB%E5%8C%85">@biya/shared - 基础共享包</a></li>
+<li><a href="#biyatheme---%E4%B8%BB%E9%A2%98%E7%AE%A1%E7%90%86%E5%8C%85">@biya/theme - 主题管理包</a></li>
+<li><a href="#biyai18n---%E5%9B%BD%E9%99%85%E5%8C%96%E5%8C%85">@biya/i18n - 国际化包</a></li>
+<li><a href="#biyawallet---%E9%92%B1%E5%8C%85%E7%AE%A1%E7%90%86%E5%8C%85">@biya/wallet - 钱包管理包</a></li>
+<li><a href="#biyaauth---%E8%AE%A4%E8%AF%81%E7%AE%A1%E7%90%86%E5%8C%85">@biya/auth - 认证管理包</a></li>
+</ol>
+<hr>
+<h2 id="biya-shared-基础共享包">🎨 @biya/shared - 基础共享包</h2>
+<h3 id="包结构">包结构</h3>
+<pre><code>packages/shared/
+├── 📄 package.json
+├── 📄 tsconfig.json
+├── 📄 index.ts                    # 统一导出
+│
+├── 📁 components/                 # 共享组件
+│   ├── 📄 index.ts
+│   ├── 📁 ui/                     # 基础 UI 组件
+│   │   ├── 📄 Button.tsx
+│   │   ├── 📄 Input.tsx
+│   │   ├── 📄 Card.tsx
+│   │   ├── 📄 Modal.tsx
+│   │   ├── 📄 Dropdown.tsx
+│   │   ├── 📄 Toast.tsx
+│   │   └── 📄 Loading.tsx
+│   └── 📁 layout/                 # 布局组件
+│       ├── 📄 Header.tsx
+│       ├── 📄 Footer.tsx
+│       ├── 📄 Sidebar.tsx
+│       └── 📄 Container.tsx
+│
+├── 📁 hooks/                      # 共享 Hooks
+│   ├── 📄 index.ts
+│   ├── 📄 useDebounce.ts
+│   ├── 📄 useMediaQuery.ts
+│   ├── 📄 useLocalStorage.ts
+│   ├── 📄 useClickOutside.ts
+│   └── 📄 useKeyPress.ts
+│
+├── 📁 utils/                      # 工具函数
+│   ├── 📄 index.ts
+│   ├── 📄 format.ts               # 格式化函数
+│   ├── 📄 validation.ts           # 验证函数
+│   ├── 📄 cn.ts                   # className 合并
+│   ├── 📄 date.ts                 # 日期处理
+│   └── 📄 number.ts               # 数字处理
+│
+└── 📁 types/                      # 共享类型
+    ├── 📄 index.ts
+    └── 📄 common.ts
+</code></pre>
+<hr>
+<h3 id="核心实现">核心实现</h3>
+<h4 id="1-button-组件">1. Button 组件</h4>
+<pre><code class="language-typescript">// components/ui/Button.tsx
+import { forwardRef } from &#39;react&#39;
+import { cn } from &#39;../../utils/cn&#39;
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; {
+  variant?: &#39;default&#39; | &#39;primary&#39; | &#39;secondary&#39; | &#39;outline&#39; | &#39;ghost&#39; | &#39;destructive&#39;
+  size?: &#39;sm&#39; | &#39;md&#39; | &#39;lg&#39;
+  isLoading?: boolean
+}
+
+const Button = forwardRef&lt;HTMLButtonElement, ButtonProps&gt;(
+  ({ className, variant = &#39;default&#39;, size = &#39;md&#39;, isLoading, children, disabled, ...props }, ref) =&gt; {
+    return (
+      &lt;button
+        ref={ref}
+        className={cn(
+          // 基础样式
+          &#39;inline-flex items-center justify-center rounded-lg font-medium transition-colors&#39;,
+          &#39;focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2&#39;,
+          &#39;disabled:pointer-events-none disabled:opacity-50&#39;,
+          
+          // 尺寸
+          {
+            &#39;h-8 px-3 text-sm&#39;: size === &#39;sm&#39;,
+            &#39;h-10 px-4 text-base&#39;: size === &#39;md&#39;,
+            &#39;h-12 px-6 text-lg&#39;: size === &#39;lg&#39;,
+          },
+          
+          // 变体
+          {
+            &#39;bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-50 dark:text-gray-900&#39;: 
+              variant === &#39;default&#39;,
+            &#39;bg-blue-600 text-white hover:bg-blue-700&#39;: 
+              variant === &#39;primary&#39;,
+            &#39;bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-50&#39;: 
+              variant === &#39;secondary&#39;,
+            &#39;border border-gray-300 bg-transparent hover:bg-gray-100 dark:border-gray-700&#39;: 
+              variant === &#39;outline&#39;,
+            &#39;hover:bg-gray-100 dark:hover:bg-gray-800&#39;: 
+              variant === &#39;ghost&#39;,
+            &#39;bg-red-600 text-white hover:bg-red-700&#39;: 
+              variant === &#39;destructive&#39;,
+          },
+          
+          className
+        )}
+        disabled={disabled || isLoading}
+        {...props}
+      &gt;
+        {isLoading &amp;&amp; (
+          &lt;svg className=&quot;mr-2 h-4 w-4 animate-spin&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+            &lt;circle
+              className=&quot;opacity-25&quot;
+              cx=&quot;12&quot;
+              cy=&quot;12&quot;
+              r=&quot;10&quot;
+              stroke=&quot;currentColor&quot;
+              strokeWidth=&quot;4&quot;
+              fill=&quot;none&quot;
+            /&gt;
+            &lt;path
+              className=&quot;opacity-75&quot;
+              fill=&quot;currentColor&quot;
+              d=&quot;M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z&quot;
+            /&gt;
+          &lt;/svg&gt;
+        )}
+        {children}
+      &lt;/button&gt;
+    )
+  }
+)
+
+Button.displayName = &#39;Button&#39;
+
+export { Button }
+</code></pre>
+<hr>
+<h4 id="2-usedebounce-hook">2. useDebounce Hook</h4>
+<pre><code class="language-typescript">// hooks/useDebounce.ts
+import { useEffect, useState } from &#39;react&#39;
+
+export function useDebounce&lt;T&gt;(value: T, delay: number = 500): T {
+  const [debouncedValue, setDebouncedValue] = useState&lt;T&gt;(value)
+
+  useEffect(() =&gt; {
+    const timer = setTimeout(() =&gt; {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () =&gt; {
+      clearTimeout(timer)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
+</code></pre>
+<hr>
+<h4 id="3-cn-工具函数">3. cn 工具函数</h4>
+<pre><code class="language-typescript">// utils/cn.ts
+import { type ClassValue, clsx } from &#39;clsx&#39;
+import { twMerge } from &#39;tailwind-merge&#39;
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+</code></pre>
+<hr>
+<h4 id="4-格式化工具">4. 格式化工具</h4>
+<pre><code class="language-typescript">// utils/format.ts
+
+// 格式化数字
+export function formatNumber(
+  value: number | string,
+  options?: Intl.NumberFormatOptions
+): string {
+  const num = typeof value === &#39;string&#39; ? parseFloat(value) : value
+  return new Intl.NumberFormat(&#39;en-US&#39;, options).format(num)
+}
+
+// 格式化货币
+export function formatCurrency(
+  value: number | string,
+  currency: string = &#39;USD&#39;
+): string {
+  return formatNumber(value, {
+    style: &#39;currency&#39;,
+    currency,
+  })
+}
+
+// 格式化百分比
+export function formatPercent(value: number | string): string {
+  const num = typeof value === &#39;string&#39; ? parseFloat(value) : value
+  return formatNumber(num, {
+    style: &#39;percent&#39;,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
+// 缩写大数字
+export function formatCompactNumber(value: number): string {
+  return formatNumber(value, {
+    notation: &#39;compact&#39;,
+    compactDisplay: &#39;short&#39;,
+  })
+}
+</code></pre>
+<hr>
+<h4 id="5-统一导出">5. 统一导出</h4>
+<pre><code class="language-typescript">// index.ts
+// 组件
+export * from &#39;./components/ui/Button&#39;
+export * from &#39;./components/ui/Input&#39;
+export * from &#39;./components/ui/Card&#39;
+export * from &#39;./components/layout/Header&#39;
+
+// Hooks
+export * from &#39;./hooks/useDebounce&#39;
+export * from &#39;./hooks/useMediaQuery&#39;
+export * from &#39;./hooks/useLocalStorage&#39;
+
+// 工具函数
+export * from &#39;./utils/cn&#39;
+export * from &#39;./utils/format&#39;
+export * from &#39;./utils/validation&#39;
+
+// 类型
+export * from &#39;./types/common&#39;
+</code></pre>
+<hr>
+<h2 id="biya-theme-主题管理包">🎨 @biya/theme - 主题管理包</h2>
+<h3 id="包结构">包结构</h3>
+<pre><code>packages/theme/
+├── 📄 package.json
+├── 📄 tsconfig.json
+├── 📄 index.ts
+│
+├── 📁 store/                      # Zustand Store
+│   ├── 📄 theme-store.ts
+│   └── 📄 theme-persist.ts
+│
+├── 📁 hooks/
+│   ├── 📄 useTheme.ts
+│   └── 📄 useSystemTheme.ts
+│
+├── 📁 components/
+│   ├── 📄 ThemeProvider.tsx
+│   ├── 📄 ThemeToggle.tsx
+│   └── 📄 ThemeScript.tsx
+│
+├── 📁 config/
+│   ├── 📄 themes.ts
+│   └── 📄 colors.ts
+│
+└── 📁 types/
+    └── 📄 theme.ts
+</code></pre>
+<hr>
+<h3 id="核心实现">核心实现</h3>
+<h4 id="1-theme-store">1. Theme Store</h4>
+<pre><code class="language-typescript">// store/theme-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+export type Theme = &#39;light&#39; | &#39;dark&#39; | &#39;system&#39;
+
+interface ThemeState {
+  theme: Theme
+  isDark: boolean
+  setTheme: (theme: Theme) =&gt; void
+  toggleTheme: () =&gt; void
+}
+
+export const useThemeStore = create&lt;ThemeState&gt;()(
+  persist(
+    (set, get) =&gt; ({
+      theme: &#39;system&#39;,
+      isDark: false,
+      
+      setTheme: (theme) =&gt; {
+        set({ theme })
+        
+        // 更新 DOM
+        const root = document.documentElement
+        const isDark = theme === &#39;dark&#39; || 
+          (theme === &#39;system&#39; &amp;&amp; window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches)
+        
+        if (isDark) {
+          root.classList.add(&#39;dark&#39;)
+        } else {
+          root.classList.remove(&#39;dark&#39;)
+        }
+        
+        set({ isDark })
+      },
+      
+      toggleTheme: () =&gt; {
+        const current = get().theme
+        const newTheme = current === &#39;dark&#39; ? &#39;light&#39; : &#39;dark&#39;
+        get().setTheme(newTheme)
+      },
+    }),
+    {
+      name: &#39;biya-theme-storage&#39;,
+      storage: createJSONStorage(() =&gt; localStorage),
+      partialize: (state) =&gt; ({ theme: state.theme }),
+    }
+  )
+)
+</code></pre>
+<hr>
+<h4 id="2-themeprovider">2. ThemeProvider</h4>
+<pre><code class="language-typescript">// components/ThemeProvider.tsx
+&#39;use client&#39;
+
+import { useEffect } from &#39;react&#39;
+import { useThemeStore } from &#39;../store/theme-store&#39;
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const { theme, setTheme } = useThemeStore()
+
+  useEffect(() =&gt; {
+    // 初始化主题
+    setTheme(theme)
+    
+    // 监听系统主题变化
+    if (theme === &#39;system&#39;) {
+      const mediaQuery = window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;)
+      const handleChange = () =&gt; setTheme(&#39;system&#39;)
+      
+      mediaQuery.addEventListener(&#39;change&#39;, handleChange)
+      return () =&gt; mediaQuery.removeEventListener(&#39;change&#39;, handleChange)
+    }
+  }, [theme, setTheme])
+
+  return &lt;&gt;{children}&lt;/&gt;
+}
+</code></pre>
+<hr>
+<h4 id="3-themetoggle-组件">3. ThemeToggle 组件</h4>
+<pre><code class="language-typescript">// components/ThemeToggle.tsx
+&#39;use client&#39;
+
+import { Moon, Sun } from &#39;lucide-react&#39;
+import { useThemeStore } from &#39;../store/theme-store&#39;
+
+export function ThemeToggle() {
+  const { theme, isDark, toggleTheme } = useThemeStore()
+
+  return (
+    &lt;button
+      onClick={toggleTheme}
+      className=&quot;rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors&quot;
+      aria-label=&quot;Toggle theme&quot;
+    &gt;
+      {isDark ? (
+        &lt;Sun className=&quot;h-5 w-5 text-gray-600 dark:text-gray-400&quot; /&gt;
+      ) : (
+        &lt;Moon className=&quot;h-5 w-5 text-gray-600 dark:text-gray-400&quot; /&gt;
+      )}
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+<hr>
+<h4 id="4-themescript-防闪烁">4. ThemeScript（防闪烁）</h4>
+<pre><code class="language-typescript">// components/ThemeScript.tsx
+export function ThemeScript() {
+  const themeScript = `
+    (function() {
+      const theme = localStorage.getItem(&#39;biya-theme-storage&#39;)
+      if (theme) {
+        const { state } = JSON.parse(theme)
+        const isDark = state.theme === &#39;dark&#39; || 
+          (state.theme === &#39;system&#39; &amp;&amp; window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches)
+        
+        if (isDark) {
+          document.documentElement.classList.add(&#39;dark&#39;)
+        }
+      }
+    })()
+  `
+
+  return (
+    &lt;script
+      dangerouslySetInnerHTML={{ __html: themeScript }}
+      suppressHydrationWarning
+    /&gt;
+  )
+}
+</code></pre>
+<p><strong>使用方式</strong>:</p>
+<pre><code class="language-typescript">// app/layout.tsx
+import { ThemeScript } from &#39;@biya/theme&#39;
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html suppressHydrationWarning&gt;
+      &lt;head&gt;
+        &lt;ThemeScript /&gt;
+      &lt;/head&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<hr>
+<h2 id="biya-i18n-国际化包">🌍 @biya/i18n - 国际化包</h2>
+<h3 id="包结构">包结构</h3>
+<pre><code>packages/i18n/
+├── 📄 package.json
+├── 📄 index.ts
+│
+├── 📁 locales/                    # 翻译文件
+│   ├── 📁 common/                 # 通用翻译
+│   │   ├── 📄 en.json
+│   │   ├── 📄 zh.json
+│   │   ├── 📄 ja.json
+│   │   ├── 📄 ko.json
+│   │   └── 📄 es.json
+│   └── 📁 domain/                 # 领域翻译
+│       ├── 📁 wallet/
+│       ├── 📁 trading/
+│       └── 📁 bridge/
+│
+├── 📁 hooks/
+│   └── 📄 useTranslation.ts
+│
+├── 📁 utils/
+│   ├── 📄 merge.ts                # 翻译合并
+│   └── 📄 format.ts
+│
+└── 📁 config/
+    ├── 📄 locales.ts
+    └── 📄 next-intl.ts
+</code></pre>
+<hr>
+<h3 id="核心实现">核心实现</h3>
+<h4 id="1-语言配置">1. 语言配置</h4>
+<pre><code class="language-typescript">// config/locales.ts
+export const locales = [&#39;en&#39;, &#39;zh&#39;, &#39;ja&#39;, &#39;ko&#39;, &#39;es&#39;] as const
+export type Locale = (typeof locales)[number]
+
+export const defaultLocale: Locale = &#39;en&#39;
+
+export const localeNames: Record&lt;Locale, string&gt; = {
+  en: &#39;English&#39;,
+  zh: &#39;中文&#39;,
+  ja: &#39;日本語&#39;,
+  ko: &#39;한국어&#39;,
+  es: &#39;Español&#39;,
+}
+
+export const localeFlags: Record&lt;Locale, string&gt; = {
+  en: &#39;🇺🇸&#39;,
+  zh: &#39;🇨🇳&#39;,
+  ja: &#39;🇯🇵&#39;,
+  ko: &#39;🇰🇷&#39;,
+  es: &#39;🇪🇸&#39;,
+}
+</code></pre>
+<hr>
+<h4 id="2-翻译合并工具">2. 翻译合并工具</h4>
+<pre><code class="language-typescript">// utils/merge.ts
+import type { Locale } from &#39;../config/locales&#39;
+
+export function mergeTranslations(
+  locale: Locale,
+  layers: string[]
+): Record&lt;string, any&gt; {
+  const merged: Record&lt;string, any&gt; = {}
+
+  for (const layer of layers) {
+    try {
+      let translations
+      
+      // 尝试从 common 加载
+      if (layer === &#39;common&#39;) {
+        translations = require(`../locales/common/${locale}.json`)
+      } else {
+        // 尝试从 domain 加载
+        translations = require(`../locales/domain/${layer}/${locale}.json`)
+      }
+      
+      // 深度合并
+      deepMerge(merged, translations)
+    } catch (error) {
+      console.warn(`Failed to load translations for ${layer}/${locale}`)
+    }
+  }
+
+  return merged
+}
+
+function deepMerge(target: any, source: any): void {
+  for (const key in source) {
+    if (source[key] instanceof Object &amp;&amp; key in target) {
+      deepMerge(target[key], source[key])
+    } else {
+      target[key] = source[key]
+    }
+  }
+}
+</code></pre>
+<hr>
+<h4 id="3-通用翻译">3. 通用翻译</h4>
+<pre><code class="language-json">// locales/common/en.json
+{
+  &quot;common&quot;: {
+    &quot;button&quot;: {
+      &quot;submit&quot;: &quot;Submit&quot;,
+      &quot;cancel&quot;: &quot;Cancel&quot;,
+      &quot;confirm&quot;: &quot;Confirm&quot;,
+      &quot;close&quot;: &quot;Close&quot;,
+      &quot;save&quot;: &quot;Save&quot;,
+      &quot;delete&quot;: &quot;Delete&quot;,
+      &quot;edit&quot;: &quot;Edit&quot;,
+      &quot;back&quot;: &quot;Back&quot;,
+      &quot;next&quot;: &quot;Next&quot;
+    },
+    &quot;status&quot;: {
+      &quot;loading&quot;: &quot;Loading...&quot;,
+      &quot;success&quot;: &quot;Success&quot;,
+      &quot;error&quot;: &quot;Error&quot;,
+      &quot;pending&quot;: &quot;Pending&quot;
+    },
+    &quot;language&quot;: {
+      &quot;en&quot;: &quot;English&quot;,
+      &quot;zh&quot;: &quot;中文&quot;,
+      &quot;ja&quot;: &quot;日本語&quot;,
+      &quot;ko&quot;: &quot;한국어&quot;,
+      &quot;es&quot;: &quot;Español&quot;
+    }
+  }
+}
+</code></pre>
+<pre><code class="language-json">// locales/common/zh.json
+{
+  &quot;common&quot;: {
+    &quot;button&quot;: {
+      &quot;submit&quot;: &quot;提交&quot;,
+      &quot;cancel&quot;: &quot;取消&quot;,
+      &quot;confirm&quot;: &quot;确认&quot;,
+      &quot;close&quot;: &quot;关闭&quot;,
+      &quot;save&quot;: &quot;保存&quot;,
+      &quot;delete&quot;: &quot;删除&quot;,
+      &quot;edit&quot;: &quot;编辑&quot;,
+      &quot;back&quot;: &quot;返回&quot;,
+      &quot;next&quot;: &quot;下一步&quot;
+    },
+    &quot;status&quot;: {
+      &quot;loading&quot;: &quot;加载中...&quot;,
+      &quot;success&quot;: &quot;成功&quot;,
+      &quot;error&quot;: &quot;错误&quot;,
+      &quot;pending&quot;: &quot;待处理&quot;
+    },
+    &quot;language&quot;: {
+      &quot;en&quot;: &quot;English&quot;,
+      &quot;zh&quot;: &quot;中文&quot;,
+      &quot;ja&quot;: &quot;日本語&quot;,
+      &quot;ko&quot;: &quot;한국어&quot;,
+      &quot;es&quot;: &quot;Español&quot;
+    }
+  }
+}
+</code></pre>
+<hr>
+<h4 id="4-领域翻译-钱包">4. 领域翻译（钱包）</h4>
+<pre><code class="language-json">// locales/domain/wallet/en.json
+{
+  &quot;wallet&quot;: {
+    &quot;title&quot;: &quot;Wallet&quot;,
+    &quot;connect&quot;: &quot;Connect Wallet&quot;,
+    &quot;disconnect&quot;: &quot;Disconnect&quot;,
+    &quot;connected&quot;: &quot;Connected&quot;,
+    &quot;connecting&quot;: &quot;Connecting...&quot;,
+    &quot;balance&quot;: &quot;Balance&quot;,
+    &quot;address&quot;: &quot;Address&quot;,
+    &quot;network&quot;: &quot;Network&quot;,
+    &quot;switchNetwork&quot;: &quot;Switch Network&quot;,
+    &quot;copied&quot;: &quot;Address copied!&quot;
+  }
+}
+</code></pre>
+<pre><code class="language-json">// locales/domain/wallet/zh.json
+{
+  &quot;wallet&quot;: {
+    &quot;title&quot;: &quot;钱包&quot;,
+    &quot;connect&quot;: &quot;连接钱包&quot;,
+    &quot;disconnect&quot;: &quot;断开连接&quot;,
+    &quot;connected&quot;: &quot;已连接&quot;,
+    &quot;connecting&quot;: &quot;连接中...&quot;,
+    &quot;balance&quot;: &quot;余额&quot;,
+    &quot;address&quot;: &quot;地址&quot;,
+    &quot;network&quot;: &quot;网络&quot;,
+    &quot;switchNetwork&quot;: &quot;切换网络&quot;,
+    &quot;copied&quot;: &quot;地址已复制！&quot;
+  }
+}
+</code></pre>
+<hr>
+<h2 id="biya-wallet-钱包管理包">💰 @biya/wallet - 钱包管理包</h2>
+<h3 id="包结构">包结构</h3>
+<pre><code>packages/wallet/
+├── 📄 package.json
+├── 📄 index.ts
+│
+├── 📁 store/
+│   └── 📄 wallet-store.ts         # Zustand Store
+│
+├── 📁 hooks/
+│   ├── 📄 useWallet.ts
+│   ├── 📄 useBalance.ts
+│   └── 📄 useNetwork.ts
+│
+├── 📁 components/
+│   ├── 📄 WalletButton.tsx
+│   ├── 📄 WalletModal.tsx
+│   └── 📄 WalletIcon.tsx
+│
+├── 📁 services/
+│   └── 📄 wallet-service.ts
+│
+└── 📁 types/
+    └── 📄 wallet.ts
+</code></pre>
+<hr>
+<h3 id="核心实现">核心实现</h3>
+<h4 id="1-wallet-store">1. Wallet Store</h4>
+<pre><code class="language-typescript">// store/wallet-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+interface WalletState {
+  // 状态
+  address: string | null
+  injectiveAddress: string | null
+  chainId: number | null
+  isConnected: boolean
+  isConnecting: boolean
+  balance: string | null
+  
+  // 操作
+  setAddress: (address: string | null) =&gt; void
+  setInjectiveAddress: (address: string | null) =&gt; void
+  setChainId: (chainId: number | null) =&gt; void
+  setConnected: (connected: boolean) =&gt; void
+  setConnecting: (connecting: boolean) =&gt; void
+  setBalance: (balance: string | null) =&gt; void
+  disconnect: () =&gt; void
+  reset: () =&gt; void
+}
+
+export const useWalletStore = create&lt;WalletState&gt;()(
+  persist(
+    (set) =&gt; ({
+      // 初始状态
+      address: null,
+      injectiveAddress: null,
+      chainId: null,
+      isConnected: false,
+      isConnecting: false,
+      balance: null,
+      
+      // 操作方法
+      setAddress: (address) =&gt; set({ address }),
+      setInjectiveAddress: (injectiveAddress) =&gt; set({ injectiveAddress }),
+      setChainId: (chainId) =&gt; set({ chainId }),
+      setConnected: (isConnected) =&gt; set({ isConnected }),
+      setConnecting: (isConnecting) =&gt; set({ isConnecting }),
+      setBalance: (balance) =&gt; set({ balance }),
+      
+      disconnect: () =&gt; set({
+        address: null,
+        injectiveAddress: null,
+        isConnected: false,
+        balance: null,
+      }),
+      
+      reset: () =&gt; set({
+        address: null,
+        injectiveAddress: null,
+        chainId: null,
+        isConnected: false,
+        isConnecting: false,
+        balance: null,
+      }),
+    }),
+    {
+      name: &#39;biya-wallet-storage&#39;,
+      storage: createJSONStorage(() =&gt; localStorage),
+      partialize: (state) =&gt; ({
+        address: state.address,
+        injectiveAddress: state.injectiveAddress,
+        chainId: state.chainId,
+      }),
+    }
+  )
+)
+</code></pre>
+<hr>
+<h4 id="2-walletbutton-组件">2. WalletButton 组件</h4>
+<pre><code class="language-typescript">// components/WalletButton.tsx
+&#39;use client&#39;
+
+import { Wallet } from &#39;lucide-react&#39;
+import { Button } from &#39;@biya/shared&#39;
+import { useWalletStore } from &#39;../store/wallet-store&#39;
+
+export function WalletButton() {
+  const { address, isConnected, isConnecting, disconnect } = useWalletStore()
+
+  const handleClick = () =&gt; {
+    if (isConnected) {
+      disconnect()
+    } else {
+      // 打开钱包连接弹窗
+      // TODO: 实现连接逻辑
+    }
+  }
+
+  const formatAddress = (addr: string) =&gt; {
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  }
+
+  return (
+    &lt;Button
+      onClick={handleClick}
+      isLoading={isConnecting}
+      variant={isConnected ? &#39;secondary&#39; : &#39;primary&#39;}
+    &gt;
+      &lt;Wallet className=&quot;mr-2 h-4 w-4&quot; /&gt;
+      {isConnected &amp;&amp; address ? formatAddress(address) : &#39;Connect Wallet&#39;}
+    &lt;/Button&gt;
+  )
+}
+</code></pre>
+<hr>
+<h2 id="biya-auth-认证管理包">🔐 @biya/auth - 认证管理包</h2>
+<h3 id="包结构">包结构</h3>
+<pre><code>packages/auth/
+├── 📄 package.json
+├── 📄 index.ts
+│
+├── 📁 store/
+│   ├── 📄 auth-store.ts
+│   └── 📄 session-store.ts
+│
+├── 📁 hooks/
+│   ├── 📄 useAuth.ts
+│   ├── 📄 useSession.ts
+│   └── 📄 useUser.ts
+│
+├── 📁 services/
+│   ├── 📄 auth.ts
+│   └── 📄 session.ts
+│
+└── 📁 types/
+    ├── 📄 auth.ts
+    └── 📄 user.ts
+</code></pre>
+<hr>
+<h3 id="核心实现">核心实现</h3>
+<h4 id="1-auth-store">1. Auth Store</h4>
+<pre><code class="language-typescript">// store/auth-store.ts
+import { create } from &#39;zustand&#39;
+import { persist, createJSONStorage } from &#39;zustand/middleware&#39;
+
+interface User {
+  id: string
+  email: string
+  name: string
+  avatar?: string
+}
+
+interface AuthState {
+  // 状态
+  user: User | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  token: string | null
+  
+  // 操作
+  setUser: (user: User | null) =&gt; void
+  setToken: (token: string | null) =&gt; void
+  setLoading: (loading: boolean) =&gt; void
+  login: (email: string, password: string) =&gt; Promise&lt;void&gt;
+  logout: () =&gt; void
+}
+
+export const useAuthStore = create&lt;AuthState&gt;()(
+  persist(
+    (set) =&gt; ({
+      // 初始状态
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      token: null,
+      
+      // 操作方法
+      setUser: (user) =&gt; set({ 
+        user, 
+        isAuthenticated: !!user 
+      }),
+      
+      setToken: (token) =&gt; set({ token }),
+      
+      setLoading: (isLoading) =&gt; set({ isLoading }),
+      
+      login: async (email, password) =&gt; {
+        set({ isLoading: true })
+        try {
+          // TODO: 实现登录逻辑
+          // const response = await authService.login(email, password)
+          // set({ user: response.user, token: response.token, isAuthenticated: true })
+        } catch (error) {
+          console.error(&#39;Login failed:&#39;, error)
+          throw error
+        } finally {
+          set({ isLoading: false })
+        }
+      },
+      
+      logout: () =&gt; set({
+        user: null,
+        isAuthenticated: false,
+        token: null,
+      }),
+    }),
+    {
+      name: &#39;biya-auth-storage&#39;,
+      storage: createJSONStorage(() =&gt; localStorage),
+      partialize: (state) =&gt; ({
+        user: state.user,
+        token: state.token,
+      }),
+    }
+  )
+)
+</code></pre>
+<hr>
+<h2 id="使用示例">📋 使用示例</h2>
+<h3 id="在应用中使用共享包">在应用中使用共享包</h3>
+<pre><code class="language-typescript">// apps/bridge/app/[locale]/bridge/page.tsx
+&#39;use client&#39;
+
+import { Button, formatCurrency, useDebounce } from &#39;@biya/shared&#39;
+import { ThemeToggle, useThemeStore } from &#39;@biya/theme&#39;
+import { useTranslations } from &#39;next-intl&#39;
+import { WalletButton, useWalletStore } from &#39;@biya/wallet&#39;
+import { useAuthStore } from &#39;@biya/auth&#39;
+
+export default function BridgePage() {
+  const t = useTranslations()
+  const { isDark } = useThemeStore()
+  const { isConnected, address } = useWalletStore()
+  const { user, isAuthenticated } = useAuthStore()
+  
+  const amount = useDebounce(&#39;100&#39;, 500)
+
+  return (
+    &lt;div className=&quot;container mx-auto py-8&quot;&gt;
+      &lt;div className=&quot;flex items-center justify-between mb-8&quot;&gt;
+        &lt;h1 className=&quot;text-4xl font-bold&quot;&gt;
+          {t(&#39;bridge.title&#39;)}
+        &lt;/h1&gt;
+        &lt;div className=&quot;flex items-center gap-4&quot;&gt;
+          &lt;ThemeToggle /&gt;
+          &lt;WalletButton /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;div className=&quot;grid gap-6&quot;&gt;
+        &lt;p className=&quot;text-gray-600 dark:text-gray-400&quot;&gt;
+          {t(&#39;common.status.loading&#39;)}
+        &lt;/p&gt;
+        
+        &lt;div className=&quot;text-2xl font-bold&quot;&gt;
+          {formatCurrency(amount)}
+        &lt;/div&gt;
+        
+        &lt;Button variant=&quot;primary&quot;&gt;
+          {t(&#39;common.button.submit&#39;)}
+        &lt;/Button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<hr>
+<h2 id="下一步">🚀 下一步</h2>
+<p>共享包设计已明确，继续阅读：</p>
+<p><strong>→ <a href="./05-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86.md">05-状态管理.md</a></strong></p>
+<p>了解 Zustand 状态管理策略和最佳实践。</p>
+<hr>
+<h2 id="本章小结">📚 本章小结</h2>
+<h3 id="5-个核心共享包">5 个核心共享包</h3>
+<ol>
+<li><strong>@biya/shared</strong>: 基础组件、Hooks、工具函数</li>
+<li><strong>@biya/theme</strong>: 主题管理（Zustand + Tailwind）</li>
+<li><strong>@biya/i18n</strong>: 国际化（分层翻译 + next-intl）</li>
+<li><strong>@biya/wallet</strong>: 钱包管理（Zustand + Web3）</li>
+<li><strong>@biya/auth</strong>: 认证管理（Zustand + JWT）</li>
+</ol>
+<h3 id="设计原则">设计原则</h3>
+<ol>
+<li><strong>单一职责</strong>: 每个包只做一件事</li>
+<li><strong>零依赖</strong>: 包之间尽量减少依赖</li>
+<li><strong>类型安全</strong>: 完整的 TypeScript 支持</li>
+<li><strong>易于使用</strong>: 简单的 API，清晰的文档</li>
+<li><strong>可扩展</strong>: 易于添加新功能</li>
+</ol>
+<hr>
+<p><em>最后更新: 2025-10-31</em></p>
+
+</div>
+</body>
+</html>
