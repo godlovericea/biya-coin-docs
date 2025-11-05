@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figma_MCP完整配置与使用指南</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#figma-mcp-完整配置与使用指南" class="toc-link">Figma MCP 完整配置与使用指南</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📋 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#什么是-figma-mcp" class="toc-link">什么是 Figma MCP</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#配置-figma-mcp" class="toc-link">配置 Figma MCP</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-获取-figma-access-token" class="toc-link">步骤 1：获取 Figma Access Token</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-确定配置文件路径" class="toc-link">步骤 2：确定配置文件路径</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-创建-编辑配置文件" class="toc-link">步骤 3：创建/编辑配置文件</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-重启-cursor" class="toc-link">步骤 4：重启 Cursor</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#验证配置是否成功" class="toc-link">验证配置是否成功</a>
+    <li class="toc-item toc-level-3">
+      <a href="#方法-1-查看-mcp-状态指示器" class="toc-link">方法 1：查看 MCP 状态指示器</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#方法-2-使用测试命令" class="toc-link">方法 2：使用测试命令</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#方法-3-检查-mcp-工具列表" class="toc-link">方法 3：检查 MCP 工具列表</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#通过-figma-mcp-生成代码" class="toc-link">通过 Figma MCP 生成代码</a>
+    <li class="toc-item toc-level-3">
+      <a href="#完整工作流程" class="toc-link">完整工作流程</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-获取-figma-设计链接" class="toc-link">步骤 1：获取 Figma 设计链接</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-在-cursor-中请求读取设计" class="toc-link">步骤 2：在 Cursor 中请求读取设计</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-指定技术栈和要求" class="toc-link">步骤 3：指定技术栈和要求</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-cursor-自动生成代码" class="toc-link">步骤 4：Cursor 自动生成代码</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#完整案例-登录页面" class="toc-link">完整案例：登录页面</a>
+    <li class="toc-item toc-level-3">
+      <a href="#需求描述" class="toc-link">需求描述</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#实际操作步骤" class="toc-link">实际操作步骤</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-提供设计链接" class="toc-link">1️⃣ 提供设计链接</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-cursor-读取设计" class="toc-link">2️⃣ Cursor 读取设计</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#3-确认技术栈" class="toc-link">3️⃣ 确认技术栈</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#4-cursor-生成文件" class="toc-link">4️⃣ Cursor 生成文件</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#5-测试和调整" class="toc-link">5️⃣ 测试和调整</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常见问题解决" class="toc-link">常见问题解决</a>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-1-mcp-连接失败" class="toc-link">问题 1：MCP 连接失败 ❌</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-2-token-无效" class="toc-link">问题 2：Token 无效 ❌</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-3-无法读取特定文件" class="toc-link">问题 3：无法读取特定文件 ❌</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-4-生成的代码不准确" class="toc-link">问题 4：生成的代码不准确 ❌</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#最佳实践" class="toc-link">最佳实践</a>
+    <li class="toc-item toc-level-3">
+      <a href="#1-设计稿准备" class="toc-link">1. 设计稿准备</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#2-提示词技巧" class="toc-link">2. 提示词技巧</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#3-文件组织" class="toc-link">3. 文件组织</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#4-迭代优化" class="toc-link">4. 迭代优化</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#5-代码复用" class="toc-link">5. 代码复用</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#高级用法" class="toc-link">高级用法</a>
+    <li class="toc-item toc-level-3">
+      <a href="#多节点批量生成" class="toc-link">多节点批量生成</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#设计系统提取" class="toc-link">设计系统提取</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#响应式适配" class="toc-link">响应式适配</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#备选方案-node-js-脚本" class="toc-link">备选方案：Node.js 脚本</a>
+    <li class="toc-item toc-level-3">
+      <a href="#创建备用脚本" class="toc-link">创建备用脚本</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#使用脚本" class="toc-link">使用脚本</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#总结" class="toc-link">总结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#figma-mcp-工作流" class="toc-link">Figma MCP 工作流</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#关键优势" class="toc-link">关键优势</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#下一步" class="toc-link">下一步</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#相关资源" class="toc-link">相关资源</a>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="figma-mcp-完整配置与使用指南">Figma MCP 完整配置与使用指南</h1>
+<h2 id="目录">📋 目录</h2>
+<ol>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF-figma-mcp">什么是 Figma MCP</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE-figma-mcp">配置 Figma MCP</a></li>
+<li><a href="#%E9%AA%8C%E8%AF%81%E9%85%8D%E7%BD%AE%E6%98%AF%E5%90%A6%E6%88%90%E5%8A%9F">验证配置是否成功</a></li>
+<li><a href="#%E9%80%9A%E8%BF%87-figma-mcp-%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81">通过 Figma MCP 生成代码</a></li>
+<li><a href="#%E5%AE%8C%E6%95%B4%E6%A1%88%E4%BE%8B%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2">完整案例：登录页面</a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3">常见问题解决</a></li>
+<li><a href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5">最佳实践</a></li>
+</ol>
+<hr>
+<h2 id="什么是-figma-mcp">什么是 Figma MCP</h2>
+<p><strong>MCP (Model Context Protocol)</strong> 是一个开放协议，允许 AI 助手（如 Cursor）连接到外部工具和数据源。</p>
+<p><strong>Figma MCP</strong> 是 MCP 的一个实现，让 Cursor 能够：</p>
+<ul>
+<li>直接访问 Figma 设计文件</li>
+<li>读取设计规范（颜色、字体、间距等）</li>
+<li>提取组件信息</li>
+<li>自动生成基于设计稿的代码</li>
+</ul>
+<hr>
+<h2 id="配置-figma-mcp">配置 Figma MCP</h2>
+<h3 id="步骤-1-获取-figma-access-token">步骤 1：获取 Figma Access Token</h3>
+<ol>
+<li>访问 <a href="https://www.figma.com/developers/api#access-tokens">Figma Settings - Personal Access Tokens</a></li>
+<li>点击 <strong>&quot;Generate new token&quot;</strong></li>
+<li>给 token 起个名字（例如：<code>cursor-mcp-token</code>）</li>
+<li>复制生成的 token（格式：<code>figd_xxxxxxxxxxxxx</code>）</li>
+<li>⚠️ <strong>重要</strong>：保存好这个 token，页面关闭后无法再次查看</li>
+</ol>
+<h3 id="步骤-2-确定配置文件路径">步骤 2：确定配置文件路径</h3>
+<p>Cursor 的 MCP 配置文件位置：</p>
+<p><strong>Windows:</strong></p>
+<pre><code>C:\Users\你的用户名\.cursor\mcp.json
+</code></pre>
+<p><strong>macOS/Linux:</strong></p>
+<pre><code>~/.cursor/mcp.json
+</code></pre>
+<h3 id="步骤-3-创建-编辑配置文件">步骤 3：创建/编辑配置文件</h3>
+<p>如果文件不存在，创建它。内容如下：</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;figma&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;figma-developer-mcp&quot;],
+      &quot;env&quot;: {
+        &quot;FIGMA_API_KEY&quot;: &quot;figd_你的实际token&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p><strong>关键配置说明：</strong></p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mcpServers</code></td>
+<td>MCP 服务器配置对象</td>
+</tr>
+<tr>
+<td><code>&quot;figma&quot;</code></td>
+<td>服务器名称（可自定义）</td>
+</tr>
+<tr>
+<td><code>command</code></td>
+<td>执行命令（使用 npx）</td>
+</tr>
+<tr>
+<td><code>args</code></td>
+<td>参数数组，<code>-y</code> 自动确认安装</td>
+</tr>
+<tr>
+<td><code>figma-developer-mcp</code></td>
+<td>使用的 Figma MCP 包</td>
+</tr>
+<tr>
+<td><code>FIGMA_API_KEY</code></td>
+<td>你的 Figma token</td>
+</tr>
+</tbody></table>
+<h3 id="步骤-4-重启-cursor">步骤 4：重启 Cursor</h3>
+<p>⚠️ <strong>必须重启 Cursor</strong> 才能加载 MCP 配置！</p>
+<ol>
+<li>完全关闭 Cursor（不是最小化）</li>
+<li>重新打开 Cursor</li>
+<li>等待几秒让 MCP 服务初始化</li>
+</ol>
+<hr>
+<h2 id="验证配置是否成功">验证配置是否成功</h2>
+<h3 id="方法-1-查看-mcp-状态指示器">方法 1：查看 MCP 状态指示器</h3>
+<p>在 Cursor 右下角查找 MCP 状态指示器：</p>
+<ul>
+<li><strong>绿点</strong> 🟢 = 已连接（成功）</li>
+<li><strong>红点/灰点</strong> = 未连接（失败）</li>
+</ul>
+<h3 id="方法-2-使用测试命令">方法 2：使用测试命令</h3>
+<p>在 Cursor 聊天中输入：</p>
+<pre><code>请帮我读取这个 Figma 文件：FusPoyOyC8pxTf8boEF0nP
+</code></pre>
+<p>如果成功，Cursor 会返回文件信息。</p>
+<h3 id="方法-3-检查-mcp-工具列表">方法 3：检查 MCP 工具列表</h3>
+<p>使用命令：</p>
+<pre><code>@mcp list
+</code></pre>
+<p>应该看到类似输出：</p>
+<pre><code>Available MCP Tools:
+- figma/get_file
+- figma/get_file_nodes
+- figma/get_image
+...
+</code></pre>
+<hr>
+<h2 id="通过-figma-mcp-生成代码">通过 Figma MCP 生成代码</h2>
+<h3 id="完整工作流程">完整工作流程</h3>
+<pre><code>Figma 设计稿 → Figma MCP → Cursor AI → Next.js/React 代码
+</code></pre>
+<h3 id="步骤-1-获取-figma-设计链接">步骤 1：获取 Figma 设计链接</h3>
+<p>从 Figma 设计文件 URL 中提取信息：</p>
+<p><strong>示例 URL：</strong></p>
+<pre><code>https://www.figma.com/design/FusPoyOyC8pxTf8boEF0nP/web?node-id=319-68&amp;p=f&amp;t=JTbTNnvRpDnMraru-0
+</code></pre>
+<p><strong>提取信息：</strong></p>
+<ul>
+<li><strong>File ID</strong>: <code>FusPoyOyC8pxTf8boEF0nP</code> (设计文件ID)</li>
+<li><strong>Node ID</strong>: <code>319-68</code> (具体节点/画板ID)</li>
+</ul>
+<h3 id="步骤-2-在-cursor-中请求读取设计">步骤 2：在 Cursor 中请求读取设计</h3>
+<p><strong>基础读取命令：</strong></p>
+<pre><code>请读取 Figma 设计文件 ID: FusPoyOyC8pxTf8boEF0nP
+</code></pre>
+<p><strong>读取特定节点：</strong></p>
+<pre><code>请读取 Figma 文件 FusPoyOyC8pxTf8boEF0nP 中的节点 319-68
+</code></pre>
+<p><strong>完整请求示例：</strong></p>
+<pre><code>我有一个 Figma 登录页面设计，URL 是：
+https://www.figma.com/design/FusPoyOyC8pxTf8boEF0nP/web?node-id=319-68
+
+请帮我：
+1. 读取这个设计的详细信息
+2. 提取颜色、字体、间距等规范
+3. 生成对应的 Next.js 登录页面代码
+</code></pre>
+<h3 id="步骤-3-指定技术栈和要求">步骤 3：指定技术栈和要求</h3>
+<p><strong>明确你的需求：</strong></p>
+<pre><code>基于上面的 Figma 设计，请创建 Next.js 页面，要求：
+
+技术栈：
+- Next.js 14 (App Router)
+- TypeScript
+- TailwindCSS
+- Framer Motion（动画）
+- next-intl（国际化）
+
+功能需求：
+- 响应式设计（移动端、平板、桌面）
+- 表单验证
+- 加载状态
+- 错误处理
+- 深色模式支持
+
+文件结构：
+- 创建在 app/[locale]/login/ 目录
+- 组件化设计，拆分为可复用组件
+</code></pre>
+<h3 id="步骤-4-cursor-自动生成代码">步骤 4：Cursor 自动生成代码</h3>
+<p>Cursor 会：</p>
+<ol>
+<li>✅ 通过 Figma MCP 读取设计数据</li>
+<li>✅ 分析设计的布局、颜色、字体</li>
+<li>✅ 提取组件层级结构</li>
+<li>✅ 生成对应的 React 组件</li>
+<li>✅ 应用 TailwindCSS 样式</li>
+<li>✅ 添加动画和交互效果</li>
+<li>✅ 创建国际化翻译文件</li>
+</ol>
+<hr>
+<h2 id="完整案例-登录页面">完整案例：登录页面</h2>
+<h3 id="需求描述">需求描述</h3>
+<p><strong>Figma 设计：</strong></p>
+<ul>
+<li>URL: <code>https://www.figma.com/design/FusPoyOyC8pxTf8boEF0nP/web?node-id=319-68</code></li>
+<li>设计特点：左右分栏布局，左侧品牌展示，右侧登录表单</li>
+</ul>
+<h3 id="实际操作步骤">实际操作步骤</h3>
+<h4 id="1-提供设计链接">1️⃣ 提供设计链接</h4>
+<pre><code>我有一个登录页面的 Figma 设计：
+https://www.figma.com/design/FusPoyOyC8pxTf8boEF0nP/web?node-id=319-68
+
+请帮我分析这个设计并生成 Next.js 代码。
+</code></pre>
+<h4 id="2-cursor-读取设计">2️⃣ Cursor 读取设计</h4>
+<p>Cursor 会自动：</p>
+<ul>
+<li>调用 <code>mcp_figma_get_file</code> 读取文件</li>
+<li>调用 <code>mcp_figma_get_file_nodes</code> 读取节点</li>
+<li>分析设计规范</li>
+</ul>
+<h4 id="3-确认技术栈">3️⃣ 确认技术栈</h4>
+<pre><code>请使用以下技术栈：
+- Next.js 14 App Router
+- TypeScript
+- TailwindCSS
+- Framer Motion
+- next-intl
+
+创建位置：biya-helix-app/app/[locale]/login/
+</code></pre>
+<h4 id="4-cursor-生成文件">4️⃣ Cursor 生成文件</h4>
+<p>自动生成：</p>
+<p><strong>页面文件：</strong></p>
+<pre><code class="language-typescript">// app/[locale]/login/page.tsx
+import { setRequestLocale } from &#39;next-intl/server&#39;
+import BiyaPayLoginForm from &#39;./components/BiyaPayLoginForm&#39;
+import Link from &#39;next/link&#39;
+
+export default async function LoginPage({
+  params
+}: {
+  params: Promise&lt;{ locale: string }&gt;
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
+  return (
+    &lt;div className=&quot;relative min-h-screen&quot;&gt;
+      &lt;Link href=&quot;/&quot; className=&quot;absolute top-8 left-8 ...&quot;&gt;
+        Back to Home
+      &lt;/Link&gt;
+      &lt;BiyaPayLoginForm /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p><strong>组件文件：</strong></p>
+<pre><code class="language-typescript">// app/[locale]/login/components/BiyaPayLoginForm.tsx
+&#39;use client&#39;
+
+import { useState } from &#39;react&#39;
+import { useTranslations } from &#39;next-intl&#39;
+import { motion } from &#39;framer-motion&#39;
+
+export default function BiyaPayLoginForm() {
+  const t = useTranslations(&#39;LoginPage&#39;)
+  // ... 组件实现
+}
+</code></pre>
+<p><strong>国际化文件：</strong></p>
+<pre><code class="language-json">// messages/en.json
+{
+  &quot;LoginPage&quot;: {
+    &quot;title&quot;: &quot;Welcome Back&quot;,
+    &quot;subtitle&quot;: &quot;Sign in to your account&quot;,
+    &quot;email&quot;: &quot;Email Address&quot;,
+    ...
+  }
+}
+</code></pre>
+<h4 id="5-测试和调整">5️⃣ 测试和调整</h4>
+<pre><code class="language-bash"># 启动开发服务器
+cd biya-helix-app
+npm run dev
+
+# 访问页面
+http://localhost:8080/en/login
+</code></pre>
+<p>如需调整：</p>
+<pre><code>登录表单的按钮应该更大一些，字体改为 semibold，
+并且悬停时有放大动画效果。
+</code></pre>
+<hr>
+<h2 id="常见问题解决">常见问题解决</h2>
+<h3 id="问题-1-mcp-连接失败">问题 1：MCP 连接失败 ❌</h3>
+<p><strong>症状：</strong></p>
+<ul>
+<li>右下角红点或灰点</li>
+<li>提示 &quot;No server info found&quot;</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<ol>
+<li><p><strong>检查配置文件路径</strong></p>
+<pre><code class="language-bash"># Windows PowerShell
+Test-Path &quot;C:\Users\你的用户名\.cursor\mcp.json&quot;
+
+# 应该返回 True
+</code></pre>
+</li>
+<li><p><strong>验证 JSON 格式</strong></p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;figma&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;figma-developer-mcp&quot;],
+      &quot;env&quot;: {
+        &quot;FIGMA_API_KEY&quot;: &quot;figd_xxxxx&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>⚠️ 注意：</p>
+<ul>
+<li>逗号位置正确</li>
+<li>引号匹配</li>
+<li>没有多余的逗号</li>
+</ul>
+</li>
+<li><p><strong>重启 Cursor</strong></p>
+<ul>
+<li>完全关闭（任务管理器确认进程已结束）</li>
+<li>重新启动</li>
+<li>等待 10-15 秒</li>
+</ul>
+</li>
+</ol>
+<h3 id="问题-2-token-无效">问题 2：Token 无效 ❌</h3>
+<p><strong>症状：</strong></p>
+<ul>
+<li>MCP 绿点但无法读取文件</li>
+<li>提示 &quot;Authentication failed&quot;</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<ol>
+<li><p><strong>重新生成 Token</strong></p>
+<ul>
+<li>访问 Figma Settings</li>
+<li>删除旧 token</li>
+<li>生成新 token</li>
+<li>更新 mcp.json</li>
+</ul>
+</li>
+<li><p><strong>检查 Token 格式</strong></p>
+<pre><code>正确：figd_xxxxxxxxxxxxxxxxxxxxxxxxxxx
+错误：没有 figd_ 前缀
+</code></pre>
+</li>
+</ol>
+<h3 id="问题-3-无法读取特定文件">问题 3：无法读取特定文件 ❌</h3>
+<p><strong>症状：</strong></p>
+<ul>
+<li>其他文件可以读取</li>
+<li>特定文件提示权限错误</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<ol>
+<li><p><strong>检查文件权限</strong></p>
+<ul>
+<li>确保你有文件的查看权限</li>
+<li>文件不是私有状态</li>
+</ul>
+</li>
+<li><p><strong>使用正确的 File ID</strong></p>
+<pre><code>URL: https://www.figma.com/design/FusPoyOyC8pxTf8boEF0nP/web
+File ID: FusPoyOyC8pxTf8boEF0nP (不含前后缀)
+</code></pre>
+</li>
+</ol>
+<h3 id="问题-4-生成的代码不准确">问题 4：生成的代码不准确 ❌</h3>
+<p><strong>解决方案：</strong></p>
+<ol>
+<li><p><strong>提供更详细的上下文</strong></p>
+<pre><code>这个登录表单有以下特点：
+1. 左侧是品牌展示区，背景为渐变色
+2. 右侧是表单区，白色背景
+3. 输入框有圆角和阴影
+4. 按钮是深色的，有悬停效果
+5. 支持 Google 和 GitHub 登录
+
+请严格按照这些特点生成代码。
+</code></pre>
+</li>
+<li><p><strong>分步骤请求</strong></p>
+<pre><code>第一步：请先创建页面布局和结构
+第二步：添加表单组件和验证逻辑
+第三步：添加样式和动画效果
+第四步：添加国际化支持
+</code></pre>
+</li>
+<li><p><strong>提供参考截图</strong></p>
+<ul>
+<li>在聊天中直接粘贴设计截图</li>
+<li>Cursor 可以同时参考 Figma 数据和截图</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="最佳实践">最佳实践</h2>
+<h3 id="1-设计稿准备">1. 设计稿准备</h3>
+<p><strong>✅ 好的设计稿：</strong></p>
+<ul>
+<li>图层命名清晰（button-primary, input-email）</li>
+<li>组件化设计（使用 Figma Components）</li>
+<li>有完整的设计规范（Colors, Typography）</li>
+<li>响应式设计标注</li>
+</ul>
+<p><strong>❌ 避免：</strong></p>
+<ul>
+<li>图层命名混乱（Rectangle 1, Group 23）</li>
+<li>所有元素都是独立的（未组件化）</li>
+<li>缺少设计规范</li>
+</ul>
+<h3 id="2-提示词技巧">2. 提示词技巧</h3>
+<p><strong>✅ 清晰明确：</strong></p>
+<pre><code>基于 Figma 设计 [File ID: xxx, Node ID: xxx]，创建一个：
+- 响应式的登录页面
+- 使用 Next.js 14 + TypeScript
+- TailwindCSS 样式
+- 支持中英文切换
+- 表单验证和错误提示
+</code></pre>
+<p><strong>❌ 模糊不清：</strong></p>
+<pre><code>帮我做个登录页面
+</code></pre>
+<h3 id="3-文件组织">3. 文件组织</h3>
+<p><strong>推荐结构：</strong></p>
+<pre><code>app/
+└── [locale]/
+    └── login/
+        ├── page.tsx              # 主页面
+        ├── components/
+        │   ├── LoginForm.tsx     # 表单组件
+        │   ├── SocialLogin.tsx   # 社交登录
+        │   └── BrandSection.tsx  # 品牌展示
+        └── styles.css           # 自定义样式（如需）
+
+messages/
+├── en.json                      # 英文翻译
+├── zh.json                      # 中文翻译
+└── ...
+</code></pre>
+<h3 id="4-迭代优化">4. 迭代优化</h3>
+<p><strong>第一次生成后：</strong></p>
+<pre><code>✅ 先测试基本功能是否正常
+✅ 再调整样式细节
+✅ 最后优化动画和交互
+</code></pre>
+<p><strong>逐步完善：</strong></p>
+<pre><code>第 1 步：生成基础页面 ✓
+第 2 步：添加表单验证 ✓
+第 3 步：添加动画效果 ✓
+第 4 步：优化响应式 ✓
+第 5 步：添加深色模式 ✓
+</code></pre>
+<h3 id="5-代码复用">5. 代码复用</h3>
+<p><strong>提取可复用组件：</strong></p>
+<pre><code class="language-typescript">// components/ui/Button.tsx
+export function Button({ variant, children, ...props }) {
+  return (
+    &lt;motion.button
+      className={cn(buttonVariants({ variant }))}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      {...props}
+    &gt;
+      {children}
+    &lt;/motion.button&gt;
+  )
+}
+
+// 在多个页面中使用
+import { Button } from &#39;@/components/ui/Button&#39;
+</code></pre>
+<hr>
+<h2 id="高级用法">高级用法</h2>
+<h3 id="多节点批量生成">多节点批量生成</h3>
+<pre><code>我有 3 个相关的 Figma 节点：
+1. 节点 404-2655: 邮箱输入界面
+2. 节点 404-2445: 密码输入界面  
+3. 节点 386-848: 登录成功界面
+
+请读取这 3 个节点，并生成一个多步骤登录表单组件。
+</code></pre>
+<h3 id="设计系统提取">设计系统提取</h3>
+<pre><code>请分析 Figma 文件 [File ID]，提取完整的设计系统：
+1. 颜色变量（primary, secondary, etc.）
+2. 字体系统（heading, body, etc.）
+3. 间距系统（spacing scale）
+4. 圆角系统（border radius）
+5. 阴影系统（box shadow）
+
+然后生成对应的 TailwindCSS 配置文件。
+</code></pre>
+<h3 id="响应式适配">响应式适配</h3>
+<pre><code>这个 Figma 设计有 3 个断点：
+- Mobile: 375px
+- Tablet: 768px
+- Desktop: 1440px
+
+请生成响应式代码，在不同断点下调整布局。
+</code></pre>
+<hr>
+<h2 id="备选方案-node-js-脚本">备选方案：Node.js 脚本</h2>
+<p>如果 MCP 无法使用，可以使用直接 API 调用：</p>
+<h3 id="创建备用脚本">创建备用脚本</h3>
+<pre><code class="language-javascript">// scripts/read-figma-design.js
+const https = require(&#39;https&#39;);
+
+const FIGMA_TOKEN = process.env.FIGMA_ACCESS_TOKEN;
+const FILE_ID = process.env.FIGMA_FILE_ID || &#39;FusPoyOyC8pxTf8boEF0nP&#39;;
+const NODE_ID = process.env.FIGMA_NODE_ID || &#39;319-68&#39;;
+
+const options = {
+  hostname: &#39;api.figma.com&#39;,
+  path: `/v1/files/${FILE_ID}/nodes?ids=${NODE_ID}`,
+  method: &#39;GET&#39;,
+  headers: {
+    &#39;X-Figma-Token&#39;: FIGMA_TOKEN
+  }
+};
+
+https.get(options, (res) =&gt; {
+  let data = &#39;&#39;;
+  res.on(&#39;data&#39;, chunk =&gt; data += chunk);
+  res.on(&#39;end&#39;, () =&gt; {
+    const result = JSON.parse(data);
+    console.log(JSON.stringify(result, null, 2));
+  });
+});
+</code></pre>
+<h3 id="使用脚本">使用脚本</h3>
+<pre><code class="language-bash"># 设置环境变量
+export FIGMA_ACCESS_TOKEN=&quot;figd_xxxxx&quot;
+export FIGMA_FILE_ID=&quot;FusPoyOyC8pxTf8boEF0nP&quot;
+export FIGMA_NODE_ID=&quot;319-68&quot;
+
+# 运行脚本
+node scripts/read-figma-design.js &gt; figma-data.json
+</code></pre>
+<p>然后将 JSON 数据提供给 Cursor：</p>
+<pre><code>我已经通过 API 获取了 Figma 设计数据（见 figma-data.json），
+请基于这些数据生成 Next.js 页面代码。
+</code></pre>
+<hr>
+<h2 id="总结">总结</h2>
+<h3 id="figma-mcp-工作流">Figma MCP 工作流</h3>
+<pre><code>1. 设计师在 Figma 创建设计 📐
+   ↓
+2. 开发者获取 Figma URL 🔗
+   ↓
+3. 在 Cursor 中请求读取设计 💬
+   ↓
+4. Figma MCP 自动获取数据 🔄
+   ↓
+5. Cursor AI 分析设计规范 🤖
+   ↓
+6. 自动生成 React/Next.js 代码 ⚡
+   ↓
+7. 开发者测试和微调 ✨
+</code></pre>
+<h3 id="关键优势">关键优势</h3>
+<ul>
+<li>✅ <strong>自动化</strong>：减少手动编码时间 50%+</li>
+<li>✅ <strong>准确性</strong>：直接基于设计稿，减少偏差</li>
+<li>✅ <strong>一致性</strong>：确保代码与设计保持同步</li>
+<li>✅ <strong>效率</strong>：快速迭代和原型开发</li>
+<li>✅ <strong>协作</strong>：设计和开发无缝衔接</li>
+</ul>
+<h3 id="下一步">下一步</h3>
+<ol>
+<li>✅ 配置好 Figma MCP</li>
+<li>✅ 准备好设计文件</li>
+<li>✅ 尝试生成第一个页面</li>
+<li>✅ 根据需求迭代优化</li>
+<li>✅ 建立自己的组件库</li>
+</ol>
+<hr>
+<h2 id="相关资源">相关资源</h2>
+<ul>
+<li><a href="https://www.figma.com/developers/api">Figma API 文档</a></li>
+<li><a href="https://modelcontextprotocol.io">MCP 官方文档</a></li>
+<li><a href="https://nextjs.org/docs">Next.js 文档</a></li>
+<li><a href="https://tailwindcss.com/docs">TailwindCSS 文档</a></li>
+<li><a href="https://www.framer.com/motion/">Framer Motion 文档</a></li>
+</ul>
+<hr>
+<p><strong>最后更新：</strong> 2025-01-31<br><strong>版本：</strong> 1.0<br><strong>作者：</strong> Cursor AI Assistant</p>
+<p>如有问题或建议，欢迎反馈！🚀</p>
+
+</div>
+</body>
+</html>
