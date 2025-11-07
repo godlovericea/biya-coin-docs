@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机构KYB认证 - 包含UBO流程</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="kybUserApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">机构认证 (包含UBO流程)</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="page='home'">首页</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">认证进度</span>
+                    <span class="text-sm text-gray-500" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${getProgressPercentage()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>基本信息</span>
+                    <span>材料上传</span>
+                    <span>人员认证</span>
+                    <span>最终审核</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证首页 -->
+        <section x-show="page==='home'" x-transition x-cloak>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="认证" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-xl font-semibold mb-2">欢迎进行机构认证</h2>
+                <p class="mb-4 text-gray-600 text-center">为保障平台合规与安全，请完成机构认证流程。认证后可正常使用全部服务。</p>
+                <div class="w-full max-w-md">
+                    <div class="mb-4">
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>1. 填写基本信息</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>2. 上传认证材料</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>3. 添加股东董事信息</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>4. UBO/实际控制人身份认证</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>5. UBO/实际控制人声明确认</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>6. 综合审核</span>
+                        </div>
+                    </div>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='country'">开始认证</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 基本信息页 -->
+        <section x-show="page==='country'" x-transition x-cloak>
+            <div class="max-w-md mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">填写机构基本信息</h2>
+                
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium text-gray-700">公司名称 <span class="text-red-500">*</span></label>
+                    <input type="text" class="w-full border rounded p-2" placeholder="请输入公司名称" x-model="form.companyName">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium text-gray-700">注册号 <span class="text-red-500">*</span></label>
+                    <input type="text" class="w-full border rounded p-2" placeholder="请输入注册号" x-model="form.registrationNumber">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium text-gray-700">注册国家/地区 <span class="text-red-500">*</span></label>
+                    <select x-model="form.country" class="w-full border rounded p-2">
+                        <option value="">请选择国家/地区</option>
+                        <option value="CN">中国大陆</option>
+                        <option value="HK">香港</option>
+                        <option value="US">美国</option>
+                        <option value="GB">英国</option>
+                        <option value="SG">新加坡</option>
+                    </select>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="page='materials'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 材料上传页 -->
+        <section x-show="page==='materials'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">上传认证材料</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>提示：</strong>请上传清晰的PDF、JPG或PNG格式文件，单个文件不超过10MB。
+                    </p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="border rounded-lg p-4">
+                        <h3 class="font-medium mb-2">营业执照</h3>
+                        <div class="border-2 border-dashed border-gray-300 rounded p-4 text-center">
+                            <p class="text-gray-500">点击或拖拽上传文件</p>
+                        </div>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <h3 class="font-medium mb-2">法定代表人身份证明</h3>
+                        <div class="border-2 border-dashed border-gray-300 rounded p-4 text-center">
+                            <p class="text-gray-500">点击或拖拽上传文件</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='country'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="page='personnel'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 股东董事信息页 -->
+        <section x-show="page==='personnel'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">添加股东和董事信息</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>重要提示：</strong>请添加持股25%以上的股东和所有董事信息。这些人员需要完成个人身份认证。
+                    </p>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-700">
+                        <strong>实际控制人说明：</strong>如果没有持股超过25%的股东，请至少添加一位实际控制人（如董事长、执行董事或CEO）的信息。
+                    </p>
+                </div>
+
+                <!-- 股东信息 -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-md font-semibold">股东信息</h3>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700" @click="showAddShareholderModal = true">+ 添加股东</button>
+                    </div>
+                    
+                    <div x-show="form.shareholders.length === 0" class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed">
+                        <p>暂无股东信息，请点击"添加股东"按钮开始添加</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(shareholder, index) in form.shareholders" :key="index">
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium" x-text="shareholder.name"></h4>
+                                        <p class="text-sm text-gray-600">持股比例：<span x-text="shareholder.ownershipPercentage + '%'"></span></p>
+                                        <p class="text-sm text-gray-600">身份证号：<span x-text="maskIdNumber(shareholder.idNumber)"></span></p>
+                                    </div>
+                                    <button class="text-red-600 hover:text-red-800 text-sm" @click="removeShareholder(index)">删除</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 董事信息 -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-md font-semibold">董事信息 <span class="text-red-500 text-sm">*</span></h3>
+                        <button class="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700" @click="showAddDirectorModal = true">+ 添加董事</button>
+                    </div>
+                    
+                    <div x-show="form.directors.length === 0" class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed">
+                        <p>暂无董事信息，请点击"添加董事"按钮开始添加</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(director, index) in form.directors" :key="index">
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium" x-text="director.name"></h4>
+                                        <p class="text-sm text-gray-600">职务：<span x-text="director.position"></span></p>
+                                        <p class="text-sm text-gray-600">身份证号：<span x-text="maskIdNumber(director.idNumber)"></span></p>
+                                    </div>
+                                    <button class="text-red-600 hover:text-red-800 text-sm" @click="removeDirector(index)">删除</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='materials'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="form.directors.length === 0"
+                            :class="{'opacity-50': form.directors.length === 0}"
+                            @click="page='ubo-verification'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- UBO身份认证页 -->
+        <section x-show="page==='ubo-verification'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4" x-text="getUBOList().length > 0 ? 'UBO身份认证' : '实际控制人身份认证'"></h2>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-700">
+                        <strong>身份认证说明：</strong>根据监管要求，<span x-text="getUBOList().length > 0 ? '持股25%以上的股东和所有董事' : '所有董事（作为实际控制人）'"></span>需要完成个人身份认证（KYC）。认证将通过Sumsub平台进行。
+                    </p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <!-- 股东认证列表 -->
+                    <template x-for="(shareholder, index) in form.shareholders" :key="`shareholder-${index}`">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium" x-text="shareholder.name"></h4>
+                                    <p class="text-sm text-gray-600">股东 - <span x-text="shareholder.ownershipPercentage + '%'"></span></p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span x-show="!shareholder.kycStatus || shareholder.kycStatus === 'pending'" class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">待认证</span>
+                                    <span x-show="shareholder.kycStatus === 'completed'" class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">已完成</span>
+                                    <button x-show="!shareholder.kycStatus || shareholder.kycStatus === 'pending'" 
+                                            class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700" 
+                                            @click="startKYC('shareholder', index)">开始认证</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- 董事认证列表 -->
+                    <template x-for="(director, index) in form.directors" :key="`director-${index}`">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium" x-text="director.name"></h4>
+                                    <p class="text-sm text-gray-600" x-text="director.position"></p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span x-show="!director.kycStatus || director.kycStatus === 'pending'" class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">待认证</span>
+                                    <span x-show="director.kycStatus === 'completed'" class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">已完成</span>
+                                    <button x-show="!director.kycStatus || director.kycStatus === 'pending'" 
+                                            class="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700" 
+                                            @click="startKYC('director', index)">开始认证</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-medium">认证进度</h4>
+                            <p class="text-sm text-gray-600">已完成 <span x-text="getCompletedKYCCount()"></span> / <span x-text="getTotalKYCCount()"></span> 人员认证</p>
+                        </div>
+                        <div class="text-2xl font-bold text-blue-600" x-text="Math.round(getKYCProgress()) + '%'"></div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='personnel'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!allKYCCompleted()"
+                            :class="{'opacity-50': !allKYCCompleted()}"
+                            @click="page='ubo-declaration'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- UBO声明确认页 -->
+        <section x-show="page==='ubo-declaration'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4" x-text="getUBOList().length > 0 ? '最终受益所有人声明' : '实际控制人声明'"></h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>监管要求：</strong>根据反洗钱法规，请确认并声明<span x-text="getUBOList().length > 0 ? '公司的最终受益所有人' : '公司的实际控制人'"></span>信息。
+                    </p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold mb-4" x-text="getUBOList().length > 0 ? '最终受益所有人列表' : '实际控制人列表'"></h3>
+                    
+                    <!-- 当有25%以上股东时显示 -->
+                    <div x-show="getUBOList().length > 0" class="space-y-4">
+                        <template x-for="ubo in getUBOList()" :key="ubo.id">
+                            <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold" x-text="ubo.name"></h4>
+                                        <p class="text-sm text-gray-600" x-text="ubo.role"></p>
+                                        <p class="text-sm text-blue-600 font-medium">总受益比例：<span x-text="ubo.totalOwnership + '%'"></span></p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-blue-600 text-white text-xs rounded-full">UBO</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- 当没有25%以上股东时显示实际控制人 -->
+                    <div x-show="getUBOList().length === 0" class="space-y-4">
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                            <p class="text-sm text-yellow-700">
+                                <strong>说明：</strong>由于没有持股超过25%的股东，以下列出的是公司的实际控制人。
+                            </p>
+                        </div>
+                        <template x-for="director in form.directors" :key="director.id || director.name">
+                            <div class="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold" x-text="director.name"></h4>
+                                        <p class="text-sm text-gray-600" x-text="director.position"></p>
+                                        <p class="text-sm text-green-600 font-medium">实际控制人</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-600 text-white text-xs rounded-full">实际控制人</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold mb-4">声明确认</h3>
+                    <div class="bg-gray-50 border rounded-lg p-4 space-y-3">
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="form.uboDeclaration.confirmAccuracy">
+                            <span class="text-sm">我确认以上<span x-text="getUBOList().length > 0 ? '最终受益所有人' : '实际控制人'"></span>信息真实、准确、完整</span>
+                        </label>
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="form.uboDeclaration.confirmUpdates">
+                            <span class="text-sm">我承诺如有任何变更将在30天内及时更新相关信息</span>
+                        </label>
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="form.uboDeclaration.confirmLegal">
+                            <span class="text-sm">我了解提供虚假信息可能承担的法律后果</span>
+                        </label>
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="form.uboDeclaration.confirmCompliance">
+                            <span class="text-sm">我同意遵守相关反洗钱和反恐怖主义融资法规要求</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold mb-4">电子签名</h3>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <div x-show="!form.uboDeclaration.signature">
+                            <p class="text-gray-600 mb-4">请在此处签署您的姓名</p>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="openSignaturePad()">点击签名</button>
+                        </div>
+                        <div x-show="form.uboDeclaration.signature" class="text-center">
+                            <div class="text-lg font-semibold text-blue-600 mb-2">签名已完成</div>
+                            <p class="text-sm text-gray-600">签名人：<span x-text="form.uboDeclaration.signerName"></span></p>
+                            <button class="mt-2 text-blue-600 hover:text-blue-800 text-sm" @click="clearSignature()">重新签名</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='ubo-verification'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canSubmitDeclaration()"
+                            :class="{'opacity-50': !canSubmitDeclaration()}"
+                            @click="submitFinalApplication()">提交申请</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 添加股东模态框 -->
+        <div x-show="showAddShareholderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" x-cloak>
+            <div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+                <h3 class="text-lg font-medium mb-4">添加股东信息</h3>
+                <form @submit.prevent="addShareholder()">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">姓名 *</label>
+                        <input type="text" x-model="newShareholder.name" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">身份证号 *</label>
+                        <input type="text" x-model="newShareholder.idNumber" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">持股比例 (%) *</label>
+                        <input type="number" x-model="newShareholder.ownershipPercentage" class="w-full border rounded p-2" min="0" max="100" step="0.01" required>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" class="flex-1 py-2 bg-gray-200 rounded hover:bg-gray-300" @click="closeShareholderModal()">取消</button>
+                        <button type="submit" class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 添加董事模态框 -->
+        <div x-show="showAddDirectorModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" x-cloak>
+            <div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+                <h3 class="text-lg font-medium mb-4">添加董事信息</h3>
+                <form @submit.prevent="addDirector()">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">姓名 *</label>
+                        <input type="text" x-model="newDirector.name" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">身份证号 *</label>
+                        <input type="text" x-model="newDirector.idNumber" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">职务 *</label>
+                        <select x-model="newDirector.position" class="w-full border rounded p-2" required>
+                            <option value="">请选择职务</option>
+                            <option value="董事长">董事长</option>
+                            <option value="副董事长">副董事长</option>
+                            <option value="执行董事">执行董事</option>
+                            <option value="董事">董事</option>
+                            <option value="CEO">CEO（首席执行官）</option>
+                            <option value="总经理">总经理</option>
+                            <option value="法定代表人">法定代表人</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" class="flex-1 py-2 bg-gray-200 rounded hover:bg-gray-300" @click="closeDirectorModal()">取消</button>
+                        <button type="submit" class="flex-1 py-2 bg-green-600 text-white rounded hover:bg-green-700">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function kybUserApp() {
+            return {
+                page: 'home',
+                
+                // 表单数据
+                form: {
+                    companyName: '',
+                    registrationNumber: '',
+                    country: '',
+                    shareholders: [],
+                    directors: [],
+                    uboDeclaration: {
+                        confirmAccuracy: false,
+                        confirmUpdates: false,
+                        confirmLegal: false,
+                        confirmCompliance: false,
+                        signature: null,
+                        signerName: null
+                    }
+                },
+                
+                // 模态框状态
+                showAddShareholderModal: false,
+                showAddDirectorModal: false,
+                
+                // 新增人员信息
+                newShareholder: { name: '', idNumber: '', ownershipPercentage: '' },
+                newDirector: { name: '', idNumber: '', position: '' },
+
+                // 股东相关方法
+                addShareholder() {
+                    if (this.newShareholder.name && this.newShareholder.idNumber && this.newShareholder.ownershipPercentage) {
+                        this.form.shareholders.push({
+                            ...this.newShareholder,
+                            kycStatus: 'pending'
+                        });
+                        this.closeShareholderModal();
+                    }
+                },
+
+                closeShareholderModal() {
+                    this.showAddShareholderModal = false;
+                    this.newShareholder = { name: '', idNumber: '', ownershipPercentage: '' };
+                },
+
+                removeShareholder(index) {
+                    this.form.shareholders.splice(index, 1);
+                },
+
+                // 董事相关方法
+                addDirector() {
+                    if (this.newDirector.name && this.newDirector.idNumber && this.newDirector.position) {
+                        this.form.directors.push({
+                            ...this.newDirector,
+                            kycStatus: 'pending'
+                        });
+                        this.closeDirectorModal();
+                    }
+                },
+
+                closeDirectorModal() {
+                    this.showAddDirectorModal = false;
+                    this.newDirector = { name: '', idNumber: '', position: '' };
+                },
+
+                removeDirector(index) {
+                    this.form.directors.splice(index, 1);
+                },
+
+                // 身份证号脱敏
+                maskIdNumber(idNumber) {
+                    if (!idNumber || idNumber.length <= 8) return idNumber;
+                    return idNumber.substring(0, 4) + '****' + idNumber.substring(idNumber.length - 4);
+                },
+
+                // KYC相关方法
+                startKYC(type, index) {
+                    if (type === 'shareholder') {
+                        this.form.shareholders[index].kycStatus = 'in_progress';
+                        setTimeout(() => {
+                            this.form.shareholders[index].kycStatus = 'completed';
+                        }, 2000);
+                    } else if (type === 'director') {
+                        this.form.directors[index].kycStatus = 'in_progress';
+                        setTimeout(() => {
+                            this.form.directors[index].kycStatus = 'completed';
+                        }, 2000);
+                    }
+                },
+
+                getCompletedKYCCount() {
+                    const completedShareholders = this.form.shareholders.filter(s => s.kycStatus === 'completed').length;
+                    const completedDirectors = this.form.directors.filter(d => d.kycStatus === 'completed').length;
+                    return completedShareholders + completedDirectors;
+                },
+
+                getTotalKYCCount() {
+                    return this.form.shareholders.length + this.form.directors.length;
+                },
+
+                getKYCProgress() {
+                    const total = this.getTotalKYCCount();
+                    return total === 0 ? 0 : (this.getCompletedKYCCount() / total) * 100;
+                },
+
+                allKYCCompleted() {
+                    return this.getTotalKYCCount() > 0 && this.getCompletedKYCCount() === this.getTotalKYCCount();
+                },
+
+                // UBO相关方法
+                getUBOList() {
+                    const ubos = [];
+                    
+                    // 添加持股25%以上的股东
+                    this.form.shareholders.forEach((shareholder, index) => {
+                        if (parseFloat(shareholder.ownershipPercentage) >= 25) {
+                            ubos.push({
+                                id: `shareholder-${index}`,
+                                name: shareholder.name,
+                                role: `股东 (${shareholder.ownershipPercentage}%)`,
+                                totalOwnership: shareholder.ownershipPercentage
+                            });
+                        }
+                    });
+
+                    return ubos;
+                },
+                
+                // 检查是否有实际控制人（当没有25%以上股东时）
+                hasActualController() {
+                    return this.getUBOList().length === 0 && this.form.directors.length > 0;
+                },
+
+                canSubmitDeclaration() {
+                    return this.form.uboDeclaration.confirmAccuracy &&
+                           this.form.uboDeclaration.confirmUpdates &&
+                           this.form.uboDeclaration.confirmLegal &&
+                           this.form.uboDeclaration.confirmCompliance &&
+                           this.form.uboDeclaration.signature;
+                },
+
+                openSignaturePad() {
+                    const signerName = prompt('请输入您的姓名进行电子签名：');
+                    if (signerName) {
+                        this.form.uboDeclaration.signature = `${signerName}_signature_${Date.now()}`;
+                        this.form.uboDeclaration.signerName = signerName;
+                    }
+                },
+
+                clearSignature() {
+                    this.form.uboDeclaration.signature = null;
+                    this.form.uboDeclaration.signerName = null;
+                },
+
+                submitFinalApplication() {
+                    const hasUBO = this.getUBOList().length > 0;
+                    const controllerType = hasUBO ? 'UBO（最终受益所有人）' : '实际控制人';
+                    
+                    let message = '申请提交成功！\n\n您的完整KYB认证申请已提交，包括：\n';
+                    message += '- 机构基本信息\n';
+                    message += '- 认证材料\n';
+                    message += '- 股东董事信息\n';
+                    message += `- ${controllerType}身份认证\n`;
+                    message += `- ${controllerType}声明确认\n\n`;
+                    message += '我们将在1-3个工作日内完成审核。';
+                    
+                    alert(message);
+                    this.page = 'home';
+                    this.resetForm();
+                },
+
+                resetForm() {
+                    this.form = {
+                        companyName: '',
+                        registrationNumber: '',
+                        country: '',
+                        shareholders: [],
+                        directors: [],
+                        uboDeclaration: {
+                            confirmAccuracy: false,
+                            confirmUpdates: false,
+                            confirmLegal: false,
+                            confirmCompliance: false,
+                            signature: null,
+                            signerName: null
+                        }
+                    };
+                },
+
+                // 获取进度百分比
+                getProgressPercentage() {
+                    if (this.page === 'country') return 15;
+                    if (this.page === 'materials') return 30;
+                    if (this.page === 'personnel') return 50;
+                    if (this.page === 'ubo-verification') return 75;
+                    if (this.page === 'ubo-declaration') return 90;
+                    return 0;
+                },
+
+                // 获取进度文本
+                getProgressText() {
+                    if (this.page === 'country') return '第1步：填写基本信息';
+                    if (this.page === 'materials') return '第2步：上传认证材料';
+                    if (this.page === 'personnel') return '第3步：添加股东董事信息';
+                    if (this.page === 'ubo-verification') {
+                        const hasUBO = this.getUBOList().length > 0;
+                        return hasUBO ? '第4步：UBO身份认证' : '第4步：实际控制人身份认证';
+                    }
+                    if (this.page === 'ubo-declaration') {
+                        const hasUBO = this.getUBOList().length > 0;
+                        return hasUBO ? '第5步：UBO声明确认' : '第5步：实际控制人声明确认';
+                    }
+                    return '';
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

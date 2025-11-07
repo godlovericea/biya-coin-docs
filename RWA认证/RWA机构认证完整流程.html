@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWA机构认证完整流程</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scan-line {
+            animation: scan 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="rwaFullApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">RWA机构认证</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': currentStep==='home' }" @click="currentStep='home'">首页</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 整体进度条 -->
+        <div x-show="currentStep !== 'home'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">RWA机构认证进度</span>
+                    <span class="text-sm text-gray-500" x-text="getOverallProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                    <div class="bg-blue-600 h-3 rounded-full transition-all duration-300" :style="`width: ${getOverallProgress()}%`"></div>
+                </div>
+                <div class="grid grid-cols-6 gap-2 text-xs text-center">
+                    <div>
+                        <div class="font-medium" :class="{'text-blue-600': getCurrentStageIndex() >= 0}">1. KYB认证</div>
+                        <div class="text-gray-500" x-show="getCurrentStageIndex() === 0" x-text="getKYBProgress()"></div>
+                    </div>
+                    <div>
+                        <div class="font-medium" :class="{'text-blue-600': getCurrentStageIndex() >= 1}">2. 合规审核</div>
+                        <div class="text-gray-500" x-show="getCurrentStageIndex() === 1">企业合规性</div>
+                    </div>
+                    <div>
+                        <div class="font-medium" :class="{'text-blue-600': getCurrentStageIndex() >= 2}">3. UBO认证</div>
+                        <div class="text-gray-500" x-show="getCurrentStageIndex() === 2" x-text="getUBOProgress()"></div>
+                    </div>
+                    <div>
+                        <div class="font-medium" :class="{'text-blue-600': getCurrentStageIndex() >= 3}">4. 账户操作人</div>
+                        <div class="text-gray-500" x-show="getCurrentStageIndex() === 3">身份验证</div>
+                    </div>
+                    <div>
+                        <div class="font-medium" :class="{'text-blue-600': getCurrentStageIndex() >= 4}">5. 专业投资者</div>
+                        <div class="text-gray-500" x-show="getCurrentStageIndex() === 4">机构认证</div>
+                    </div>
+                    <div>
+                        <div class="font-medium" :class="{'text-blue-600': getCurrentStageIndex() >= 5}">6. 风险测评</div>
+                        <div class="text-gray-500" x-show="getCurrentStageIndex() === 5">风险评估</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <section x-show="currentStep==='home'" x-transition x-cloak>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80" alt="RWA认证" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-2xl font-semibold mb-3">RWA机构认证</h2>
+                <p class="mb-6 text-gray-600 text-center max-w-md">完成RWA机构认证，解锁数字资产管理权限。我们将引导您完成KYB、合规审核、UBO和专业投资者认证的全流程。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>认证流程包括：</strong>
+                        </p>
+                        <div class="text-sm text-gray-700 space-y-2">
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">1</span>
+                                <span>机构KYB认证 - 验证机构身份</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">2</span>
+                                <span>企业合规审核 - 合规性检查</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">3</span>
+                                <span>UBO认证 - 最终受益人识别</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">4</span>
+                                <span>账户操作人认证 - 设置登录账户</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">5</span>
+                                <span>专业投资者认证 - 资质证明</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">6</span>
+                                <span>机构风险测评 - 风险承受能力评估</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                        <p class="text-sm text-yellow-700 mb-2">
+                            <strong>预计完成时间：</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">约25-30分钟（准备好所有材料的情况下）</p>
+                    </div>
+                </div>
+                
+                <button class="w-full max-w-md py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="startCertification()">开始认证</button>
+            </div>
+        </section>
+
+        <!-- ============ 第一阶段：KYB认证 ============ -->
+        
+        <!-- KYB - 国家选择页 -->
+        <section x-show="currentStep==='kyb-country'" x-transition x-cloak>
+            <div class="max-w-md mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">第一步：机构KYB认证</h2>
+                <p class="text-sm text-gray-600 mb-6">请填写机构基本信息</p>
+                
+                <!-- 公司名称字段 -->
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium text-gray-700">公司名称 <span class="text-red-500">*</span></label>
+                    <input
+                        type="text"
+                        class="w-full border rounded p-2"
+                        placeholder="请输入公司名称"
+                        x-model="kybForm.companyName"
+                        :class="{'border-red-500': kybErrors.companyName}"
+                    >
+                    <div x-show="kybErrors.companyName" class="text-red-600 text-sm mt-1" x-text="kybErrors.companyName"></div>
+                </div>
+
+                <!-- 注册号字段 -->
+                <div class="mb-4">
+                    <label class="block mb-1 font-medium text-gray-700">注册号 <span class="text-red-500">*</span></label>
+                    <input
+                        type="text"
+                        class="w-full border rounded p-2"
+                        placeholder="请输入注册号/统一社会信用代码"
+                        x-model="kybForm.registrationNumber"
+                        :class="{'border-red-500': kybErrors.registrationNumber}"
+                    >
+                    <div x-show="kybErrors.registrationNumber" class="text-red-600 text-sm mt-1" x-text="kybErrors.registrationNumber"></div>
+                </div>
+
+                <!-- 国家搜索和选择区域 -->
+                <div class="relative mb-4">
+                    <label class="block mb-1 font-medium text-gray-700">注册国家/地区 <span class="text-red-500">*</span></label>
+                    <input
+                        type="text"
+                        class="w-full border rounded p-2"
+                        placeholder="搜索国家或地区..."
+                        x-model="countrySearchText"
+                        @click.outside="showCountryDropdown = false"
+                        @focus="showCountryDropdown = true"
+                        @input="showCountryDropdown = true"
+                        :class="{'border-red-500': kybErrors.country}"
+                    >
+                    <!-- 显示当前选中的国家 -->
+                    <div x-show="selectedCountryName" class="absolute top-0 right-2 mt-8 text-gray-600 text-sm" x-text="selectedCountryName"></div>
+
+                    <!-- 国家列表下拉框 -->
+                    <ul x-show="showCountryDropdown && filteredCountries.length > 0" class="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-48 overflow-y-auto">
+                        <template x-for="country in filteredCountries" :key="country.code">
+                            <li
+                                class="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                                @click="selectCountry(country)"
+                                x-text="`${country.name} (${country.code})`"
+                            ></li>
+                        </template>
+                    </ul>
+                    <div x-show="kybErrors.country" class="text-red-600 text-sm mt-1" x-text="kybErrors.country"></div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="validateKYBBasicInfo()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYB - 材料清单页 -->
+        <section x-show="currentStep==='kyb-materials'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">KYB认证材料清单</h2>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                <strong>温馨提示：</strong>请提前准备好以下所有机构认证材料的电子版本（PDF、JPG、PNG格式，单个文件不超过10MB）。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <template x-for="(item, index) in getKYBMaterialList()" :key="item">
+                        <div class="flex items-start p-4 border rounded-lg">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-sm font-semibold text-blue-600" x-text="index + 1"></span>
+                            </div>
+                            <div class="flex-grow">
+                                <h3 class="font-medium text-gray-900" x-text="item"></h3>
+                                <p class="text-sm text-gray-600 mt-1" x-text="getKYBMaterialDescription(item)"></p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <div x-show="kybForm.files[item]" class="text-green-600">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="flex space-x-2 mt-6">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='kyb-country'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="startKYBUpload()">开始上传</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYB - 文件上传页 -->
+        <section x-show="currentStep==='kyb-upload'" x-transition x-cloak>
+            <div class="max-w-md mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="text-sm text-gray-500 mb-2">
+                        第 <span x-text="kybUploadIndex + 1"></span> 步，共 <span x-text="getKYBMaterialList().length"></span> 步
+                    </div>
+                    <h2 class="text-lg font-bold" x-text="getCurrentKYBMaterial()"></h2>
+                    <p class="text-sm text-gray-600 mt-2" x-text="getKYBMaterialDescription(getCurrentKYBMaterial())"></p>
+                </div>
+
+                <div class="mb-6">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" 
+                         :class="{'border-blue-500 bg-blue-50': isDragOver, 'border-green-500 bg-green-50': kybForm.files[getCurrentKYBMaterial()]}"
+                         @dragover.prevent="isDragOver = true"
+                         @dragleave.prevent="isDragOver = false"
+                         @drop.prevent="handleKYBFileDrop($event)">
+                        
+                        <template x-if="!kybForm.files[getCurrentKYBMaterial()]">
+                            <div>
+                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <div class="mt-4">
+                                    <label class="cursor-pointer">
+                                        <span class="mt-2 block text-sm font-medium text-gray-900">点击上传文件</span>
+                                        <span class="mt-1 block text-xs text-gray-500">或拖拽文件到此处</span>
+                                        <span class="mt-1 block text-xs text-gray-500">支持 PDF、JPG、PNG 格式，最大 10MB</span>
+                                        <input type="file" accept=".pdf,.jpg,.jpeg,.png" class="sr-only" @change="handleKYBFileUpload($event)">
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="kybForm.files[getCurrentKYBMaterial()]">
+                            <div>
+                                <svg class="mx-auto h-12 w-12 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="mt-4">
+                                    <p class="text-sm font-medium text-green-600">文件上传成功</p>
+                                    <p class="text-xs text-gray-500 mt-1" x-text="kybForm.files[getCurrentKYBMaterial()]?.name"></p>
+                                    <button class="mt-2 text-xs text-blue-600 hover:text-blue-800" @click="removeCurrentKYBFile()">重新上传</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div x-show="kybForm.fileErrors[getCurrentKYBMaterial()]" class="text-red-600 text-sm mt-2" x-text="kybForm.fileErrors[getCurrentKYBMaterial()]"></div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="goToPreviousKYBStep()">上一步</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!kybForm.files[getCurrentKYBMaterial()]"
+                            :class="{'opacity-50 cursor-not-allowed': !kybForm.files[getCurrentKYBMaterial()]}"
+                            @click="goToNextKYBStep()">
+                        <span x-text="isLastKYBUploadStep() ? '完成上传' : '下一步'"></span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第二阶段：合规审核 ============ -->
+        
+        <!-- 合规审核 - 补充信息页 -->
+        <section x-show="currentStep==='aml-input'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">第二步：企业合规审核</h2>
+                <p class="text-gray-600 mb-6 text-sm">根据相关地区的合规要求，需要对企业进行合规性审核</p>
+                
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <p class="text-sm text-green-700 mb-2">
+                        <strong>已从KYB获取的信息：</strong>
+                    </p>
+                    <div class="text-sm text-gray-700 space-y-1">
+                        <div>• 公司名称：<span class="font-semibold" x-text="kybForm.companyName"></span></div>
+                        <div>• 注册号：<span class="font-semibold" x-text="kybForm.registrationNumber"></span></div>
+                        <div>• 注册国家：<span class="font-semibold" x-text="selectedCountryName"></span></div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- EIN - 雇主识别号 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            雇主识别号（EIN）<span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">Employer Identification Number - 美国国税局分配的9位数字</p>
+                        <input type="text" 
+                               x-model="amlForm.ein"
+                               placeholder="例如：12-3456789"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- State of Incorporation - 注册州 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            注册州（State of Incorporation）<span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">公司在美国的注册州</p>
+                        <select x-model="amlForm.stateOfIncorporation"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">请选择州</option>
+                            <option value="CA">California (CA)</option>
+                            <option value="DE">Delaware (DE)</option>
+                            <option value="NY">New York (NY)</option>
+                            <option value="TX">Texas (TX)</option>
+                            <!-- 更多州省略 -->
+                        </select>
+                    </div>
+
+                    <!-- Business Street Address - 营业地址 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            营业街道地址（Business Street Address）<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               x-model="amlForm.businessStreetAddress"
+                               placeholder="例如：1234 Main Street, Suite 567"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- City - 城市 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                城市（City）<span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   x-model="amlForm.city"
+                                   placeholder="例如：New York"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+
+                        <!-- State - 州 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                州（State）<span class="text-red-500">*</span>
+                            </label>
+                            <select x-model="amlForm.state"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="">请选择州</option>
+                                <option value="CA">California</option>
+                                <option value="NY">New York</option>
+                                <option value="TX">Texas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ZIP Code - 邮编 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            邮编（ZIP Code）<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               x-model="amlForm.zipCode"
+                               placeholder="例如：10001"
+                               maxlength="10"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                </div>
+
+                <div class="flex space-x-3 mt-8">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStep='kyb-upload'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            :disabled="!canSubmitAML()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitAML()}"
+                            @click="submitAML()">
+                        完成合规审核
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第三阶段：UBO认证 ============ -->
+        
+        <!-- UBO - 股东和实际控制人信息页 -->
+        <section x-show="currentStep==='ubo-personnel'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">第三步：UBO认证 - 添加股东和实际控制人信息</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>什么是UBO？</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        最终受益所有人（Ultimate Beneficial Owner）是指直接或间接持有企业25%以上股权，或通过其他方式对企业实施实际控制的自然人。
+                    </p>
+                </div>
+
+                <!-- 股东信息 -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-md font-semibold">股东信息（持股≥25%）</h3>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700" @click="showAddShareholderModal = true">+ 添加股东</button>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4">
+                        <p class="text-sm text-yellow-700">
+                            <strong>重要提示：</strong>请添加<span class="font-bold">全部</span>持股25%及以上的股东，确保信息完整
+                        </p>
+                    </div>
+                    
+                    <div x-show="uboForm.shareholders.length === 0" class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed">
+                        <p class="mb-2">暂无股东信息</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(shareholder, index) in uboForm.shareholders" :key="index">
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium" x-text="shareholder.name"></h4>
+                                        <p class="text-sm text-gray-600">持股比例：<span x-text="shareholder.ownershipPercentage + '%'"></span></p>
+                                    </div>
+                                    <button class="text-red-600 hover:text-red-800 text-sm" @click="removeShareholder(index)">删除</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 实际控制人 -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-md font-semibold">实际控制人</h3>
+                        <button class="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700" @click="showAddDirectorModal = true">+ 添加实际控制人</button>
+                    </div>
+                    
+                    <div x-show="uboForm.directors.length === 0" class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed">
+                        <p class="mb-2">暂无实际控制人信息</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(director, index) in uboForm.directors" :key="index">
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-medium" x-text="director.name"></h4>
+                                        <p class="text-sm text-gray-600">职务：<span x-text="director.position"></span></p>
+                                    </div>
+                                    <button class="text-red-600 hover:text-red-800 text-sm" @click="removeDirector(index)">删除</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 没有股东和实际控制人按钮 -->
+                <div class="mb-4">
+                    <button class="w-full py-3 bg-orange-50 text-orange-700 border-2 border-orange-300 rounded-lg font-semibold hover:bg-orange-100 transition" 
+                            @click="goToNoUBOPage()">
+                        没有股东和实际控制人
+                    </button>
+                    <p class="text-xs text-gray-500 text-center mt-2">如果企业同时没有符合条件的股东和实际控制人，请点击此按钮</p>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='aml-input'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="uboForm.shareholders.length === 0 && uboForm.directors.length === 0"
+                            :class="{'opacity-50': uboForm.shareholders.length === 0 && uboForm.directors.length === 0}"
+                            @click="currentStep='ubo-verification'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- UBO - 身份认证页 -->
+        <section x-show="currentStep==='ubo-verification'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">UBO身份认证</h2>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-700">
+                        <strong>身份认证说明：</strong>持股25%以上的股东和实际控制人需要完成个人身份认证（KYC）
+                    </p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <!-- 股东认证列表 -->
+                    <template x-for="(shareholder, index) in uboForm.shareholders" :key="`shareholder-${index}`">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium" x-text="shareholder.name"></h4>
+                                    <p class="text-sm text-gray-600">股东 - <span x-text="shareholder.ownershipPercentage + '%'"></span></p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span x-show="!shareholder.kycStatus || shareholder.kycStatus === 'pending'" class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">待认证</span>
+                                    <span x-show="shareholder.kycStatus === 'completed'" class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">已完成</span>
+                                    <button x-show="!shareholder.kycStatus || shareholder.kycStatus === 'pending'" 
+                                            class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700" 
+                                            @click="startUBOKYC('shareholder', index)">开始认证</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- 实际控制人认证列表 -->
+                    <template x-for="(director, index) in uboForm.directors" :key="`director-${index}`">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium" x-text="director.name"></h4>
+                                    <p class="text-sm text-gray-600" x-text="director.position"></p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span x-show="!director.kycStatus || director.kycStatus === 'pending'" class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">待认证</span>
+                                    <span x-show="director.kycStatus === 'completed'" class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">已完成</span>
+                                    <button x-show="!director.kycStatus || director.kycStatus === 'pending'" 
+                                            class="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700" 
+                                            @click="startUBOKYC('director', index)">开始认证</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-medium">认证进度</h4>
+                            <p class="text-sm text-gray-600">已完成 <span x-text="getCompletedUBOKYCCount()"></span> / <span x-text="getTotalUBOKYCCount()"></span> 人员认证</p>
+                        </div>
+                        <div class="text-2xl font-bold text-blue-600" x-text="Math.round(getUBOKYCProgress()) + '%'"></div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='ubo-personnel'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!allUBOKYCCompleted()"
+                            :class="{'opacity-50': !allUBOKYCCompleted()}"
+                            @click="currentStep='ubo-declaration'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- UBO - 无股东和实际控制人说明页 -->
+        <section x-show="currentStep==='ubo-no-personnel'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">UBO认证 - 无股东和实际控制人说明</h2>
+                
+                <div class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6">
+                    <p class="text-sm text-orange-700 mb-2">
+                        <strong>特殊情况说明：</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        如果您的企业<strong>同时</strong>没有持股25%以上的股东<strong>和</strong>实际控制人，请说明原因并上传相关证明文件。
+                    </p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        说明原因 <span class="text-red-500">*</span>
+                    </label>
+                    <textarea x-model="uboForm.noPersonnelReason" 
+                              rows="4"
+                              placeholder="请详细说明为什么没有符合条件的股东或实际控制人..."
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">例如：股权分散，无单一股东持股超过25%；或为国有企业等特殊情况</p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        上传证明文件 <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mb-3">请上传股权结构图、股东名册或其他能证明股权分布情况的文件（可上传多个）</p>
+                    
+                    <!-- 已上传文件列表 -->
+                    <div x-show="uboForm.noPersonnelProofs.length > 0" class="mb-4 space-y-2">
+                        <template x-for="(file, index) in uboForm.noPersonnelProofs" :key="index">
+                            <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900" x-text="file.name"></p>
+                                        <p class="text-xs text-gray-500" x-text="(file.size / 1024 / 1024).toFixed(2) + ' MB'"></p>
+                                    </div>
+                                </div>
+                                <button class="text-red-600 hover:text-red-800 text-sm font-medium" @click="removeNoPersonnelFile(index)">删除</button>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- 上传区域 -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition" 
+                         @dragover.prevent="isDragOver = true"
+                         @dragleave.prevent="isDragOver = false"
+                         @drop.prevent="handleNoPersonnelFileDrop($event)">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="mt-4">
+                            <label class="cursor-pointer">
+                                <span class="mt-2 block text-sm font-medium text-gray-900">
+                                    <span x-show="uboForm.noPersonnelProofs.length === 0">点击上传证明文件</span>
+                                    <span x-show="uboForm.noPersonnelProofs.length > 0">继续添加文件</span>
+                                </span>
+                                <span class="mt-1 block text-xs text-gray-500">支持 PDF、JPG、PNG 格式，单个文件最大 10MB</span>
+                                <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple class="sr-only" @change="handleNoPersonnelFileUpload($event)">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='ubo-personnel'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canSubmitNoPersonnel()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitNoPersonnel()}"
+                            @click="submitNoPersonnel()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- UBO - 声明确认页 -->
+        <section x-show="currentStep==='ubo-declaration'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">UBO声明确认</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>监管要求：</strong>根据合规要求，请确认并声明公司的最终受益所有人信息
+                    </p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold mb-4">最终受益所有人列表及签名</h3>
+                    <p class="text-sm text-gray-600 mb-4">每位股东和实际控制人均需完成电子签名</p>
+                    
+                    <div class="space-y-4">
+                        <template x-for="(shareholder, index) in uboForm.shareholders" :key="'sh-' + index">
+                            <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold" x-text="shareholder.name"></h4>
+                                        <p class="text-sm text-gray-600">股东</p>
+                                        <p class="text-sm text-blue-600 font-medium">持股比例：<span x-text="shareholder.ownershipPercentage + '%'"></span></p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-blue-600 text-white text-xs rounded-full">UBO</span>
+                                </div>
+                                
+                                <!-- 签名区域 -->
+                                <div class="border-2 border-dashed rounded-lg p-3 mt-3"
+                                     :class="shareholder.signature ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'">
+                                    <div x-show="!shareholder.signature" class="text-center">
+                                        <p class="text-sm text-gray-600 mb-2">请签署确认</p>
+                                        <button type="button" 
+                                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition" 
+                                                @click="openUBOPersonSignature('shareholder', index)">
+                                            点击签名
+                                        </button>
+                                    </div>
+                                    <div x-show="shareholder.signature" class="text-center">
+                                        <div class="flex items-center justify-center text-green-600 mb-1">
+                                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span class="text-sm font-semibold">已签名</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600" x-text="shareholder.signerName"></p>
+                                        <button type="button" class="text-xs text-blue-600 hover:text-blue-800 mt-1" @click="clearUBOPersonSignature('shareholder', index)">重新签名</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <template x-for="(director, index) in uboForm.directors" :key="'dr-' + index">
+                            <div class="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold" x-text="director.name"></h4>
+                                        <p class="text-sm text-gray-600" x-text="director.position"></p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-600 text-white text-xs rounded-full">实际控制人</span>
+                                </div>
+                                
+                                <!-- 签名区域 -->
+                                <div class="border-2 border-dashed rounded-lg p-3 mt-3"
+                                     :class="director.signature ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'">
+                                    <div x-show="!director.signature" class="text-center">
+                                        <p class="text-sm text-gray-600 mb-2">请签署确认</p>
+                                        <button type="button" 
+                                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium transition" 
+                                                @click="openUBOPersonSignature('director', index)">
+                                            点击签名
+                                        </button>
+                                    </div>
+                                    <div x-show="director.signature" class="text-center">
+                                        <div class="flex items-center justify-center text-green-600 mb-1">
+                                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span class="text-sm font-semibold">已签名</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600" x-text="director.signerName"></p>
+                                        <button type="button" class="text-xs text-blue-600 hover:text-blue-800 mt-1" @click="clearUBOPersonSignature('director', index)">重新签名</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold mb-4">声明确认</h3>
+                    <div class="bg-gray-50 border rounded-lg p-4 space-y-3">
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="uboForm.declaration.confirmAccuracy">
+                            <span class="text-sm">我确认以上最终受益所有人信息真实、准确、完整</span>
+                        </label>
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="uboForm.declaration.confirmUpdates">
+                            <span class="text-sm">我承诺如有任何变更将在30天内及时更新相关信息</span>
+                        </label>
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="uboForm.declaration.confirmLegal">
+                            <span class="text-sm">我了解提供虚假信息可能承担的法律后果</span>
+                        </label>
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="uboForm.declaration.confirmCompliance">
+                            <span class="text-sm">我同意遵守相关合规和反恐怖主义融资法规要求</span>
+                        </label>
+                    </div>
+                </div>
+
+
+                <!-- 提示信息 -->
+                <div x-show="!canSubmitUBODeclaration()" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                    <p class="text-sm text-yellow-700">
+                        <strong>提示：</strong>请完成以下所有步骤才能提交：
+                    </p>
+                    <ul class="text-sm text-yellow-700 mt-2 space-y-1">
+                        <li x-show="!uboForm.declaration.confirmAccuracy">• 请勾选"确认信息真实、准确、完整"</li>
+                        <li x-show="!uboForm.declaration.confirmUpdates">• 请勾选"承诺及时更新信息"</li>
+                        <li x-show="!uboForm.declaration.confirmLegal">• 请勾选"了解法律后果"</li>
+                        <li x-show="!uboForm.declaration.confirmCompliance">• 请勾选"遵守法规要求"</li>
+                        <li x-show="!allUBOPersonsSigned()">• 请所有股东和实际控制人完成签名（已完成 <span x-text="getSignedUBOPersonsCount()"></span> / <span x-text="getTotalUBOPersonsCount()"></span> 人）</li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='ubo-verification'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canSubmitUBODeclaration()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitUBODeclaration()}"
+                            @click="submitUBO()">完成UBO认证</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第四阶段：账户操作人认证 ============ -->
+        
+        <!-- 账户操作人 - 选择人员和职位页 -->
+        <section x-show="currentStep==='operator-select'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">第四步：账户操作人认证</h2>
+                <p class="text-gray-600 mb-6 text-sm">设置账户操作人，用于日常登录和操作账户</p>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>什么是账户操作人？</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        账户操作人是机构授权的账户管理人员，负责日常登录和操作。该人员的人脸信息将用于后续登录验证。
+                    </p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold mb-4">选择账户操作人</h3>
+                    
+                    <div class="bg-gray-50 border rounded-lg p-4 mb-4">
+                        <!-- 如果有UBO人员，显示选择选项 -->
+                        <template x-if="uboForm.hasUBOPersonnel">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-3">您可以从已认证的股东和实际控制人中选择，或添加新的操作人员：</p>
+                                
+                                <!-- 从已认证人员中选择 -->
+                                <div class="space-y-3 mb-4">
+                                    <p class="text-xs font-medium text-gray-700">已认证的股东和实际控制人：</p>
+                            
+                            <template x-for="(shareholder, index) in uboForm.shareholders.filter(s => s.kycStatus === 'completed')" :key="`sh-${index}`">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50 transition"
+                                       :class="{'bg-blue-100 border-blue-500': operatorForm.selectedPersonType === 'shareholder' && operatorForm.selectedPersonIndex === index}">
+                                    <input type="radio" name="operator" class="mr-3" 
+                                           @change="selectExistingOperator('shareholder', index)"
+                                           :checked="operatorForm.selectedPersonType === 'shareholder' && operatorForm.selectedPersonIndex === index">
+                                    <div>
+                                        <div class="font-medium" x-text="shareholder.name"></div>
+                                        <div class="text-xs text-gray-600">股东 - 持股<span x-text="shareholder.ownershipPercentage"></span>%</div>
+                                    </div>
+                                </label>
+                            </template>
+                            
+                            <template x-for="(director, index) in uboForm.directors.filter(d => d.kycStatus === 'completed')" :key="`dr-${index}`">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-blue-50 transition"
+                                       :class="{'bg-blue-100 border-blue-500': operatorForm.selectedPersonType === 'director' && operatorForm.selectedPersonIndex === index}">
+                                    <input type="radio" name="operator" class="mr-3" 
+                                           @change="selectExistingOperator('director', index)"
+                                           :checked="operatorForm.selectedPersonType === 'director' && operatorForm.selectedPersonIndex === index">
+                                    <div>
+                                        <div class="font-medium" x-text="director.name"></div>
+                                        <div class="text-xs text-gray-600" x-text="director.position"></div>
+                                    </div>
+                                </label>
+                            </template>
+                                </div>
+                                
+                                <!-- 或添加新的操作人 -->
+                                <div class="border-t pt-4">
+                                    <label class="flex items-start p-3 border rounded-lg cursor-pointer hover:bg-blue-50 transition"
+                                           :class="{'bg-blue-100 border-blue-500': operatorForm.selectedPersonType === 'new'}">
+                                        <input type="radio" name="operator" class="mr-3 mt-1" 
+                                               @change="selectNewOperator()"
+                                               :checked="operatorForm.selectedPersonType === 'new'">
+                                        <div class="flex-1">
+                                            <div class="font-medium mb-3">添加新的账户操作人</div>
+                                            
+                                            <div x-show="operatorForm.selectedPersonType === 'new'" class="space-y-3">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">姓名 <span class="text-red-500">*</span></label>
+                                                    <input type="text" 
+                                                           x-model="operatorForm.name"
+                                                           placeholder="请输入账户操作人姓名"
+                                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                                </div>
+                                                
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">职位 <span class="text-red-500">*</span></label>
+                                                    <select x-model="operatorForm.position"
+                                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                                        <option value="">请选择职位</option>
+                                                        <option value="财务总监">财务总监（CFO）</option>
+                                                        <option value="财务经理">财务经理</option>
+                                                        <option value="会计主管">会计主管</option>
+                                                        <option value="运营总监">运营总监（COO）</option>
+                                                        <option value="项目经理">项目经理</option>
+                                                        <option value="授权代表">授权代表</option>
+                                                        <option value="其他">其他</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- 如果没有UBO人员，只显示添加新操作人选项 -->
+                        <template x-if="!uboForm.hasUBOPersonnel">
+                            <div>
+                                <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4">
+                                    <p class="text-sm text-blue-700">
+                                        由于您的企业没有符合条件的股东和实际控制人，请直接添加账户操作人信息。
+                                    </p>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">姓名 <span class="text-red-500">*</span></label>
+                                        <input type="text" 
+                                               x-model="operatorForm.name"
+                                               placeholder="请输入账户操作人姓名"
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">职位 <span class="text-red-500">*</span></label>
+                                        <select x-model="operatorForm.position"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                            <option value="">请选择职位</option>
+                                            <option value="财务总监">财务总监（CFO）</option>
+                                            <option value="财务经理">财务经理</option>
+                                            <option value="会计主管">会计主管</option>
+                                            <option value="运营总监">运营总监（COO）</option>
+                                            <option value="项目经理">项目经理</option>
+                                            <option value="授权代表">授权代表</option>
+                                            <option value="其他">其他</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 提示信息 -->
+                <div x-show="!canProceedToOperatorKYC()" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                    <p class="text-sm text-yellow-700">
+                        <strong>提示：</strong>
+                        <span x-show="!operatorForm.name || !operatorForm.position">
+                            请填写账户操作人的姓名和职位
+                        </span>
+                        <span x-show="uboForm.hasUBOPersonnel && !operatorForm.selectedPersonType && operatorForm.name && operatorForm.position">
+                            请选择账户操作人
+                        </span>
+                    </p>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" 
+                            @click="currentStep = uboForm.hasUBOPersonnel ? 'ubo-declaration' : 'ubo-no-personnel'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canProceedToOperatorKYC()"
+                            :class="{'opacity-50 cursor-not-allowed': !canProceedToOperatorKYC()}"
+                            @click="proceedToOperatorKYC()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 账户操作人 - KYC认证完成页 -->
+        <section x-show="currentStep==='operator-kyc-complete'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">账户操作人认证完成</h2>
+                    <p class="text-gray-600">已成功设置账户操作人</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>账户操作人信息：</strong>
+                    </p>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>姓名：<span class="font-semibold" x-text="getOperatorName()"></span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                            </svg>
+                            <span>职位：<span class="font-semibold" x-text="getOperatorPosition()"></span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>身份认证：<span class="font-semibold text-green-600">已完成</span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>人脸识别：<span class="font-semibold text-green-600">已录入</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        重要提示
+                    </h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• 后续登录账户时将使用该操作人的人脸识别进行验证</li>
+                        <li>• 请妥善保管账户信息，确保操作人身份安全</li>
+                        <li>• 如需变更账户操作人，请联系客服或在后台管理中心操作</li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='operator-select'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="currentStep='pi-upload'">继续下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ KYC个人身份认证流程（嵌入UBO流程中） ============ -->
+        
+        <!-- KYC 第1步：选择证件类型 -->
+        <section x-show="currentStep==='kyc-select-id-type'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">身份认证 - 步骤 1/4：选择证件类型</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>正在为以下人员进行KYC身份认证：</strong>
+                    </p>
+                    <p class="text-sm text-gray-700 font-semibold" x-text="getCurrentKYCPersonName()"></p>
+                    <p class="text-xs text-gray-600 mt-2">请选择您要使用的证件类型，确保证件在有效期内，照片清晰可见</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- 身份证 -->
+                    <button @click="selectIdType('id_card')" 
+                            :class="kycForm.idType === 'id_card' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-300 hover:border-blue-400'"
+                            class="border-2 rounded-xl p-6 text-center transition duration-200">
+                        <div class="text-5xl mb-3">🪪</div>
+                        <div class="font-bold text-lg mb-2">身份证</div>
+                        <div class="text-sm text-gray-600">中华人民共和国居民身份证</div>
+                        <div x-show="kycForm.idType === 'id_card'" class="mt-3">
+                            <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">✓ 已选择</span>
+                        </div>
+                    </button>
+
+                    <!-- 护照 -->
+                    <button @click="selectIdType('passport')" 
+                            :class="kycForm.idType === 'passport' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-300 hover:border-blue-400'"
+                            class="border-2 rounded-xl p-6 text-center transition duration-200">
+                        <div class="text-5xl mb-3">🛂</div>
+                        <div class="font-bold text-lg mb-2">护照</div>
+                        <div class="text-sm text-gray-600">中国护照 / 外国护照</div>
+                        <div x-show="kycForm.idType === 'passport'" class="mt-3">
+                            <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">✓ 已选择</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="cancelKYC()">取消</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!kycForm.idType"
+                            :class="{'opacity-50 cursor-not-allowed': !kycForm.idType}"
+                            @click="goToKYCCapture()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYC 第2步：拍摄证件 -->
+        <section x-show="currentStep==='kyc-capture-id'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">身份认证 - 步骤 2/4：拍摄证件照片</h2>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-700 mb-2">
+                        <strong>拍摄要求：</strong>
+                    </p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>• 请在光线充足的环境下拍摄</li>
+                        <li>• 确保证件四角完整，信息清晰可读</li>
+                        <li>• 避免反光、模糊或遮挡</li>
+                        <li x-show="kycForm.idType === 'id_card'">• 请分别拍摄身份证正面和反面</li>
+                    </ul>
+                </div>
+
+                <!-- 拍摄身份证正面 -->
+                <div class="mb-6" x-show="kycForm.idType === 'id_card'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        身份证正面 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="kycForm.idFrontCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="captureIdFront()">
+                        <template x-if="!kycForm.idFrontCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄身份证正面</p>
+                                <p class="text-xs text-gray-500">包含照片、姓名、身份证号等信息的一面</p>
+                            </div>
+                        </template>
+                        <template x-if="kycForm.idFrontCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 身份证正面已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 拍摄身份证反面 -->
+                <div class="mb-6" x-show="kycForm.idType === 'id_card'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        身份证反面 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="kycForm.idBackCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="captureIdBack()">
+                        <template x-if="!kycForm.idBackCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄身份证反面</p>
+                                <p class="text-xs text-gray-500">包含签发机关、有效期限等信息的一面</p>
+                            </div>
+                        </template>
+                        <template x-if="kycForm.idBackCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 身份证反面已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 拍摄护照 -->
+                <div class="mb-6" x-show="kycForm.idType === 'passport'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        护照信息页 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="kycForm.passportCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="capturePassport()">
+                        <template x-if="!kycForm.passportCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄护照信息页</p>
+                                <p class="text-xs text-gray-500">包含照片、姓名、护照号等个人信息的页面</p>
+                            </div>
+                        </template>
+                        <template x-if="kycForm.passportCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 护照信息页已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- OCR识别进度 -->
+                <div x-show="kycForm.isOCRProcessing" class="mb-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-blue-900">正在识别证件信息...</p>
+                                <p class="text-xs text-blue-700 mt-1">AI正在智能识别您的证件内容，请稍候</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='kyc-select-id-type'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canProceedToFaceRecognition()"
+                            :class="{'opacity-50 cursor-not-allowed': !canProceedToFaceRecognition()}"
+                            @click="startOCR()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYC 第3步：人脸识别 -->
+        <section x-show="currentStep==='kyc-face-recognition'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">身份认证 - 步骤 3/4：人脸识别验证</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>人脸识别说明：</strong>
+                    </p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>• 请正对摄像头，确保光线充足</li>
+                        <li>• 摘下眼镜、帽子等遮挡物</li>
+                        <li>• 保持自然表情，不要遮挡面部</li>
+                        <li>• 系统将进行活体检测和人脸比对</li>
+                    </ul>
+                </div>
+
+                <!-- 摄像头预览区域 -->
+                <div class="mb-6">
+                    <div class="relative border-2 rounded-lg overflow-hidden bg-gray-900"
+                         :class="kycForm.faceRecognitionStatus === 'success' ? 'border-green-500' : kycForm.faceRecognitionStatus === 'failed' ? 'border-red-500' : 'border-blue-500'">
+                        
+                        <!-- 模拟摄像头画面 -->
+                        <div class="aspect-video flex items-center justify-center relative">
+                            <template x-if="!kycForm.isFaceRecognizing && kycForm.faceRecognitionStatus === ''">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    <p class="text-lg font-semibold">点击下方按钮开始人脸识别</p>
+                                </div>
+                            </template>
+
+                            <!-- 识别中状态 -->
+                            <template x-if="kycForm.isFaceRecognizing">
+                                <div class="text-center text-white w-full">
+                                    <div class="relative">
+                                        <svg class="w-32 h-32 mx-auto mb-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <!-- 扫描线动画 -->
+                                        <div class="absolute inset-0 overflow-hidden">
+                                            <div class="scan-line h-0.5 bg-blue-500 shadow-lg shadow-blue-500/50"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-lg font-semibold mb-2">正在进行人脸识别...</p>
+                                    <p class="text-sm text-gray-300" x-text="kycForm.recognitionStep"></p>
+                                </div>
+                            </template>
+
+                            <!-- 识别成功 -->
+                            <template x-if="kycForm.faceRecognitionStatus === 'success'">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-lg font-semibold text-green-500">✓ 人脸识别成功</p>
+                                    <p class="text-sm text-gray-300 mt-2">人脸比对通过，相似度：98.5%</p>
+                                </div>
+                            </template>
+
+                            <!-- 识别失败 -->
+                            <template x-if="kycForm.faceRecognitionStatus === 'failed'">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-lg font-semibold text-red-500">✗ 人脸识别失败</p>
+                                    <p class="text-sm text-gray-300 mt-2">请确保光线充足，面部清晰可见</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="text-center mb-6">
+                    <button x-show="!kycForm.isFaceRecognizing && kycForm.faceRecognitionStatus !== 'success'" 
+                            @click="startFaceRecognition()"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition shadow-lg">
+                        <span x-show="kycForm.faceRecognitionStatus !== 'failed'">开始人脸识别</span>
+                        <span x-show="kycForm.faceRecognitionStatus === 'failed'">重新识别</span>
+                    </button>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='kyc-capture-id'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="kycForm.faceRecognitionStatus !== 'success'"
+                            :class="{'opacity-50 cursor-not-allowed': kycForm.faceRecognitionStatus !== 'success'}"
+                            @click="currentStep='kyc-confirm-info'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYC 第4步：确认信息 -->
+        <section x-show="currentStep==='kyc-confirm-info'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">身份认证 - 步骤 4/4：确认个人信息</h2>
+                
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <p class="text-sm text-green-700 mb-2">
+                        <strong>信息识别完成：</strong>
+                    </p>
+                    <p class="text-xs text-gray-700">以下信息由AI自动识别，请仔细核对。如有错误请修改后提交。</p>
+                </div>
+
+                <!-- OCR识别的信息 -->
+                <div class="space-y-4 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">姓名</label>
+                            <input type="text" x-model="kycForm.ocrData.name" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">性别</label>
+                            <select x-model="kycForm.ocrData.gender" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">民族</label>
+                            <input type="text" x-model="kycForm.ocrData.ethnicity" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">出生日期</label>
+                            <input type="text" x-model="kycForm.ocrData.birthDate" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">身份证号 / 护照号</label>
+                        <input type="text" x-model="kycForm.ocrData.idNumber" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">地址</label>
+                        <textarea x-model="kycForm.ocrData.address" rows="2"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4" x-show="kycForm.idType === 'id_card'">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">签发机关</label>
+                            <input type="text" x-model="kycForm.ocrData.issuingAuthority" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">有效期限</label>
+                            <input type="text" x-model="kycForm.ocrData.validPeriod" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStep='kyc-face-recognition'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="submitKYCVerification()">确认并完成认证</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第五阶段：专业投资者认证 ============ -->
+        
+        <!-- 专业投资者 - 上传材料页 -->
+        <section x-show="currentStep==='pi-upload'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">第五步：专业投资者认证（机构）</h2>
+                <p class="text-gray-600 mb-6 text-sm">最后一步！请上传资产证明并确认声明</p>
+
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                    <div class="text-sm text-red-700 mb-2">
+                        <strong>认证标准</strong>
+                    </div>
+                    <div class="text-sm text-gray-700 space-y-1">
+                        <div>• 总资产 ≥ 100万美元</div>
+                        <div>• 初始投资额 ≥ 10万美元（声明即可）</div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        1. 机构总资产证明 <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mb-3">请上传银行资产证明/审计报告/财务报表（总资产≥100万美元）</p>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" 
+                         :class="{'border-green-500 bg-green-50': piForm.assetProof}"
+                         @dragover.prevent="isDragOver = true"
+                         @dragleave.prevent="isDragOver = false"
+                         @drop.prevent="handlePIFileDrop($event)">
+                        
+                        <template x-if="!piForm.assetProof">
+                            <div>
+                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <div class="mt-4">
+                                    <label class="cursor-pointer">
+                                        <span class="mt-2 block text-sm font-medium text-gray-900">点击上传总资产证明</span>
+                                        <span class="mt-1 block text-xs text-gray-500">支持 PDF、JPG、PNG 格式，最大 10MB</span>
+                                        <input type="file" accept=".pdf,.jpg,.jpeg,.png" class="sr-only" @change="handlePIFileUpload($event)">
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="piForm.assetProof">
+                            <div>
+                                <svg class="mx-auto h-12 w-12 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="mt-4">
+                                    <p class="text-sm font-medium text-green-600">文件上传成功</p>
+                                    <p class="text-xs text-gray-500 mt-1" x-text="piForm.assetProof?.name"></p>
+                                    <button class="mt-2 text-xs text-blue-600 hover:text-blue-800" @click="removePIFile()">重新上传</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="border-t pt-6">
+                    <h3 class="text-md font-semibold mb-4">声明确认</h3>
+                    <div class="bg-gray-50 border rounded-lg p-4 space-y-3">
+                        <label class="flex items-start">
+                            <input type="checkbox" class="mt-1 mr-3" x-model="piForm.declaration.agreeToTerms">
+                            <span class="text-sm">本机构同意被作为专业投资者对待，并理解专业投资者的权利和义务</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 mt-8">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStep='operator-kyc-complete'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            :disabled="!canSubmitPI()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitPI()}"
+                            @click="goToRiskAssessment()">
+                        继续风险测评
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第六阶段：机构风险测评 ============ -->
+        
+        <!-- 风险测评 - 欢迎页 -->
+        <section x-show="currentStep==='risk-welcome'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">第六步：机构风险承受能力测评</h2>
+                <p class="text-gray-600 mb-6 text-sm">请根据贵机构的真实情况完成以下测评</p>
+
+                <!-- 重要提示 -->
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-3">⚠️</span>
+                        <div>
+                            <p class="font-semibold text-red-800 mb-1">重要提示：</p>
+                            <p class="text-red-700 text-sm">本RWA产品为高风险产品，仅适合成长型（R4）及以上的机构投资者参与。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 测评说明 -->
+                <div class="mb-8 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-3">ℹ️</span>
+                        <div>
+                            <p class="font-semibold text-blue-800 mb-2">测评说明：</p>
+                            <ul class="text-blue-700 text-sm space-y-1">
+                                <li>• 共10道问题，预计需要5-8分钟</li>
+                                <li>• 请根据贵机构的真实情况作答</li>
+                                <li>• 测评结果将影响贵机构是否可以参与本产品</li>
+                                <li>• 测评结果有效期为1年</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStep='pi-upload'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            @click="startRiskAssessment()">
+                        开始测评
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 问卷页 -->
+        <section x-show="currentStep==='risk-questionnaire'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <!-- 进度指示 -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">第 <span x-text="riskForm.currentQuestion + 1"></span> 题 / 共 10 题</span>
+                        <span class="text-sm font-medium text-blue-600"><span x-text="Math.round((riskForm.currentQuestion + 1) / 10 * 100)"></span>%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${(riskForm.currentQuestion + 1) / 10 * 100}%`"></div>
+                    </div>
+                </div>
+
+                <!-- 问题内容 -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6" x-text="riskQuestions[riskForm.currentQuestion].question"></h2>
+                    <div class="space-y-3">
+                        <template x-for="(option, index) in riskQuestions[riskForm.currentQuestion].options" :key="index">
+                            <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400"
+                                   :class="riskForm.answers[riskForm.currentQuestion] === index ? 'border-blue-600 bg-blue-50' : 'border-gray-200'">
+                                <input type="radio" 
+                                       :name="'risk-question-' + riskForm.currentQuestion" 
+                                       :value="index"
+                                       @change="selectRiskAnswer(index)"
+                                       :checked="riskForm.answers[riskForm.currentQuestion] === index"
+                                       class="mt-1 mr-3 text-blue-600 focus:ring-blue-500">
+                                <span class="text-gray-700" x-text="option.text"></span>
+                            </label>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 导航按钮 -->
+                <div class="flex justify-between">
+                    <button @click="previousRiskQuestion()" 
+                            x-show="riskForm.currentQuestion > 0"
+                            class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition duration-200">
+                        上一题
+                    </button>
+                    <div x-show="riskForm.currentQuestion === 0"></div>
+                    
+                    <button @click="nextRiskQuestion()" 
+                            x-show="riskForm.currentQuestion < 9"
+                            :disabled="riskForm.answers[riskForm.currentQuestion] === null"
+                            :class="riskForm.answers[riskForm.currentQuestion] === null ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
+                            class="px-6 py-2 text-white font-semibold rounded-lg transition duration-200">
+                        下一题
+                    </button>
+
+                    <button @click="showRiskDeclaration()" 
+                            x-show="riskForm.currentQuestion === 9"
+                            :disabled="riskForm.answers[riskForm.currentQuestion] === null"
+                            :class="riskForm.answers[riskForm.currentQuestion] === null ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
+                            class="px-6 py-2 text-white font-semibold rounded-lg transition duration-200">
+                        提交测评
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 声明确认页 -->
+        <section x-show="currentStep==='risk-declaration'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">声明确认</h2>
+                    <p class="text-gray-600">在查看测评结果前，请确认以下声明</p>
+                </div>
+
+                <!-- 声明框 -->
+                <div class="mb-6 p-6 bg-gray-50 border-2 border-gray-200 rounded-lg">
+                    <label class="flex items-start cursor-pointer">
+                        <input type="checkbox" 
+                               x-model="riskForm.confirmDeclaration"
+                               class="mt-1 mr-4 text-blue-600 focus:ring-blue-500 w-5 h-5">
+                        <span class="text-gray-700">
+                            本机构确认以上风险测评问卷由本机构授权代表独立完成，未受到任何机构或个人的诱导或不当影响。本机构承诺所有答案均基于本机构真实情况如实填写，并理解虚假填写可能导致不适当的投资建议和相应的投资风险及法律责任。
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button @click="currentStep = 'risk-questionnaire'; riskForm.currentQuestion = 9;" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition duration-200">
+                        返回修改
+                    </button>
+                    <button @click="calculateRiskResult()" 
+                            :disabled="!riskForm.confirmDeclaration"
+                            :class="riskForm.confirmDeclaration ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'"
+                            class="flex-1 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                        查看结果
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 结果页（通过 R4-R5） -->
+        <section x-show="currentStep==='risk-result-pass'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">风险测评完成</h2>
+                    <p class="text-xl text-green-600 font-semibold">✓ 符合产品要求</p>
+                </div>
+
+                <!-- 测评结果卡片 -->
+                <div class="mb-6 p-6 bg-green-50 border-2 border-green-500 rounded-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">测评结果</h3>
+                        <span class="px-4 py-2 bg-green-600 text-white font-semibold rounded-full" x-text="riskForm.result.level"></span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-gray-600 text-sm">风险等级</p>
+                        <p class="text-gray-900 font-semibold text-lg" x-text="riskForm.result.type"></p>
+                    </div>
+                    <p class="text-gray-700 text-sm" x-text="riskForm.result.description"></p>
+                </div>
+
+                <!-- 温馨提示 -->
+                <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <p class="font-semibold text-blue-800 mb-1">温馨提示：</p>
+                    <p class="text-blue-700 text-sm">测评结果有效期为1年，若有效期内公司情况有变化也可以重新测评。</p>
+                </div>
+
+                <button @click="goToFinalDeclaration()" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    继续最终确认
+                </button>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 结果页（不通过 R1-R3） -->
+        <section x-show="currentStep==='risk-result-fail'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
+                        <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">风险测评完成</h2>
+                    <p class="text-xl text-red-600 font-semibold">✗ 不符合产品要求</p>
+                </div>
+
+                <!-- 测评结果卡片 -->
+                <div class="mb-6 p-6 bg-red-50 border-2 border-red-500 rounded-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">测评结果</h3>
+                        <span class="px-4 py-2 bg-red-600 text-white font-semibold rounded-full" x-text="riskForm.result.level"></span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-gray-600 text-sm">风险等级</p>
+                        <p class="text-gray-900 font-semibold text-lg" x-text="riskForm.result.type"></p>
+                    </div>
+                    <p class="text-gray-700 text-sm" x-text="riskForm.result.description"></p>
+                </div>
+
+                <!-- 不符合要求说明 -->
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                    <div class="flex items-start">
+                        <span class="text-xl mr-2">✗</span>
+                        <div>
+                            <p class="font-semibold text-red-800 mb-1">不符合产品要求</p>
+                            <p class="text-red-700 text-sm mb-2">根据监管要求，本RWA产品为高风险产品，仅适合成长型（R4）及以上的机构投资者参与。</p>
+                            <p class="text-red-700 text-sm">您的机构风险承受能力评估结果为<span class="font-semibold" x-text="riskForm.result.type"></span>，暂不符合本产品的投资要求。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作提示 -->
+                <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <p class="font-semibold text-blue-800 mb-2">您可以选择：</p>
+                    <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• 重新测评（如果您认为测评结果不准确）</li>
+                        <li>• 退出认证（我们会为您推荐更适合的产品）</li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button @click="retakeRiskAssessment()" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                        重新测评
+                    </button>
+                    <button @click="exitRiskAssessment()" class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                        退出认证
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最终确认页 -->
+        <section x-show="currentStep==='final-declaration'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">最终确认</h2>
+                    <p class="text-gray-600">请仔细阅读并确认以下声明</p>
+                </div>
+
+                <!-- 认证完成汇总 -->
+                <div class="mb-6 p-6 bg-green-50 border-2 border-green-500 rounded-lg">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">✓ 您已完成所有认证步骤</h3>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>机构名称：<span class="font-semibold" x-text="kybForm.companyName"></span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>注册号：<span class="font-semibold" x-text="kybForm.registrationNumber"></span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>注册国家：<span class="font-semibold" x-text="selectedCountryName"></span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>风险等级：<span class="font-semibold text-green-600" x-text="riskForm.result.level + ' - ' + riskForm.result.type"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最终声明 -->
+                <div class="mb-6 p-6 bg-blue-50 border-2 border-blue-500 rounded-lg">
+                    <label class="flex items-start cursor-pointer">
+                        <input type="checkbox" 
+                               x-model="finalDeclaration.confirmed"
+                               class="mt-1 mr-4 text-blue-600 focus:ring-blue-500 w-5 h-5">
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-semibold mb-2">最终声明</p>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                本机构确认以上所有信息真实、准确、完整，并了解提供虚假信息可能承担的法律后果。本机构声明：
+                            </p>
+                            <ul class="text-sm text-gray-700 mt-2 space-y-1">
+                                <li>• 已完成机构KYB认证、企业合规审核、UBO认证、账户操作人认证和专业投资者认证</li>
+                                <li>• 风险测评结果真实反映本机构的风险承受能力</li>
+                                <li>• 初始投资额≥10万美元，总资产≥100万美元</li>
+                                <li>• 同意遵守相关监管要求和平台规则</li>
+                            </ul>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStep='risk-result-pass'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition" 
+                            :disabled="!finalDeclaration.confirmed"
+                            :class="{'opacity-50 cursor-not-allowed': !finalDeclaration.confirmed}"
+                            @click="submitFinalApplication()">
+                        提交完整申请
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最终提交成功页 -->
+        <section x-show="currentStep==='final-success'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-3">🎉 认证申请提交成功！</h2>
+                    <p class="text-gray-600 text-lg">您已完成RWA机构认证的全部流程</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>已完成的认证项目：</strong>
+                    </p>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>✓ KYB机构认证</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>✓ 企业合规审核</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>✓ UBO最终受益人认证</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>✓ 账户操作人认证</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>✓ 专业投资者认证（机构）</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>✓ 机构风险测评（<span x-text="riskForm.result.level"></span> <span x-text="riskForm.result.type"></span>）</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">申请信息摘要</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">机构名称：</span>
+                            <span class="font-semibold text-gray-800" x-text="kybForm.companyName"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">注册号：</span>
+                            <span class="font-semibold text-gray-800" x-text="kybForm.registrationNumber"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">注册国家：</span>
+                            <span class="font-semibold text-gray-800" x-text="selectedCountryName"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-semibold text-gray-800" x-text="new Date().toLocaleString('zh-CN')"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">审核状态：</span>
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                                等待审核
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-5 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-3">接下来会发生什么？</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>我们的合规团队将在1-3个工作日内审核您的认证材料</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>审核结果将通过邮件和站内消息通知您</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>认证通过后，您将可以访问RWA产品和服务</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                        @click="resetAndGoHome()">
+                    完成
+                </button>
+            </div>
+        </section>
+
+        <!-- 添加股东模态框 -->
+        <div x-show="showAddShareholderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" x-cloak>
+            <div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+                <h3 class="text-lg font-medium mb-4">添加股东信息</h3>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4 text-xs text-blue-700">
+                    请填写持股25%及以上的股东信息
+                </div>
+                <form @submit.prevent="addShareholder()">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">姓名 *</label>
+                        <input type="text" x-model="newShareholder.name" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">持股比例 (%) *</label>
+                        <input type="number" x-model="newShareholder.ownershipPercentage" class="w-full border rounded p-2" min="25" max="100" step="0.01" required>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" class="flex-1 py-2 bg-gray-200 rounded hover:bg-gray-300" @click="closeShareholderModal()">取消</button>
+                        <button type="submit" class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 添加实际控制人模态框 -->
+        <div x-show="showAddDirectorModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" x-cloak>
+            <div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+                <h3 class="text-lg font-medium mb-4">添加实际控制人信息</h3>
+                <form @submit.prevent="addDirector()">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">姓名 *</label>
+                        <input type="text" x-model="newDirector.name" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">职务 *</label>
+                        <select x-model="newDirector.position" class="w-full border rounded p-2" required>
+                            <option value="">请选择职务</option>
+                            <option value="法定代表人">法定代表人</option>
+                            <option value="董事长">董事长</option>
+                            <option value="CEO">CEO（首席执行官）</option>
+                            <option value="总经理">总经理</option>
+                            <option value="执行董事">执行董事</option>
+                            <option value="副董事长">副董事长</option>
+                            <option value="董事">董事</option>
+                            <option value="其他高管">其他高管</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" class="flex-1 py-2 bg-gray-200 rounded hover:bg-gray-300" @click="closeDirectorModal()">取消</button>
+                        <button type="submit" class="flex-1 py-2 bg-green-600 text-white rounded hover:bg-green-700">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function rwaFullApp() {
+            return {
+                currentStep: 'home',
+                isDragOver: false,
+                
+                // KYB 表单数据
+                kybForm: {
+                    companyName: '',
+                    registrationNumber: '',
+                    country: '',
+                    files: {},
+                    fileErrors: {}
+                },
+                kybErrors: {
+                    companyName: '',
+                    registrationNumber: '',
+                    country: ''
+                },
+                kybUploadIndex: 0,
+                
+                // 国家选择相关
+                countrySearchText: '',
+                showCountryDropdown: false,
+                selectedCountryName: '',
+                countries: [
+                    { code: 'CN', name: '中国大陆' },
+                    { code: 'HK', name: '香港' },
+                    { code: 'US', name: '美国' },
+                    { code: 'GB', name: '英国' },
+                    { code: 'SG', name: '新加坡' },
+                    { code: 'JP', name: '日本' },
+                    { code: 'DE', name: '德国' },
+                    { code: 'FR', name: '法国' },
+                    { code: 'CA', name: '加拿大' },
+                    { code: 'AU', name: '澳大利亚' },
+                ],
+                
+                // AML 表单数据
+                amlForm: {
+                    ein: '',
+                    stateOfIncorporation: '',
+                    businessStreetAddress: '',
+                    city: '',
+                    state: '',
+                    zipCode: ''
+                },
+                
+                // UBO 表单数据
+                uboForm: {
+                    shareholders: [],
+                    directors: [],
+                    hasUBOPersonnel: true, // 是否有UBO人员（股东或实际控制人）
+                    noPersonnelReason: '', // 无UBO人员的原因说明
+                    noPersonnelProofs: [], // 无UBO人员的证明文件（支持多个）
+                    declaration: {
+                        confirmAccuracy: false,
+                        confirmUpdates: false,
+                        confirmLegal: false,
+                        confirmCompliance: false
+                    }
+                },
+                showAddShareholderModal: false,
+                showAddDirectorModal: false,
+                newShareholder: { name: '', ownershipPercentage: '' },
+                newDirector: { name: '', position: '' },
+                
+                // 账户操作人表单数据
+                operatorForm: {
+                    selectedPersonType: '', // 'shareholder', 'director', 'new'
+                    selectedPersonIndex: -1,
+                    name: '',
+                    position: '',
+                    kycCompleted: false
+                },
+                
+                // 专业投资者表单数据
+                piForm: {
+                    assetProof: null,
+                    declaration: {
+                        agreeToTerms: false
+                    }
+                },
+                
+                // 风险测评表单数据
+                riskForm: {
+                    currentQuestion: 0,
+                    answers: Array(10).fill(null),
+                    totalScore: 0,
+                    confirmDeclaration: false,
+                    result: {
+                        level: '',
+                        type: '',
+                        description: '',
+                        suitableProducts: ''
+                    }
+                },
+                
+                // 最终声明
+                finalDeclaration: {
+                    confirmed: false
+                },
+                
+                // KYC个人认证表单数据
+                kycForm: {
+                    personType: '', // 'shareholder' or 'director'
+                    personIndex: -1, // 正在认证的人员索引
+                    idType: '', // 'id_card' or 'passport'
+                    idFrontCaptured: false,
+                    idBackCaptured: false,
+                    passportCaptured: false,
+                    isOCRProcessing: false,
+                    isFaceRecognizing: false,
+                    faceRecognitionStatus: '', // '', 'success', 'failed'
+                    recognitionStep: '',
+                    ocrData: {
+                        name: '',
+                        gender: '男',
+                        ethnicity: '汉',
+                        birthDate: '',
+                        idNumber: '',
+                        address: '',
+                        issuingAuthority: '',
+                        validPeriod: ''
+                    }
+                },
+
+                // 风险测评问题列表
+                riskQuestions: [
+                    {
+                        question: '1. 贵机构的类型是？',
+                        options: [
+                            { text: '初创企业（成立3年以内）', score: 1 },
+                            { text: '成长型企业（成立3-10年）', score: 3 },
+                            { text: '成熟企业（成立10年以上）', score: 5 },
+                            { text: '金融机构或投资机构', score: 5 },
+                            { text: '上市公司或大型集团', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '2. 贵机构的总资产规模？',
+                        options: [
+                            { text: '100万-500万美元', score: 1 },
+                            { text: '500万-1000万美元', score: 2 },
+                            { text: '1000万-5000万美元', score: 3 },
+                            { text: '5000万-1亿美元', score: 4 },
+                            { text: '1亿美元以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '3. 贵机构的投资经验如何？',
+                        options: [
+                            { text: '无投资经验', score: 1 },
+                            { text: '1年以下', score: 2 },
+                            { text: '1-3年', score: 3 },
+                            { text: '3-5年', score: 4 },
+                            { text: '5年以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '4. 贵机构是否有专业的投资团队或投资顾问？',
+                        options: [
+                            { text: '没有专业团队，由管理层决策', score: 1 },
+                            { text: '有兼职人员负责投资', score: 2 },
+                            { text: '有1-2名专职投资人员', score: 3 },
+                            { text: '有3-5人的专业投资团队', score: 4 },
+                            { text: '有5人以上的专业投资团队或聘请外部专业投资顾问', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '5. 贵机构的投资目的是？',
+                        options: [
+                            { text: '资产保值，保本为主', score: 1 },
+                            { text: '稳定增值，追求稳定收益', score: 2 },
+                            { text: '资产增值，愿意承担一定风险', score: 3 },
+                            { text: '追求高收益，可承受较大波动', score: 4 },
+                            { text: '战略投资或激进投资，追求最大收益', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '6. 贵机构计划的投资期限是？',
+                        options: [
+                            { text: '6个月以内', score: 1 },
+                            { text: '6-12个月', score: 2 },
+                            { text: '1-3年', score: 3 },
+                            { text: '3-5年', score: 4 },
+                            { text: '5年以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '7. 贵机构可用于本次投资的资金占总资产的比例？',
+                        options: [
+                            { text: '5%以下', score: 1 },
+                            { text: '5%-10%', score: 2 },
+                            { text: '10%-20%', score: 3 },
+                            { text: '20%-30%', score: 4 },
+                            { text: '30%以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '8. 如果投资在短期内下跌20%，贵机构会？',
+                        options: [
+                            { text: '立即全部退出止损', score: 1 },
+                            { text: '减少投资规模', score: 2 },
+                            { text: '继续持有，观望市场', score: 3 },
+                            { text: '适当增加投资，分摊成本', score: 4 },
+                            { text: '大幅增加投资，把握机会', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '9. 贵机构能承受的最大投资亏损比例是？',
+                        options: [
+                            { text: '不能承受任何亏损', score: 1 },
+                            { text: '5%以内', score: 2 },
+                            { text: '5%-15%', score: 3 },
+                            { text: '15%-30%', score: 4 },
+                            { text: '30%以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '10. 贵机构对高风险投资产品（如衍生品、杠杆产品）的了解程度？',
+                        options: [
+                            { text: '完全不了解', score: 1 },
+                            { text: '了解基础知识', score: 2 },
+                            { text: '有一定了解', score: 3 },
+                            { text: '比较了解', score: 4 },
+                            { text: '非常了解，有实际投资经验', score: 5 }
+                        ]
+                    }
+                ],
+
+                // ========== 国家选择相关方法 ==========
+                get filteredCountries() {
+                    if (!this.countrySearchText && this.kybForm.country && this.selectedCountryName) {
+                        const selectedCountry = this.countries.find(c => c.code === this.kybForm.country);
+                        return selectedCountry ? [selectedCountry] : [];
+                    }
+                    if (!this.countrySearchText) {
+                        return this.countries;
+                    }
+                    const lowerSearchText = this.countrySearchText.toLowerCase();
+                    return this.countries.filter(country =>
+                        country.name.toLowerCase().includes(lowerSearchText) ||
+                        country.code.toLowerCase().includes(lowerSearchText)
+                    );
+                },
+
+                selectCountry(country) {
+                    this.kybForm.country = country.code;
+                    this.selectedCountryName = country.name;
+                    this.countrySearchText = country.name;
+                    this.showCountryDropdown = false;
+                    this.kybErrors.country = '';
+                },
+
+                // ========== 进度计算方法 ==========
+                getCurrentStageIndex() {
+                    if (this.currentStep.startsWith('kyb')) return 0;
+                    if (this.currentStep.startsWith('aml')) return 1;
+                    if (this.currentStep.startsWith('ubo') || this.currentStep.startsWith('kyc')) return 2;
+                    if (this.currentStep.startsWith('operator')) return 3;
+                    if (this.currentStep.startsWith('pi')) return 4;
+                    if (this.currentStep.startsWith('risk')) return 5;
+                    if (this.currentStep === 'final-success') return 6;
+                    return -1;
+                },
+
+                getOverallProgress() {
+                    const stageIndex = this.getCurrentStageIndex();
+                    if (stageIndex === -1) return 0;
+                    
+                    // 基础进度：每个阶段20%
+                    let baseProgress = stageIndex * 20;
+                    
+                    // 当前阶段内的进度
+                    if (this.currentStep === 'kyb-country') baseProgress += 5;
+                    else if (this.currentStep === 'kyb-materials') baseProgress += 8;
+                    else if (this.currentStep === 'kyb-upload') {
+                        const materials = this.getKYBMaterialList();
+                        baseProgress += 8 + (this.kybUploadIndex / materials.length) * 12;
+                    }
+                    else if (this.currentStep === 'aml-input') baseProgress += 15;
+                    else if (this.currentStep === 'ubo-personnel') baseProgress += 5;
+                    else if (this.currentStep === 'ubo-verification') baseProgress += 10;
+                    else if (this.currentStep === 'ubo-declaration') baseProgress += 15;
+                    else if (this.currentStep === 'operator-select') baseProgress += 10;
+                    else if (this.currentStep === 'operator-kyc-complete') baseProgress += 18;
+                    else if (this.currentStep === 'pi-upload') baseProgress += 15;
+                    else if (this.currentStep === 'pi-final-declaration') baseProgress += 18;
+                    else if (this.currentStep === 'final-success') return 100;
+                    
+                    return Math.min(baseProgress, 100);
+                },
+
+                getOverallProgressText() {
+                    if (this.currentStep.startsWith('kyb')) return '第一步：KYB机构认证';
+                    if (this.currentStep.startsWith('aml')) return '第二步：企业合规审核';
+                    if (this.currentStep.startsWith('ubo') || this.currentStep.startsWith('kyc')) return '第三步：UBO认证';
+                    if (this.currentStep.startsWith('operator')) return '第四步：账户操作人认证';
+                    if (this.currentStep.startsWith('pi')) return '第五步：专业投资者认证';
+                    if (this.currentStep.startsWith('risk')) return '第六步：机构风险测评';
+                    return '';
+                },
+
+                getKYBProgress() {
+                    if (this.currentStep === 'kyb-country') return '基本信息';
+                    if (this.currentStep === 'kyb-materials') return '材料清单';
+                    if (this.currentStep === 'kyb-upload') return `上传中 ${this.kybUploadIndex + 1}/${this.getKYBMaterialList().length}`;
+                    return '';
+                },
+
+                getUBOProgress() {
+                    if (this.currentStep === 'ubo-personnel') return '人员信息';
+                    if (this.currentStep === 'ubo-verification') return '身份认证';
+                    if (this.currentStep === 'ubo-declaration') return '声明确认';
+                    return '';
+                },
+
+                // ========== KYB 相关方法 ==========
+                startCertification() {
+                    this.currentStep = 'kyb-country';
+                },
+
+                validateKYBBasicInfo() {
+                    let hasError = false;
+
+                    if (!this.kybForm.companyName || this.kybForm.companyName.trim() === '') {
+                        this.kybErrors.companyName = '请输入公司名称';
+                        hasError = true;
+                    } else {
+                        this.kybErrors.companyName = '';
+                    }
+
+                    if (!this.kybForm.registrationNumber || this.kybForm.registrationNumber.trim() === '') {
+                        this.kybErrors.registrationNumber = '请输入注册号';
+                        hasError = true;
+                    } else {
+                        this.kybErrors.registrationNumber = '';
+                    }
+
+                    if (!this.kybForm.country) {
+                        this.kybErrors.country = '请选择机构注册国家/地区';
+                        hasError = true;
+                    } else {
+                        this.kybErrors.country = '';
+                    }
+
+                    if (!hasError) {
+                        this.currentStep = 'kyb-materials';
+                    }
+                },
+
+                getKYBMaterialList() {
+                    const base = [
+                        '机构营业执照/注册证明',
+                        '法定代表人身份证明',
+                        '机构章程或组织结构文件'
+                    ];
+                    const extra = {
+                        'CN': ['营业执照副本', '组织机构代码证'],
+                        'HK': ['商业登记证', '公司注册证书'],
+                        'US': ['EIN证明', '公司章程'],
+                        'GB': ['公司注册证书', '公司章程'],
+                        'SG': ['ACRA注册文件'],
+                    };
+                    const specificMaterials = extra[this.kybForm.country] || [];
+                    return base.concat(specificMaterials);
+                },
+
+                getKYBMaterialDescription(material) {
+                    const descriptions = {
+                        '机构营业执照/注册证明': '请上传清晰的营业执照或公司注册证明文件',
+                        '法定代表人身份证明': '请上传法定代表人的身份证或护照等有效证件',
+                        '机构章程或组织结构文件': '请上传公司章程或组织架构相关文件',
+                        '营业执照副本': '请上传营业执照副本的清晰扫描件',
+                        '组织机构代码证': '请上传组织机构代码证',
+                        '商业登记证': '请上传香港商业登记证',
+                        '公司注册证书': '请上传公司注册证书',
+                        'EIN证明': '请上传美国雇主识别号(EIN)证明',
+                        '公司章程': '请上传公司章程文件',
+                        'ACRA注册文件': '请上传新加坡ACRA注册相关文件',
+                    };
+                    return descriptions[material] || '请上传相关证明文件';
+                },
+
+                startKYBUpload() {
+                    this.kybUploadIndex = 0;
+                    this.currentStep = 'kyb-upload';
+                },
+
+                getCurrentKYBMaterial() {
+                    const materials = this.getKYBMaterialList();
+                    return materials[this.kybUploadIndex] || '';
+                },
+
+                isLastKYBUploadStep() {
+                    return this.kybUploadIndex >= this.getKYBMaterialList().length - 1;
+                },
+
+                handleKYBFileUpload(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    this.processKYBFile(file);
+                },
+
+                handleKYBFileDrop(e) {
+                    this.isDragOver = false;
+                    const file = e.dataTransfer.files[0];
+                    if (!file) return;
+                    this.processKYBFile(file);
+                },
+
+                processKYBFile(file) {
+                    const currentMaterial = this.getCurrentKYBMaterial();
+                    
+                    const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        this.kybForm.fileErrors[currentMaterial] = '仅支持PDF/JPG/PNG格式';
+                        return;
+                    }
+                    if (file.size > 10 * 1024 * 1024) {
+                        this.kybForm.fileErrors[currentMaterial] = '单文件最大10MB';
+                        return;
+                    }
+
+                    this.kybForm.fileErrors[currentMaterial] = '';
+                    this.kybForm.files[currentMaterial] = file;
+                },
+
+                removeCurrentKYBFile() {
+                    const currentMaterial = this.getCurrentKYBMaterial();
+                    delete this.kybForm.files[currentMaterial];
+                    delete this.kybForm.fileErrors[currentMaterial];
+                },
+
+                goToPreviousKYBStep() {
+                    if (this.kybUploadIndex > 0) {
+                        this.kybUploadIndex--;
+                    } else {
+                        this.currentStep = 'kyb-materials';
+                    }
+                },
+
+                goToNextKYBStep() {
+                    if (this.isLastKYBUploadStep()) {
+                        this.currentStep = 'aml-input';
+                    } else {
+                        this.kybUploadIndex++;
+                    }
+                },
+
+                // ========== AML 相关方法 ==========
+                canSubmitAML() {
+                    return this.amlForm.ein && 
+                           this.amlForm.stateOfIncorporation && 
+                           this.amlForm.businessStreetAddress && 
+                           this.amlForm.city && 
+                           this.amlForm.state && 
+                           this.amlForm.zipCode;
+                },
+
+                submitAML() {
+                    this.currentStep = 'ubo-personnel';
+                },
+
+                // ========== UBO 相关方法 ==========
+                addShareholder() {
+                    if (this.newShareholder.name && this.newShareholder.ownershipPercentage) {
+                        this.uboForm.shareholders.push({
+                            ...this.newShareholder,
+                            kycStatus: 'pending'
+                        });
+                        this.closeShareholderModal();
+                    }
+                },
+
+                closeShareholderModal() {
+                    this.showAddShareholderModal = false;
+                    this.newShareholder = { name: '', ownershipPercentage: '' };
+                },
+
+                removeShareholder(index) {
+                    this.uboForm.shareholders.splice(index, 1);
+                },
+
+                addDirector() {
+                    if (this.newDirector.name && this.newDirector.position) {
+                        this.uboForm.directors.push({
+                            ...this.newDirector,
+                            kycStatus: 'pending'
+                        });
+                        this.closeDirectorModal();
+                    }
+                },
+
+                closeDirectorModal() {
+                    this.showAddDirectorModal = false;
+                    this.newDirector = { name: '', position: '' };
+                },
+
+                removeDirector(index) {
+                    this.uboForm.directors.splice(index, 1);
+                },
+
+                startUBOKYC(type, index) {
+                    // 保存当前认证对象
+                    this.kycForm.personType = type;
+                    this.kycForm.personIndex = index;
+                    
+                    // 重置KYC表单
+                    this.resetKYCForm();
+                    
+                    // 设置认证中状态
+                    if (type === 'shareholder') {
+                        this.uboForm.shareholders[index].kycStatus = 'in_progress';
+                        // 使用股东姓名初始化OCR数据
+                        this.kycForm.ocrData.name = this.uboForm.shareholders[index].name;
+                    } else if (type === 'director') {
+                        this.uboForm.directors[index].kycStatus = 'in_progress';
+                        // 使用实际控制人姓名初始化OCR数据
+                        this.kycForm.ocrData.name = this.uboForm.directors[index].name;
+                    }
+                    
+                    // 跳转到KYC流程
+                    this.currentStep = 'kyc-select-id-type';
+                },
+
+                getCompletedUBOKYCCount() {
+                    const completedShareholders = this.uboForm.shareholders.filter(s => s.kycStatus === 'completed').length;
+                    const completedDirectors = this.uboForm.directors.filter(d => d.kycStatus === 'completed').length;
+                    return completedShareholders + completedDirectors;
+                },
+
+                getTotalUBOKYCCount() {
+                    return this.uboForm.shareholders.length + this.uboForm.directors.length;
+                },
+
+                getUBOKYCProgress() {
+                    const total = this.getTotalUBOKYCCount();
+                    return total === 0 ? 0 : (this.getCompletedUBOKYCCount() / total) * 100;
+                },
+
+                allUBOKYCCompleted() {
+                    return this.getTotalUBOKYCCount() > 0 && this.getCompletedUBOKYCCount() === this.getTotalUBOKYCCount();
+                },
+
+                // 获取已签名的UBO人员数量
+                getSignedUBOPersonsCount() {
+                    const signedShareholders = this.uboForm.shareholders.filter(s => s.signature).length;
+                    const signedDirectors = this.uboForm.directors.filter(d => d.signature).length;
+                    return signedShareholders + signedDirectors;
+                },
+
+                // 获取UBO人员总数
+                getTotalUBOPersonsCount() {
+                    return this.uboForm.shareholders.length + this.uboForm.directors.length;
+                },
+
+                // 检查是否所有UBO人员都已签名
+                allUBOPersonsSigned() {
+                    const allShareholdersSigned = this.uboForm.shareholders.every(s => s.signature);
+                    const allDirectorsSigned = this.uboForm.directors.every(d => d.signature);
+                    return allShareholdersSigned && allDirectorsSigned && this.getTotalUBOPersonsCount() > 0;
+                },
+
+                canSubmitUBODeclaration() {
+                    return this.uboForm.declaration.confirmAccuracy &&
+                           this.uboForm.declaration.confirmUpdates &&
+                           this.uboForm.declaration.confirmLegal &&
+                           this.uboForm.declaration.confirmCompliance &&
+                           this.allUBOPersonsSigned();
+                },
+
+                // 为每个UBO人员打开签名
+                openUBOPersonSignature(type, index) {
+                    console.log(`打开${type}签名面板, index: ${index}`);
+                    try {
+                        const person = type === 'shareholder' ? this.uboForm.shareholders[index] : this.uboForm.directors[index];
+                        const signerName = prompt(`请 ${person.name} 输入姓名进行电子签名：`);
+                        console.log('用户输入:', signerName);
+                        
+                        if (signerName && signerName.trim()) {
+                            person.signature = `${signerName.trim()}_signature_${Date.now()}`;
+                            person.signerName = signerName.trim();
+                            console.log('签名完成:', person);
+                            alert(`签名成功！签名人：${signerName.trim()}`);
+                        } else if (signerName !== null) {
+                            alert('请输入有效的姓名');
+                        } else {
+                            console.log('用户取消了签名');
+                        }
+                    } catch (error) {
+                        console.error('签名过程出错:', error);
+                        alert('签名过程出现错误，请重试');
+                    }
+                },
+
+                // 清除某个UBO人员的签名
+                clearUBOPersonSignature(type, index) {
+                    const person = type === 'shareholder' ? this.uboForm.shareholders[index] : this.uboForm.directors[index];
+                    person.signature = null;
+                    person.signerName = null;
+                },
+
+                submitUBO() {
+                    this.currentStep = 'operator-select';
+                },
+
+                // ========== 无UBO人员相关方法 ==========
+                goToNoUBOPage() {
+                    // 设置为无UBO人员状态
+                    this.uboForm.hasUBOPersonnel = false;
+                    this.currentStep = 'ubo-no-personnel';
+                },
+
+                canSubmitNoPersonnel() {
+                    return this.uboForm.noPersonnelReason && 
+                           this.uboForm.noPersonnelReason.trim() !== '' &&
+                           this.uboForm.noPersonnelProofs.length > 0;
+                },
+
+                handleNoPersonnelFileUpload(e) {
+                    const files = Array.from(e.target.files);
+                    if (files.length === 0) return;
+                    
+                    files.forEach(file => {
+                        this.processNoPersonnelFile(file);
+                    });
+                    
+                    // 清空input以允许重复上传同名文件
+                    e.target.value = '';
+                },
+
+                handleNoPersonnelFileDrop(e) {
+                    this.isDragOver = false;
+                    const files = Array.from(e.dataTransfer.files);
+                    if (files.length === 0) return;
+                    
+                    files.forEach(file => {
+                        this.processNoPersonnelFile(file);
+                    });
+                },
+
+                processNoPersonnelFile(file) {
+                    const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        alert(`文件 "${file.name}" 格式不支持，仅支持PDF/JPG/PNG格式`);
+                        return;
+                    }
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`文件 "${file.name}" 超过10MB限制`);
+                        return;
+                    }
+                    
+                    // 检查是否已存在同名文件
+                    const exists = this.uboForm.noPersonnelProofs.some(f => f.name === file.name);
+                    if (exists) {
+                        alert(`文件 "${file.name}" 已存在`);
+                        return;
+                    }
+                    
+                    this.uboForm.noPersonnelProofs.push(file);
+                },
+
+                removeNoPersonnelFile(index) {
+                    this.uboForm.noPersonnelProofs.splice(index, 1);
+                },
+
+                submitNoPersonnel() {
+                    console.log('提交无UBO人员说明');
+                    // 直接跳转到账户操作人选择页面
+                    this.currentStep = 'operator-select';
+                },
+
+                // ========== 账户操作人相关方法 ==========
+                selectExistingOperator(type, index) {
+                    this.operatorForm.selectedPersonType = type;
+                    this.operatorForm.selectedPersonIndex = index;
+                    this.operatorForm.name = '';
+                    this.operatorForm.position = '';
+                },
+
+                selectNewOperator() {
+                    this.operatorForm.selectedPersonType = 'new';
+                    this.operatorForm.selectedPersonIndex = -1;
+                },
+
+                canProceedToOperatorKYC() {
+                    // 如果没有UBO人员，只需要填写姓名和职位
+                    if (!this.uboForm.hasUBOPersonnel) {
+                        return this.operatorForm.name && this.operatorForm.position;
+                    }
+                    
+                    // 如果有UBO人员
+                    if (this.operatorForm.selectedPersonType === 'new') {
+                        return this.operatorForm.name && this.operatorForm.position;
+                    }
+                    return this.operatorForm.selectedPersonType && this.operatorForm.selectedPersonIndex >= 0;
+                },
+
+                proceedToOperatorKYC() {
+                    // 如果没有UBO人员，强制添加新操作人并进行KYC
+                    if (!this.uboForm.hasUBOPersonnel) {
+                        this.operatorForm.selectedPersonType = 'new';
+                        this.kycForm.personType = 'operator';
+                        this.kycForm.personIndex = -1;
+                        this.resetKYCForm();
+                        this.kycForm.ocrData.name = this.operatorForm.name;
+                        this.currentStep = 'kyc-select-id-type';
+                        return;
+                    }
+                    
+                    // 如果有UBO人员，按原逻辑处理
+                    // 如果选择的是新操作人，需要进行KYC认证
+                    if (this.operatorForm.selectedPersonType === 'new') {
+                        this.kycForm.personType = 'operator';
+                        this.kycForm.personIndex = -1;
+                        this.resetKYCForm();
+                        this.kycForm.ocrData.name = this.operatorForm.name;
+                        this.currentStep = 'kyc-select-id-type';
+                    } else {
+                        // 如果选择的是已认证的股东或实际控制人，直接完成
+                        this.operatorForm.kycCompleted = true;
+                        this.currentStep = 'operator-kyc-complete';
+                    }
+                },
+
+                getOperatorName() {
+                    if (this.operatorForm.selectedPersonType === 'new') {
+                        return this.operatorForm.name;
+                    } else if (this.operatorForm.selectedPersonType === 'shareholder') {
+                        return this.uboForm.shareholders[this.operatorForm.selectedPersonIndex]?.name || '';
+                    } else if (this.operatorForm.selectedPersonType === 'director') {
+                        return this.uboForm.directors[this.operatorForm.selectedPersonIndex]?.name || '';
+                    }
+                    return '';
+                },
+
+                getOperatorPosition() {
+                    if (this.operatorForm.selectedPersonType === 'new') {
+                        return this.operatorForm.position;
+                    } else if (this.operatorForm.selectedPersonType === 'shareholder') {
+                        return '股东';
+                    } else if (this.operatorForm.selectedPersonType === 'director') {
+                        return this.uboForm.directors[this.operatorForm.selectedPersonIndex]?.position || '';
+                    }
+                    return '';
+                },
+
+                // ========== KYC个人认证相关方法 ==========
+                getCurrentKYCPersonName() {
+                    if (this.kycForm.personType === 'shareholder' && this.kycForm.personIndex >= 0) {
+                        return this.uboForm.shareholders[this.kycForm.personIndex]?.name || '';
+                    } else if (this.kycForm.personType === 'director' && this.kycForm.personIndex >= 0) {
+                        return this.uboForm.directors[this.kycForm.personIndex]?.name || '';
+                    } else if (this.kycForm.personType === 'operator') {
+                        return this.operatorForm.name;
+                    }
+                    return '';
+                },
+
+                selectIdType(type) {
+                    this.kycForm.idType = type;
+                    console.log('选择证件类型:', type);
+                },
+
+                goToKYCCapture() {
+                    this.currentStep = 'kyc-capture-id';
+                },
+
+                captureIdFront() {
+                    console.log('拍摄身份证正面');
+                    // 模拟拍摄
+                    setTimeout(() => {
+                        this.kycForm.idFrontCaptured = true;
+                    }, 500);
+                },
+
+                captureIdBack() {
+                    console.log('拍摄身份证反面');
+                    // 模拟拍摄
+                    setTimeout(() => {
+                        this.kycForm.idBackCaptured = true;
+                    }, 500);
+                },
+
+                capturePassport() {
+                    console.log('拍摄护照');
+                    // 模拟拍摄
+                    setTimeout(() => {
+                        this.kycForm.passportCaptured = true;
+                    }, 500);
+                },
+
+                canProceedToFaceRecognition() {
+                    if (this.kycForm.idType === 'id_card') {
+                        return this.kycForm.idFrontCaptured && this.kycForm.idBackCaptured;
+                    } else if (this.kycForm.idType === 'passport') {
+                        return this.kycForm.passportCaptured;
+                    }
+                    return false;
+                },
+
+                startOCR() {
+                    console.log('开始OCR识别');
+                    this.kycForm.isOCRProcessing = true;
+                    
+                    // 模拟OCR识别过程
+                    setTimeout(() => {
+                        this.kycForm.isOCRProcessing = false;
+                        
+                        // 模拟识别结果 - 使用当前人员姓名并填充其他模拟数据
+                        const personName = this.getCurrentKYCPersonName();
+                        if (this.kycForm.idType === 'passport') {
+                            this.kycForm.ocrData = {
+                                name: personName || 'ZHANG San',
+                                gender: '男',
+                                ethnicity: '-',
+                                birthDate: '1990-01-01',
+                                idNumber: 'E12345678',
+                                address: 'Beijing, China',
+                                issuingAuthority: 'Ministry of Public Security',
+                                validPeriod: '2020-01-01 - 2030-01-01'
+                            };
+                        } else {
+                            this.kycForm.ocrData = {
+                                name: personName || '张三',
+                                gender: '男',
+                                ethnicity: '汉',
+                                birthDate: '1990年1月1日',
+                                idNumber: '110101199001011234',
+                                address: '北京市东城区长安街1号',
+                                issuingAuthority: '北京市公安局东城分局',
+                                validPeriod: '2020.01.01-2030.01.01'
+                            };
+                        }
+                        
+                        this.currentStep = 'kyc-face-recognition';
+                    }, 2000);
+                },
+
+                startFaceRecognition() {
+                    console.log('开始人脸识别');
+                    this.kycForm.isFaceRecognizing = true;
+                    this.kycForm.faceRecognitionStatus = '';
+                    
+                    // 模拟识别步骤
+                    const steps = [
+                        '正在启动摄像头...',
+                        '检测人脸位置...',
+                        '进行活体检测...',
+                        '提取面部特征...',
+                        '与证件照片比对中...',
+                        '分析相似度...'
+                    ];
+                    
+                    let currentStep = 0;
+                    const stepInterval = setInterval(() => {
+                        if (currentStep < steps.length) {
+                            this.kycForm.recognitionStep = steps[currentStep];
+                            currentStep++;
+                        } else {
+                            clearInterval(stepInterval);
+                            
+                            // 模拟识别结果（95%概率成功）
+                            const success = Math.random() > 0.05;
+                            
+                            setTimeout(() => {
+                                this.kycForm.isFaceRecognizing = false;
+                                this.kycForm.faceRecognitionStatus = success ? 'success' : 'failed';
+                            }, 500);
+                        }
+                    }, 800);
+                },
+
+                submitKYCVerification() {
+                    console.log('提交KYC认证信息');
+                    
+                    // 更新对应人员的KYC状态为completed
+                    if (this.kycForm.personType === 'shareholder' && this.kycForm.personIndex >= 0) {
+                        this.uboForm.shareholders[this.kycForm.personIndex].kycStatus = 'completed';
+                        // 返回到UBO身份认证页面
+                        this.currentStep = 'ubo-verification';
+                    } else if (this.kycForm.personType === 'director' && this.kycForm.personIndex >= 0) {
+                        this.uboForm.directors[this.kycForm.personIndex].kycStatus = 'completed';
+                        // 返回到UBO身份认证页面
+                        this.currentStep = 'ubo-verification';
+                    } else if (this.kycForm.personType === 'operator') {
+                        this.operatorForm.kycCompleted = true;
+                        // 返回到账户操作人完成页面
+                        this.currentStep = 'operator-kyc-complete';
+                    }
+                },
+
+                cancelKYC() {
+                    console.log('取消KYC认证');
+                    
+                    // 重置认证中状态
+                    if (this.kycForm.personType === 'shareholder' && this.kycForm.personIndex >= 0) {
+                        this.uboForm.shareholders[this.kycForm.personIndex].kycStatus = 'pending';
+                        // 返回到UBO身份认证页面
+                        this.currentStep = 'ubo-verification';
+                    } else if (this.kycForm.personType === 'director' && this.kycForm.personIndex >= 0) {
+                        this.uboForm.directors[this.kycForm.personIndex].kycStatus = 'pending';
+                        // 返回到UBO身份认证页面
+                        this.currentStep = 'ubo-verification';
+                    } else if (this.kycForm.personType === 'operator') {
+                        // 返回到账户操作人选择页面
+                        this.currentStep = 'operator-select';
+                    }
+                },
+
+                resetKYCForm() {
+                    this.kycForm.idType = '';
+                    this.kycForm.idFrontCaptured = false;
+                    this.kycForm.idBackCaptured = false;
+                    this.kycForm.passportCaptured = false;
+                    this.kycForm.isOCRProcessing = false;
+                    this.kycForm.isFaceRecognizing = false;
+                    this.kycForm.faceRecognitionStatus = '';
+                    this.kycForm.recognitionStep = '';
+                    this.kycForm.ocrData = {
+                        name: '',
+                        gender: '男',
+                        ethnicity: '汉',
+                        birthDate: '',
+                        idNumber: '',
+                        address: '',
+                        issuingAuthority: '',
+                        validPeriod: ''
+                    };
+                },
+
+                // ========== 专业投资者相关方法 ==========
+                handlePIFileUpload(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    this.processPIFile(file);
+                },
+
+                handlePIFileDrop(e) {
+                    this.isDragOver = false;
+                    const file = e.dataTransfer.files[0];
+                    if (!file) return;
+                    this.processPIFile(file);
+                },
+
+                processPIFile(file) {
+                    const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        alert('仅支持PDF/JPG/PNG格式');
+                        return;
+                    }
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('单文件最大10MB');
+                        return;
+                    }
+                    this.piForm.assetProof = file;
+                },
+
+                removePIFile() {
+                    this.piForm.assetProof = null;
+                },
+
+                canSubmitPI() {
+                    return this.piForm.assetProof &&
+                           this.piForm.declaration.agreeToTerms;
+                },
+
+                goToRiskAssessment() {
+                    console.log('专业投资者认证完成，进入风险测评');
+                    this.currentStep = 'risk-welcome';
+                },
+
+                // ========== 最终提交 ==========
+                submitFinalApplication() {
+                    console.log('提交完整RWA机构认证申请');
+                    console.log('KYB:', this.kybForm);
+                    console.log('AML:', this.amlForm);
+                    console.log('UBO:', this.uboForm);
+                    console.log('PI:', this.piForm);
+                    console.log('Risk:', this.riskForm);
+                    
+                    // 跳转到最终成功页
+                    this.currentStep = 'final-success';
+                },
+
+                // ========== 风险测评相关方法 ==========
+                startRiskAssessment() {
+                    this.currentStep = 'risk-questionnaire';
+                },
+
+                selectRiskAnswer(index) {
+                    this.riskForm.answers[this.riskForm.currentQuestion] = index;
+                },
+
+                nextRiskQuestion() {
+                    if (this.riskForm.answers[this.riskForm.currentQuestion] !== null && this.riskForm.currentQuestion < 9) {
+                        this.riskForm.currentQuestion++;
+                    }
+                },
+
+                previousRiskQuestion() {
+                    if (this.riskForm.currentQuestion > 0) {
+                        this.riskForm.currentQuestion--;
+                    }
+                },
+
+                showRiskDeclaration() {
+                    this.currentStep = 'risk-declaration';
+                    this.riskForm.confirmDeclaration = false;
+                },
+
+                calculateRiskResult() {
+                    // 计算总分
+                    this.riskForm.totalScore = 0;
+                    this.riskForm.answers.forEach((answerIndex, questionIndex) => {
+                        if (answerIndex !== null) {
+                            this.riskForm.totalScore += this.riskQuestions[questionIndex].options[answerIndex].score;
+                        }
+                    });
+
+                    // 确定风险等级
+                    if (this.riskForm.totalScore <= 18) {
+                        this.riskForm.result.level = 'R1';
+                        this.riskForm.result.type = '保守型';
+                        this.riskForm.result.description = '贵机构风险承受能力较低，适合稳健保守的投资策略。';
+                        this.riskForm.result.suitableProducts = '货币基金、国债、银行存款、保本理财';
+                        this.currentStep = 'risk-result-fail';
+                    } else if (this.riskForm.totalScore <= 26) {
+                        this.riskForm.result.level = 'R2';
+                        this.riskForm.result.type = '稳健型';
+                        this.riskForm.result.description = '贵机构具备一定风险承受能力，适合稳健型投资策略。';
+                        this.riskForm.result.suitableProducts = '债券基金、稳健型理财、定期存款';
+                        this.currentStep = 'risk-result-fail';
+                    } else if (this.riskForm.totalScore <= 34) {
+                        this.riskForm.result.level = 'R3';
+                        this.riskForm.result.type = '平衡型';
+                        this.riskForm.result.description = '贵机构具备中等风险承受能力，适合平衡型投资策略。';
+                        this.riskForm.result.suitableProducts = '混合基金、指数基金、平衡型理财';
+                        this.currentStep = 'risk-result-fail';
+                    } else if (this.riskForm.totalScore <= 42) {
+                        this.riskForm.result.level = 'R4';
+                        this.riskForm.result.type = '成长型';
+                        this.riskForm.result.description = '贵机构具备较高风险承受能力，适合成长型投资策略，可参与高风险投资产品。';
+                        this.riskForm.result.suitableProducts = '股票基金、股票、高收益债券、RWA产品';
+                        this.currentStep = 'risk-result-pass';
+                    } else {
+                        this.riskForm.result.level = 'R5';
+                        this.riskForm.result.type = '进取型';
+                        this.riskForm.result.description = '贵机构具备极高风险承受能力，适合进取型投资策略，可参与各类高风险高收益产品。';
+                        this.riskForm.result.suitableProducts = '期货、期权、杠杆产品、衍生品、RWA产品';
+                        this.currentStep = 'risk-result-pass';
+                    }
+                },
+
+                retakeRiskAssessment() {
+                    // 重置风险测评数据
+                    this.riskForm.currentQuestion = 0;
+                    this.riskForm.answers = Array(10).fill(null);
+                    this.riskForm.totalScore = 0;
+                    this.riskForm.confirmDeclaration = false;
+                    this.currentStep = 'risk-welcome';
+                },
+
+                exitRiskAssessment() {
+                    alert('感谢您的参与。我们将为您推荐更适合的产品。');
+                    this.resetAndGoHome();
+                },
+
+                goToFinalDeclaration() {
+                    console.log('风险测评完成，进入最终确认页');
+                    this.currentStep = 'final-declaration';
+                },
+
+                resetAndGoHome() {
+                    // 重置所有表单
+                    this.kybForm = {
+                        companyName: '',
+                        registrationNumber: '',
+                        country: '',
+                        files: {},
+                        fileErrors: {}
+                    };
+                    this.kybErrors = { companyName: '', registrationNumber: '', country: '' };
+                    this.kybUploadIndex = 0;
+                    this.selectedCountryName = '';
+                    this.countrySearchText = '';
+                    
+                    this.amlForm = {
+                        ein: '',
+                        stateOfIncorporation: '',
+                        businessStreetAddress: '',
+                        city: '',
+                        state: '',
+                        zipCode: ''
+                    };
+                    
+                    this.uboForm = {
+                        shareholders: [],
+                        directors: [],
+                        hasUBOPersonnel: true,
+                        noPersonnelReason: '',
+                        noPersonnelProofs: [],
+                        declaration: {
+                            confirmAccuracy: false,
+                            confirmUpdates: false,
+                            confirmLegal: false,
+                            confirmCompliance: false
+                        }
+                    };
+                    
+                    this.operatorForm = {
+                        selectedPersonType: '',
+                        selectedPersonIndex: -1,
+                        name: '',
+                        position: '',
+                        kycCompleted: false
+                    };
+                    
+                    this.piForm = {
+                        assetProof: null,
+                        declaration: {
+                            agreeToTerms: false
+                        }
+                    };
+                    
+                    this.riskForm = {
+                        currentQuestion: 0,
+                        answers: Array(10).fill(null),
+                        totalScore: 0,
+                        confirmDeclaration: false,
+                        result: {
+                            level: '',
+                            type: '',
+                            description: '',
+                            suitableProducts: ''
+                        }
+                    };
+                    
+                    this.finalDeclaration = {
+                        confirmed: false
+                    };
+                    
+                    this.kycForm = {
+                        personType: '',
+                        personIndex: -1,
+                        idType: '',
+                        idFrontCaptured: false,
+                        idBackCaptured: false,
+                        passportCaptured: false,
+                        isOCRProcessing: false,
+                        isFaceRecognizing: false,
+                        faceRecognitionStatus: '',
+                        recognitionStep: '',
+                        ocrData: {
+                            name: '',
+                            gender: '男',
+                            ethnicity: '汉',
+                            birthDate: '',
+                            idNumber: '',
+                            address: '',
+                            issuingAuthority: '',
+                            validPeriod: ''
+                        }
+                    };
+                    
+                    this.currentStep = 'home';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

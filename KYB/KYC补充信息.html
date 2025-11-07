@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC补充信息</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="kycSupplementApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">KYC 补充信息</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="page='home'">首页</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">补充信息进度</span>
+                    <span class="text-sm text-gray-500" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${getProgressPercentage()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>填写信息</span>
+                    <span>提交完成</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <section x-show="page==='home'" x-transition>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=600&q=80" alt="补充信息" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-xl font-semibold mb-2">补充个人信息</h2>
+                <p class="mb-4 text-gray-600 text-center">为完成KYC认证，请补充以下必要信息以符合监管要求。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+                        <p class="text-sm text-green-700 mb-2">
+                            <strong>✓ 已完成身份验证</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            您的身份证件已通过审核，现在需要补充一些额外信息。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>需要填写的信息：</strong>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• 居住地址</li>
+                            <li>• 出生地信息</li>
+                            <li>• 职业和行业</li>
+                            <li>• 资金来源</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="w-full max-w-md">
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='supplement-info'">开始填写</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 补充信息页面 -->
+        <section x-show="page==='supplement-info'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">请填写以下信息</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>重要提示：</strong>请如实填写以下信息，这些信息将用于符合美国金融监管要求（BSA/AML）。
+                    </p>
+                </div>
+
+                <div class="space-y-6 mb-8">
+                    
+                    <!-- 居住地址 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            居住地址 <span class="text-red-500">*</span>
+                        </label>
+                        
+                        <!-- 国家 -->
+                        <select x-model="form.country" 
+                                @change="form.state = ''; form.city = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3">
+                            <option value="">请选择国家</option>
+                            <option value="US">美国 (United States)</option>
+                            <option value="CN">中国 (China)</option>
+                            <option value="GB">英国 (United Kingdom)</option>
+                            <option value="CA">加拿大 (Canada)</option>
+                            <option value="AU">澳大利亚 (Australia)</option>
+                            <option value="SG">新加坡 (Singapore)</option>
+                            <option value="JP">日本 (Japan)</option>
+                            <option value="KR">韩国 (South Korea)</option>
+                        </select>
+                        
+                        <!-- 州/省 -->
+                        <select x-model="form.state" 
+                                @change="form.city = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3">
+                            <option value="">请选择州/省</option>
+                            <template x-for="state in getStatesForCountry(form.country)" :key="state.value">
+                                <option :value="state.value" x-text="state.label"></option>
+                            </template>
+                        </select>
+                        
+                        <!-- 城市 -->
+                        <select x-model="form.city" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3">
+                            <option value="">请选择城市</option>
+                            <template x-for="city in getCitiesForState(form.country, form.state)" :key="city.value">
+                                <option :value="city.value" x-text="city.label"></option>
+                            </template>
+                        </select>
+                        
+                        <!-- 详细地址 -->
+                        <input type="text" x-model="form.residentialAddress" 
+                               placeholder="请输入详细地址 (街道、门牌号、公寓号等)"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3">
+                        
+                        <!-- 邮编 -->
+                        <input type="text" x-model="form.zipCode" 
+                               placeholder="请输入邮政编码 (ZIP/Postal Code)"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        
+                        <p class="text-xs text-gray-500 mt-2">请按顺序填写您当前的主要居住地址</p>
+                    </div>
+
+                    <!-- 出生地 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生地 <span class="text-red-500">*</span>
+                        </label>
+                        
+                        <!-- 出生国家 -->
+                        <select x-model="form.birthCountry" 
+                                @change="form.birthState = ''; form.birthCity = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3">
+                            <option value="">请选择出生国家</option>
+                            <option value="US">美国 (United States)</option>
+                            <option value="CN">中国 (China)</option>
+                            <option value="GB">英国 (United Kingdom)</option>
+                            <option value="CA">加拿大 (Canada)</option>
+                            <option value="AU">澳大利亚 (Australia)</option>
+                            <option value="JP">日本 (Japan)</option>
+                            <option value="KR">韩国 (South Korea)</option>
+                            <option value="SG">新加坡 (Singapore)</option>
+                        </select>
+                        
+                        <!-- 出生州/省 -->
+                        <select x-model="form.birthState" 
+                                @change="form.birthCity = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3">
+                            <option value="">请选择出生州/省</option>
+                            <template x-for="state in getStatesForCountry(form.birthCountry)" :key="state.value">
+                                <option :value="state.value" x-text="state.label"></option>
+                            </template>
+                        </select>
+                        
+                        <!-- 出生城市 -->
+                        <select x-model="form.birthCity" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择出生城市</option>
+                            <template x-for="city in getCitiesForState(form.birthCountry, form.birthState)" :key="city.value">
+                                <option :value="city.value" x-text="city.label"></option>
+                            </template>
+                        </select>
+                        
+                        <p class="text-xs text-gray-500 mt-2">请按顺序填写您的出生地信息</p>
+                    </div>
+
+                    <!-- 职业 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            职业 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="form.occupation" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择您的职业</option>
+                            <option value="employed">受雇员工 (Employed)</option>
+                            <option value="self_employed">自雇/个体经营 (Self-Employed)</option>
+                            <option value="business_owner">企业主 (Business Owner)</option>
+                            <option value="professional">专业人士 (Professional)</option>
+                            <option value="manager">管理人员 (Manager/Executive)</option>
+                            <option value="retired">退休 (Retired)</option>
+                            <option value="student">学生 (Student)</option>
+                            <option value="unemployed">待业 (Unemployed)</option>
+                            <option value="other">其他 (Other)</option>
+                        </select>
+                        <input x-show="form.occupation === 'other'" 
+                               type="text" 
+                               x-model="form.occupationOther" 
+                               placeholder="请说明具体职业"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-3">
+                        <p class="text-xs text-gray-500 mt-2">请选择最符合您当前状况的职业类型</p>
+                    </div>
+
+                    <!-- 所属行业 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            所属行业 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="form.industry" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择所属行业</option>
+                            <option value="technology">科技/IT (Technology/IT)</option>
+                            <option value="finance">金融/银行 (Finance/Banking)</option>
+                            <option value="healthcare">医疗/健康 (Healthcare)</option>
+                            <option value="education">教育 (Education)</option>
+                            <option value="retail">零售/电商 (Retail/E-commerce)</option>
+                            <option value="manufacturing">制造业 (Manufacturing)</option>
+                            <option value="real_estate">房地产 (Real Estate)</option>
+                            <option value="consulting">咨询服务 (Consulting)</option>
+                            <option value="legal">法律 (Legal)</option>
+                            <option value="media">媒体/娱乐 (Media/Entertainment)</option>
+                            <option value="hospitality">酒店/餐饮 (Hospitality)</option>
+                            <option value="transportation">交通/物流 (Transportation/Logistics)</option>
+                            <option value="energy">能源 (Energy)</option>
+                            <option value="agriculture">农业 (Agriculture)</option>
+                            <option value="government">政府/公共服务 (Government/Public Service)</option>
+                            <option value="nonprofit">非营利组织 (Non-profit)</option>
+                            <option value="other">其他 (Other)</option>
+                        </select>
+                        <input x-show="form.industry === 'other'" 
+                               type="text" 
+                               x-model="form.industryOther" 
+                               placeholder="请说明具体行业"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-3">
+                        <p class="text-xs text-gray-500 mt-2">请选择您工作或经营的主要行业</p>
+                    </div>
+
+                    <!-- 资金来源 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            资金来源 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="form.sourceOfFunds" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择主要资金来源</option>
+                            <option value="salary">工资/薪水 (Salary/Wages)</option>
+                            <option value="business">商业/企业收入 (Business Income)</option>
+                            <option value="investment">投资收益 (Investment Income)</option>
+                            <option value="rental">租金收入 (Rental Income)</option>
+                            <option value="pension">退休金/养老金 (Pension/Retirement)</option>
+                            <option value="inheritance">遗产/赠与 (Inheritance/Gift)</option>
+                            <option value="savings">储蓄 (Savings)</option>
+                            <option value="family_support">家庭支持 (Family Support)</option>
+                            <option value="freelance">自由职业 (Freelance/Contract Work)</option>
+                            <option value="royalty">版税/特许权使用费 (Royalty)</option>
+                            <option value="other">其他 (Other)</option>
+                        </select>
+                        <input x-show="form.sourceOfFunds === 'other'" 
+                               type="text" 
+                               x-model="form.sourceOfFundsOther" 
+                               placeholder="请说明具体资金来源"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-3">
+                        <p class="text-xs text-gray-500 mt-2">请选择您的主要资金来源</p>
+                    </div>
+
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canSubmit()"
+                            :class="{'opacity-50': !canSubmit()}"
+                            @click="submitInfo()">提交</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 提交成功页面 -->
+        <section x-show="page==='success'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">信息提交成功</h2>
+                    <p class="text-gray-600">您的补充信息已成功提交</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>✓ KYC认证已完成</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        您的身份认证和补充信息已全部完成。我们的合规团队将在1-3个工作日内进行最终审核。
+                    </p>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">提交信息摘要</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">居住地：</span>
+                            <span class="font-semibold text-gray-800 text-right" x-text="`${form.country}, ${form.state}, ${form.city}`"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">出生地：</span>
+                            <span class="font-semibold text-gray-800 text-right" x-text="`${form.birthCountry}, ${form.birthState}, ${form.birthCity}`"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">职业：</span>
+                            <span class="font-semibold text-gray-800" x-text="getOccupationText()"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">所属行业：</span>
+                            <span class="font-semibold text-gray-800" x-text="getIndustryText()"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">资金来源：</span>
+                            <span class="font-semibold text-gray-800" x-text="getFundsSourceText()"></span>
+                        </div>
+                        <div class="flex justify-between pt-3 border-t">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-semibold text-gray-800" x-text="new Date().toLocaleString('zh-CN')"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="page = 'home'; resetForm()" 
+                        class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                    返回首页
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function kycSupplementApp() {
+            return {
+                page: 'home',
+                
+                // 表单数据
+                form: {
+                    // 居住地址
+                    residentialAddress: '',
+                    city: '',
+                    state: '',
+                    zipCode: '',
+                    country: '',
+                    // 出生地
+                    birthCountry: '',
+                    birthState: '',
+                    birthCity: '',
+                    // 职业
+                    occupation: '',
+                    occupationOther: '',
+                    // 所属行业
+                    industry: '',
+                    industryOther: '',
+                    // 资金来源
+                    sourceOfFunds: '',
+                    sourceOfFundsOther: ''
+                },
+
+                // 州/省数据
+                statesData: {
+                    'US': [
+                        { value: 'CA', label: '加利福尼亚州 (California)' },
+                        { value: 'NY', label: '纽约州 (New York)' },
+                        { value: 'TX', label: '德克萨斯州 (Texas)' },
+                        { value: 'FL', label: '佛罗里达州 (Florida)' },
+                        { value: 'WA', label: '华盛顿州 (Washington)' },
+                        { value: 'IL', label: '伊利诺伊州 (Illinois)' },
+                        { value: 'MA', label: '马萨诸塞州 (Massachusetts)' },
+                        { value: 'PA', label: '宾夕法尼亚州 (Pennsylvania)' },
+                        { value: 'NJ', label: '新泽西州 (New Jersey)' },
+                        { value: 'GA', label: '佐治亚州 (Georgia)' }
+                    ],
+                    'CN': [
+                        { value: 'BJ', label: '北京市 (Beijing)' },
+                        { value: 'SH', label: '上海市 (Shanghai)' },
+                        { value: 'GD', label: '广东省 (Guangdong)' },
+                        { value: 'ZJ', label: '浙江省 (Zhejiang)' },
+                        { value: 'JS', label: '江苏省 (Jiangsu)' },
+                        { value: 'SD', label: '山东省 (Shandong)' },
+                        { value: 'HB', label: '湖北省 (Hubei)' },
+                        { value: 'SC', label: '四川省 (Sichuan)' },
+                        { value: 'HN', label: '湖南省 (Hunan)' },
+                        { value: 'FJ', label: '福建省 (Fujian)' }
+                    ],
+                    'GB': [
+                        { value: 'ENG', label: '英格兰 (England)' },
+                        { value: 'SCT', label: '苏格兰 (Scotland)' },
+                        { value: 'WLS', label: '威尔士 (Wales)' },
+                        { value: 'NIR', label: '北爱尔兰 (Northern Ireland)' }
+                    ],
+                    'CA': [
+                        { value: 'ON', label: '安大略省 (Ontario)' },
+                        { value: 'QC', label: '魁北克省 (Quebec)' },
+                        { value: 'BC', label: '不列颠哥伦比亚省 (British Columbia)' },
+                        { value: 'AB', label: '阿尔伯塔省 (Alberta)' },
+                        { value: 'MB', label: '马尼托巴省 (Manitoba)' },
+                        { value: 'SK', label: '萨斯喀彻温省 (Saskatchewan)' }
+                    ],
+                    'AU': [
+                        { value: 'NSW', label: '新南威尔士州 (New South Wales)' },
+                        { value: 'VIC', label: '维多利亚州 (Victoria)' },
+                        { value: 'QLD', label: '昆士兰州 (Queensland)' },
+                        { value: 'WA', label: '西澳大利亚州 (Western Australia)' },
+                        { value: 'SA', label: '南澳大利亚州 (South Australia)' },
+                        { value: 'TAS', label: '塔斯马尼亚州 (Tasmania)' }
+                    ],
+                    'SG': [
+                        { value: 'SG', label: '新加坡 (Singapore)' }
+                    ],
+                    'JP': [
+                        { value: 'Tokyo', label: '东京都 (Tokyo)' },
+                        { value: 'Osaka', label: '大阪府 (Osaka)' },
+                        { value: 'Kyoto', label: '京都府 (Kyoto)' },
+                        { value: 'Kanagawa', label: '神奈川县 (Kanagawa)' },
+                        { value: 'Hokkaido', label: '北海道 (Hokkaido)' }
+                    ],
+                    'KR': [
+                        { value: 'Seoul', label: '首尔特别市 (Seoul)' },
+                        { value: 'Busan', label: '釜山广域市 (Busan)' },
+                        { value: 'Incheon', label: '仁川广域市 (Incheon)' },
+                        { value: 'Gyeonggi', label: '京畿道 (Gyeonggi)' },
+                        { value: 'Gangwon', label: '江原道 (Gangwon)' }
+                    ]
+                },
+
+                // 城市数据
+                citiesData: {
+                    'US': {
+                        'CA': [
+                            { value: 'Los Angeles', label: '洛杉矶 (Los Angeles)' },
+                            { value: 'San Francisco', label: '旧金山 (San Francisco)' },
+                            { value: 'San Diego', label: '圣地亚哥 (San Diego)' },
+                            { value: 'San Jose', label: '圣何塞 (San Jose)' },
+                            { value: 'Sacramento', label: '萨克拉门托 (Sacramento)' }
+                        ],
+                        'NY': [
+                            { value: 'New York City', label: '纽约市 (New York City)' },
+                            { value: 'Buffalo', label: '布法罗 (Buffalo)' },
+                            { value: 'Rochester', label: '罗切斯特 (Rochester)' },
+                            { value: 'Albany', label: '奥尔巴尼 (Albany)' }
+                        ],
+                        'TX': [
+                            { value: 'Houston', label: '休斯顿 (Houston)' },
+                            { value: 'Dallas', label: '达拉斯 (Dallas)' },
+                            { value: 'Austin', label: '奥斯汀 (Austin)' },
+                            { value: 'San Antonio', label: '圣安东尼奥 (San Antonio)' }
+                        ],
+                        'FL': [
+                            { value: 'Miami', label: '迈阿密 (Miami)' },
+                            { value: 'Orlando', label: '奥兰多 (Orlando)' },
+                            { value: 'Tampa', label: '坦帕 (Tampa)' },
+                            { value: 'Jacksonville', label: '杰克逊维尔 (Jacksonville)' }
+                        ],
+                        'WA': [
+                            { value: 'Seattle', label: '西雅图 (Seattle)' },
+                            { value: 'Spokane', label: '斯波坎 (Spokane)' },
+                            { value: 'Tacoma', label: '塔科马 (Tacoma)' }
+                        ]
+                    },
+                    'CN': {
+                        'BJ': [
+                            { value: 'Beijing', label: '北京 (Beijing)' }
+                        ],
+                        'SH': [
+                            { value: 'Shanghai', label: '上海 (Shanghai)' }
+                        ],
+                        'GD': [
+                            { value: 'Guangzhou', label: '广州 (Guangzhou)' },
+                            { value: 'Shenzhen', label: '深圳 (Shenzhen)' },
+                            { value: 'Dongguan', label: '东莞 (Dongguan)' },
+                            { value: 'Foshan', label: '佛山 (Foshan)' },
+                            { value: 'Zhuhai', label: '珠海 (Zhuhai)' }
+                        ],
+                        'ZJ': [
+                            { value: 'Hangzhou', label: '杭州 (Hangzhou)' },
+                            { value: 'Ningbo', label: '宁波 (Ningbo)' },
+                            { value: 'Wenzhou', label: '温州 (Wenzhou)' }
+                        ],
+                        'JS': [
+                            { value: 'Nanjing', label: '南京 (Nanjing)' },
+                            { value: 'Suzhou', label: '苏州 (Suzhou)' },
+                            { value: 'Wuxi', label: '无锡 (Wuxi)' }
+                        ]
+                    },
+                    'GB': {
+                        'ENG': [
+                            { value: 'London', label: '伦敦 (London)' },
+                            { value: 'Manchester', label: '曼彻斯特 (Manchester)' },
+                            { value: 'Birmingham', label: '伯明翰 (Birmingham)' },
+                            { value: 'Liverpool', label: '利物浦 (Liverpool)' }
+                        ],
+                        'SCT': [
+                            { value: 'Edinburgh', label: '爱丁堡 (Edinburgh)' },
+                            { value: 'Glasgow', label: '格拉斯哥 (Glasgow)' }
+                        ],
+                        'WLS': [
+                            { value: 'Cardiff', label: '加的夫 (Cardiff)' }
+                        ],
+                        'NIR': [
+                            { value: 'Belfast', label: '贝尔法斯特 (Belfast)' }
+                        ]
+                    },
+                    'CA': {
+                        'ON': [
+                            { value: 'Toronto', label: '多伦多 (Toronto)' },
+                            { value: 'Ottawa', label: '渥太华 (Ottawa)' },
+                            { value: 'Mississauga', label: '密西沙加 (Mississauga)' }
+                        ],
+                        'QC': [
+                            { value: 'Montreal', label: '蒙特利尔 (Montreal)' },
+                            { value: 'Quebec City', label: '魁北克市 (Quebec City)' }
+                        ],
+                        'BC': [
+                            { value: 'Vancouver', label: '温哥华 (Vancouver)' },
+                            { value: 'Victoria', label: '维多利亚 (Victoria)' }
+                        ],
+                        'AB': [
+                            { value: 'Calgary', label: '卡尔加里 (Calgary)' },
+                            { value: 'Edmonton', label: '埃德蒙顿 (Edmonton)' }
+                        ]
+                    },
+                    'AU': {
+                        'NSW': [
+                            { value: 'Sydney', label: '悉尼 (Sydney)' },
+                            { value: 'Newcastle', label: '纽卡斯尔 (Newcastle)' }
+                        ],
+                        'VIC': [
+                            { value: 'Melbourne', label: '墨尔本 (Melbourne)' },
+                            { value: 'Geelong', label: '吉朗 (Geelong)' }
+                        ],
+                        'QLD': [
+                            { value: 'Brisbane', label: '布里斯班 (Brisbane)' },
+                            { value: 'Gold Coast', label: '黄金海岸 (Gold Coast)' }
+                        ],
+                        'WA': [
+                            { value: 'Perth', label: '珀斯 (Perth)' }
+                        ]
+                    },
+                    'SG': {
+                        'SG': [
+                            { value: 'Singapore', label: '新加坡 (Singapore)' }
+                        ]
+                    },
+                    'JP': {
+                        'Tokyo': [
+                            { value: 'Tokyo', label: '东京 (Tokyo)' }
+                        ],
+                        'Osaka': [
+                            { value: 'Osaka', label: '大阪 (Osaka)' }
+                        ],
+                        'Kyoto': [
+                            { value: 'Kyoto', label: '京都 (Kyoto)' }
+                        ]
+                    },
+                    'KR': {
+                        'Seoul': [
+                            { value: 'Seoul', label: '首尔 (Seoul)' }
+                        ],
+                        'Busan': [
+                            { value: 'Busan', label: '釜山 (Busan)' }
+                        ]
+                    }
+                },
+
+                // 获取指定国家的州/省列表
+                getStatesForCountry(countryCode) {
+                    if (!countryCode) return [];
+                    return this.statesData[countryCode] || [];
+                },
+
+                // 获取指定国家和州/省的城市列表
+                getCitiesForState(countryCode, stateCode) {
+                    if (!countryCode || !stateCode) return [];
+                    const countryData = this.citiesData[countryCode];
+                    if (!countryData) return [];
+                    return countryData[stateCode] || [];
+                },
+
+                canSubmit() {
+                    const basicFields = this.form.country &&
+                                       this.form.state && 
+                                       this.form.city && 
+                                       this.form.residentialAddress && 
+                                       this.form.zipCode &&
+                                       this.form.birthCountry && 
+                                       this.form.birthState && 
+                                       this.form.birthCity && 
+                                       this.form.occupation && 
+                                       this.form.industry && 
+                                       this.form.sourceOfFunds;
+                    
+                    // 检查"其他"选项是否已填写
+                    const occupationValid = this.form.occupation !== 'other' || this.form.occupationOther;
+                    const industryValid = this.form.industry !== 'other' || this.form.industryOther;
+                    const fundsValid = this.form.sourceOfFunds !== 'other' || this.form.sourceOfFundsOther;
+                    
+                    return basicFields && occupationValid && industryValid && fundsValid;
+                },
+
+                submitInfo() {
+                    this.page = 'success';
+                },
+
+                getOccupationText() {
+                    if (this.form.occupation === 'other') {
+                        return this.form.occupationOther;
+                    }
+                    const occupations = {
+                        'employed': '受雇员工',
+                        'self_employed': '自雇/个体经营',
+                        'business_owner': '企业主',
+                        'professional': '专业人士',
+                        'manager': '管理人员',
+                        'retired': '退休',
+                        'student': '学生',
+                        'unemployed': '待业'
+                    };
+                    return occupations[this.form.occupation] || this.form.occupation;
+                },
+
+                getIndustryText() {
+                    if (this.form.industry === 'other') {
+                        return this.form.industryOther;
+                    }
+                    const industries = {
+                        'technology': '科技/IT',
+                        'finance': '金融/银行',
+                        'healthcare': '医疗/健康',
+                        'education': '教育',
+                        'retail': '零售/电商',
+                        'manufacturing': '制造业',
+                        'real_estate': '房地产',
+                        'consulting': '咨询服务',
+                        'legal': '法律',
+                        'media': '媒体/娱乐',
+                        'hospitality': '酒店/餐饮',
+                        'transportation': '交通/物流',
+                        'energy': '能源',
+                        'agriculture': '农业',
+                        'government': '政府/公共服务',
+                        'nonprofit': '非营利组织'
+                    };
+                    return industries[this.form.industry] || this.form.industry;
+                },
+
+                getFundsSourceText() {
+                    if (this.form.sourceOfFunds === 'other') {
+                        return this.form.sourceOfFundsOther;
+                    }
+                    const sources = {
+                        'salary': '工资/薪水',
+                        'business': '商业/企业收入',
+                        'investment': '投资收益',
+                        'rental': '租金收入',
+                        'pension': '退休金/养老金',
+                        'inheritance': '遗产/赠与',
+                        'savings': '储蓄',
+                        'family_support': '家庭支持',
+                        'freelance': '自由职业',
+                        'royalty': '版税/特许权使用费'
+                    };
+                    return sources[this.form.sourceOfFunds] || this.form.sourceOfFunds;
+                },
+
+                resetForm() {
+                    this.form = {
+                        residentialAddress: '',
+                        city: '',
+                        state: '',
+                        zipCode: '',
+                        country: '',
+                        birthCountry: '',
+                        birthState: '',
+                        birthCity: '',
+                        occupation: '',
+                        occupationOther: '',
+                        industry: '',
+                        industryOther: '',
+                        sourceOfFunds: '',
+                        sourceOfFundsOther: ''
+                    };
+                },
+
+                getProgressPercentage() {
+                    if (this.page === 'supplement-info') return 50;
+                    if (this.page === 'success') return 100;
+                    return 0;
+                },
+
+                getProgressText() {
+                    if (this.page === 'supplement-info') return '填写补充信息';
+                    if (this.page === 'success') return '提交完成';
+                    return '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

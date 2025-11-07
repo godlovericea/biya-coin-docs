@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWA网站注册认证流程图</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .flow-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .flow-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .flow-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .flow-box.start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .flow-box.decision {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 50px;
+        }
+        
+        .flow-box.process {
+            background: #f7fafc;
+            border: 2px solid #4299e1;
+        }
+        
+        .flow-box.end {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .flow-box.institutional {
+            border-color: #ed8936;
+            background: #fffaf0;
+        }
+        
+        .flow-box.personal {
+            border-color: #9f7aea;
+            background: #faf5ff;
+        }
+        
+        .arrow-down {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid white;
+            margin: 0 auto;
+        }
+        
+        .arrow-line {
+            width: 2px;
+            background: white;
+            margin: 0 auto;
+        }
+        
+        .branch-arrow {
+            position: relative;
+        }
+        
+        .branch-arrow::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background: white;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .label {
+            background: white;
+            color: #667eea;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .path-label {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .path-label.institutional-label {
+            background: #feebc8;
+            color: #c05621;
+        }
+        
+        .path-label.personal-label {
+            background: #e9d8fd;
+            color: #6b46c1;
+        }
+        
+        .vertical-line {
+            width: 2px;
+            height: 60px;
+            background: white;
+            margin: 0 auto;
+        }
+        
+        .horizontal-line {
+            height: 2px;
+            background: white;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .step-number.institutional-num {
+            background: #ed8936;
+        }
+        
+        .step-number.personal-num {
+            background: #9f7aea;
+        }
+        
+        .sub-steps {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #cbd5e0;
+        }
+        
+        .sub-step-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 12px;
+            color: #4a5568;
+        }
+        
+        .sub-step-dot {
+            width: 6px;
+            height: 6px;
+            background: #4299e1;
+            border-radius: 50%;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .sub-step-dot.institutional-dot {
+            background: #ed8936;
+        }
+        
+        .sub-step-dot.personal-dot {
+            background: #9f7aea;
+        }
+    </style>
+</head>
+<body>
+    <div class="flow-container">
+        <!-- 标题 -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-4">RWA 网站注册认证流程</h1>
+            <p class="text-white text-lg opacity-90">从注册到完成认证的完整流程图</p>
+        </div>
+
+        <!-- 第一步：邮箱注册 -->
+        <div class="flow-box start max-w-md mx-auto">
+            <div class="text-3xl mb-3">📧</div>
+            <div class="text-2xl font-bold mb-2">邮箱注册</div>
+            <div class="text-sm opacity-90">用户填写邮箱、密码，完成注册</div>
+        </div>
+
+        <!-- 箭头 -->
+        <div class="vertical-line"></div>
+
+        <!-- 第二步：选择认证类型 -->
+        <div class="flow-box decision max-w-md mx-auto">
+            <div class="text-3xl mb-3">🔀</div>
+            <div class="text-2xl font-bold mb-2">选择认证类型</div>
+            <div class="text-sm opacity-90">机构认证 或 个人认证</div>
+        </div>
+
+        <!-- 分叉箭头 -->
+        <div class="vertical-line"></div>
+
+        <!-- 两条路径 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <!-- 机构认证路径 -->
+            <div class="space-y-0">
+                <div class="path-label institutional-label">🏢 机构认证路径</div>
+                
+                <div class="vertical-line" style="height: 40px;"></div>
+
+                <!-- 步骤1: KYB -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">1</div>
+                    <div class="text-3xl mb-3">🏛️</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">KYB 认证</div>
+                    <div class="text-sm text-gray-600">
+                        机构身份认证<br>
+                        上传营业执照、公司证明等材料
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>国家选择页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>材料清单页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>文件上传页（循环）</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤2: 合规审核 -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">2</div>
+                    <div class="text-3xl mb-3">🛡️</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">合规审核</div>
+                    <div class="text-sm text-gray-600">
+                        企业合规性审核<br>
+                        根据相关地区合规要求进行审核
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>补充信息表单页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤3: UBO -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">3</div>
+                    <div class="text-3xl mb-3">👥</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">UBO 认证</div>
+                    <div class="text-sm text-gray-600">
+                        最终受益人认证<br>
+                        添加股东/实际控制人信息，完成KYC认证
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>添加人员页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>身份认证页（KYC）</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>声明确认页（含签名）</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤4: 账户操作人认证 -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">4</div>
+                    <div class="text-3xl mb-3">👨‍💼</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">账户操作人认证</div>
+                    <div class="text-sm text-gray-600">
+                        设置账户操作人<br>
+                        选择人员并完成人脸识别验证
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>选择操作人页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>KYC认证页（如需）</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>认证完成页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤5: 专业投资者认证（机构） -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">5</div>
+                    <div class="text-3xl mb-3">💼</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">专业投资者认证（机构）</div>
+                    <div class="text-sm text-gray-600">
+                        财务资格认证<br>
+                        上传总资产证明、声明确认
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>资产证明上传页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤6: 机构风险测评 -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">6</div>
+                    <div class="text-3xl mb-3">📊</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">机构风险测评</div>
+                    <div class="text-sm text-gray-600">
+                        风险承受能力评估<br>
+                        完成问卷调查（需达到R4及以上）
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>测评欢迎页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>问卷答题页（10题）</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>声明确认页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>测评结果页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤7: 最终确认 -->
+                <div class="flow-box institutional">
+                    <div class="step-number institutional-num">7</div>
+                    <div class="text-3xl mb-3">✅</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">最终确认</div>
+                    <div class="text-sm text-gray-600">
+                        汇总确认所有认证信息<br>
+                        最终声明并提交申请
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>最终确认页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot institutional-dot"></div>
+                            <span>提交成功页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #ed8936;"></div>
+
+                <!-- 步骤8: 等待审核 -->
+                <div class="flow-box end">
+                    <div class="text-3xl mb-3">⏳</div>
+                    <div class="text-xl font-bold mb-2">等待管理员审核</div>
+                    <div class="text-sm opacity-90">
+                        审核通过后即可开始使用平台
+                    </div>
+                </div>
+            </div>
+
+            <!-- 个人认证路径 -->
+            <div class="space-y-0">
+                <div class="path-label personal-label">👤 个人认证路径</div>
+                
+                <div class="vertical-line" style="height: 40px;"></div>
+
+                <!-- 步骤1: KYC -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">1</div>
+                    <div class="text-3xl mb-3">🪪</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">KYC 认证</div>
+                    <div class="text-sm text-gray-600">
+                        个人身份认证<br>
+                        上传身份证/护照等身份证明
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>选择证件类型页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>拍摄证件页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>人脸识别页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>确认信息页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤2: KYC补充信息 -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">2</div>
+                    <div class="text-3xl mb-3">📝</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">KYC 补充信息</div>
+                    <div class="text-sm text-gray-600">
+                        补充认证信息<br>
+                        填写居住地、出生地、职业、行业等
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>补充信息表单页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤3: 合规审查 -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">3</div>
+                    <div class="text-3xl mb-3">🛡️</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">合规审查</div>
+                    <div class="text-sm text-gray-600">
+                        合规性审查<br>
+                        根据相关地区合规要求审查
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>资金来源声明页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>合规问卷页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤4: 住址证明 -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">4</div>
+                    <div class="text-3xl mb-3">🏠</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">住址证明</div>
+                    <div class="text-sm text-gray-600">
+                        地址验证<br>
+                        上传水电费账单、银行对账单等
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>住址证明上传页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤5: 专业投资者认证（个人） -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">5</div>
+                    <div class="text-3xl mb-3">💎</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">专业投资者认证（个人）</div>
+                    <div class="text-sm text-gray-600">
+                        财务资格认证<br>
+                        上传资产证明、专业资格证明
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>资产证明上传页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>专业资格上传页（可选）</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤6: 个人风险测评 -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">6</div>
+                    <div class="text-3xl mb-3">📊</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">个人风险测评</div>
+                    <div class="text-sm text-gray-600">
+                        风险承受能力评估<br>
+                        完成问卷调查（需达到R4及以上）
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>测评欢迎页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>问卷答题页（10题）</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>声明确认页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>测评结果页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤7: 最终确认 -->
+                <div class="flow-box personal">
+                    <div class="step-number personal-num">7</div>
+                    <div class="text-3xl mb-3">✅</div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">最终确认</div>
+                    <div class="text-sm text-gray-600">
+                        汇总确认所有认证信息<br>
+                        最终声明并提交申请
+                    </div>
+                    <div class="sub-steps">
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>最终确认页</span>
+                        </div>
+                        <div class="sub-step-item">
+                            <div class="sub-step-dot personal-dot"></div>
+                            <span>提交成功页</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line" style="height: 60px; background: #9f7aea;"></div>
+
+                <!-- 步骤8: 等待审核 -->
+                <div class="flow-box end">
+                    <div class="text-3xl mb-3">⏳</div>
+                    <div class="text-xl font-bold mb-2">等待管理员审核</div>
+                    <div class="text-sm opacity-90">
+                        审核通过后即可开始使用平台
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部说明 -->
+        <div class="mt-12 bg-white rounded-lg p-8 max-w-4xl mx-auto shadow-lg">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="text-3xl mr-3">📋</span>
+                流程说明
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-bold text-orange-600 mb-3">🏢 机构认证流程</h3>
+                    <ol class="space-y-2 text-gray-700">
+                        <li><strong>步骤1：KYB认证</strong> - 机构身份验证，确认企业合法性</li>
+                        <li><strong>步骤2：合规审核</strong> - 根据相关地区合规要求进行审核</li>
+                        <li><strong>步骤3：UBO认证</strong> - 识别最终受益人（股东和实际控制人）</li>
+                        <li><strong>步骤4：账户操作人认证</strong> - 设置账户操作人，人脸识别用于登录</li>
+                        <li><strong>步骤5：专业投资者认证</strong> - 验证机构财务实力</li>
+                        <li><strong>步骤6：机构风险测评</strong> - 评估风险承受能力（需达R4及以上）</li>
+                        <li><strong>步骤7：最终确认</strong> - 汇总所有认证信息并提交</li>
+                        <li><strong>步骤8：等待审核</strong> - 管理员审核所有材料</li>
+                    </ol>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-purple-600 mb-3">👤 个人认证流程</h3>
+                    <ol class="space-y-2 text-gray-700">
+                        <li><strong>步骤1：KYC认证</strong> - 个人身份验证，确认真实身份</li>
+                        <li><strong>步骤2：KYC补充信息</strong> - 补充居住地、出生地、职业、行业等信息</li>
+                        <li><strong>步骤3：合规审查</strong> - 根据相关地区合规要求进行审查</li>
+                        <li><strong>步骤4：住址证明</strong> - 验证居住地址，符合监管要求</li>
+                        <li><strong>步骤5：专业投资者认证</strong> - 验证个人财务资格</li>
+                        <li><strong>步骤6：个人风险测评</strong> - 评估风险承受能力（需达R4及以上）</li>
+                        <li><strong>步骤7：最终确认</strong> - 汇总所有认证信息并提交</li>
+                        <li><strong>步骤8：等待审核</strong> - 管理员审核所有材料</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                <h4 class="font-bold text-blue-800 mb-2">⚠️ 重要提示</h4>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• 所有认证步骤必须<strong>按顺序完成</strong>，不能跳过</li>
+                    <li>• 审核状态包括：<span class="font-semibold">待审核、已通过、补充资料、已驳回、已过期</span></li>
+                </ul>
+            </div>
+            
+            <div class="mt-6 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                <h4 class="font-bold text-purple-800 mb-3">⏰ 认证有效期策略（灵活模式）</h4>
+                <p class="text-xs text-purple-700 mb-3">所有认证类型均采用<strong>灵活模式</strong>，根据文件类型确定认证有效期，既满足合规要求，又最大化用户便利性。</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-purple-700">
+                    <!-- 第一列 -->
+                    <div>
+                        <div class="font-semibold mb-2 text-purple-900">📋 KYC身份认证</div>
+                        <ul class="space-y-1 mb-3">
+                            <li>• 护照/身份证/驾照：<strong>跟随证件有效期</strong></li>
+                            <li class="text-purple-600 text-xs">到期前30天自动提醒</li>
+                        </ul>
+                        
+                        <div class="font-semibold mb-2 text-purple-900">🏠 住址证明</div>
+                        <ul class="space-y-1 mb-3">
+                            <li>• 公用事业账单：<strong>1年</strong></li>
+                            <li>• 租赁合同：<strong>跟随合同有效期</strong></li>
+                            <li>• 房产证明：<strong>2-3年</strong></li>
+                        </ul>
+                        
+                        <div class="font-semibold mb-2 text-purple-900">👤 专业投资者（个人）</div>
+                        <ul class="space-y-1">
+                            <li>• 银行存款/证券账户证明：<strong>6个月</strong></li>
+                            <li>• 房产评估/综合资产证明：<strong>1年</strong></li>
+                            <li>• 金融从业资格证书：<strong>跟随证书有效期</strong></li>
+                            <li>• 学位证书：<strong>长期有效</strong></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 第二列 -->
+                    <div>
+                        <div class="font-semibold mb-2 text-purple-900">🏢 专业投资者（机构）</div>
+                        <ul class="space-y-1 mb-3">
+                            <li>• 年度审计报告：<strong>1年</strong></li>
+                            <li>• 季度财务报表：<strong>6个月</strong></li>
+                            <li>• 营业执照/金融牌照：<strong>跟随证照有效期</strong></li>
+                        </ul>
+                        
+                        <div class="font-semibold mb-2 text-purple-900">👥 UBO认证</div>
+                        <ul class="space-y-1 mb-3">
+                            <li>• 身份证明：<strong>跟随证件有效期</strong></li>
+                            <li>• 股权结构图：<strong>长期有效</strong>（变更时更新）</li>
+                            <li>• 工商登记信息：<strong>1年</strong></li>
+                        </ul>
+                        
+                        <div class="font-semibold mb-2 text-purple-900">🛡️ AML反洗钱</div>
+                        <ul class="space-y-1">
+                            <li>• 工资/投资收入证明：<strong>1年</strong></li>
+                            <li>• 财产转让/继承证明：<strong>长期有效</strong></li>
+                            <li>• 年度AML审查：<strong>1年</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-3 pt-3 border-t border-purple-200">
+                    <p class="text-xs text-purple-600">💡 <strong>提示：</strong>选择有效期较长的文件类型可减少更新频率。文件过期前系统会自动提醒。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg p-6 text-center shadow-lg">
+                <div class="text-4xl font-bold text-orange-600 mb-2">8</div>
+                <div class="text-gray-600">机构认证步骤</div>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center shadow-lg">
+                <div class="text-4xl font-bold text-purple-600 mb-2">8</div>
+                <div class="text-gray-600">个人认证步骤</div>
+            </div>
+        </div>
+
+        <!-- 版权信息 -->
+        <div class="mt-12 text-center text-white text-sm opacity-75">
+            <p>© 2024 RWA Platform - 认证流程图</p>
+            <p class="mt-2">最后更新: 2024年11月7日</p>
+        </div>
+    </div>
+</body>
+</html>

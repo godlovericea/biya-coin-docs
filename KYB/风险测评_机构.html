@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机构风险承受能力测评 - RWA认证系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div x-data="riskAssessment()" class="max-w-4xl mx-auto py-8 px-4">
+        <!-- 欢迎页 -->
+        <div x-show="currentStep === 'welcome'" x-transition class="bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 text-center">机构风险承受能力测评</h1>
+            <p class="text-gray-600 text-center mb-8">请根据贵机构的真实情况完成以下测评</p>
+
+            <!-- 重要提示 -->
+            <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-3">⚠️</span>
+                    <div>
+                        <p class="font-semibold text-red-800 mb-1">重要提示：</p>
+                        <p class="text-red-700 text-sm">本RWA产品为高风险产品，仅适合成长型（R4）及以上的机构投资者参与。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测评说明 -->
+            <div class="mb-8 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-3">ℹ️</span>
+                    <div>
+                        <p class="font-semibold text-blue-800 mb-2">测评说明：</p>
+                        <ul class="text-blue-700 text-sm space-y-1">
+                            <li>• 共10道问题，预计需要5-8分钟</li>
+                            <li>• 请根据贵机构的真实情况作答</li>
+                            <li>• 测评结果将影响贵机构是否可以参与本产品</li>
+                            <li>• 测评结果有效期为1年</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <button @click="startAssessment()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                开始测评
+            </button>
+        </div>
+
+        <!-- 问卷页 -->
+        <div x-show="currentStep === 'questionnaire'" x-transition class="bg-white rounded-lg shadow-lg p-8">
+            <!-- 进度指示 -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">第 <span x-text="currentQuestion + 1"></span> 题 / 共 10 题</span>
+                    <span class="text-sm font-medium text-blue-600"><span x-text="Math.round((currentQuestion + 1) / 10 * 100)"></span>%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${(currentQuestion + 1) / 10 * 100}%`"></div>
+                </div>
+            </div>
+
+            <!-- 问题内容 -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6" x-text="questions[currentQuestion].question"></h2>
+                <div class="space-y-3">
+                    <template x-for="(option, index) in questions[currentQuestion].options" :key="index">
+                        <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400"
+                               :class="answers[currentQuestion] === index ? 'border-blue-600 bg-blue-50' : 'border-gray-200'">
+                            <input type="radio" 
+                                   :name="'question-' + currentQuestion" 
+                                   :value="index"
+                                   @change="selectAnswer(index)"
+                                   class="mt-1 mr-3 text-blue-600 focus:ring-blue-500">
+                            <span class="text-gray-700" x-text="option.text"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 导航按钮 -->
+            <div class="flex justify-between">
+                <button @click="previousQuestion()" 
+                        x-show="currentQuestion > 0"
+                        class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition duration-200">
+                    上一题
+                </button>
+                <div x-show="currentQuestion === 0"></div>
+                
+                <button @click="nextQuestion()" 
+                        x-show="currentQuestion < 9"
+                        :disabled="answers[currentQuestion] === null"
+                        :class="answers[currentQuestion] === null ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
+                        class="px-6 py-2 text-white font-semibold rounded-lg transition duration-200">
+                    下一题
+                </button>
+
+                <button @click="showDeclaration()" 
+                        x-show="currentQuestion === 9"
+                        :disabled="answers[currentQuestion] === null"
+                        :class="answers[currentQuestion] === null ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
+                        class="px-6 py-2 text-white font-semibold rounded-lg transition duration-200">
+                    提交测评
+                </button>
+            </div>
+        </div>
+
+        <!-- 声明确认页 -->
+        <div x-show="currentStep === 'declaration'" x-transition class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">声明确认</h2>
+                <p class="text-gray-600">在查看测评结果前，请确认以下声明</p>
+            </div>
+
+            <!-- 声明框 -->
+            <div class="mb-6 p-6 bg-gray-50 border-2 border-gray-200 rounded-lg">
+                <label class="flex items-start cursor-pointer">
+                    <input type="checkbox" 
+                           x-model="confirmDeclaration"
+                           class="mt-1 mr-4 text-blue-600 focus:ring-blue-500 w-5 h-5">
+                    <span class="text-gray-700">
+                        本机构确认以上风险测评问卷由本机构授权代表独立完成，未受到任何机构或个人的诱导或不当影响。本机构承诺所有答案均基于本机构真实情况如实填写，并理解虚假填写可能导致不适当的投资建议和相应的投资风险及法律责任。
+                    </span>
+                </label>
+            </div>
+
+            <div class="flex space-x-4">
+                <button @click="currentStep = 'questionnaire'; currentQuestion = 9;" 
+                        class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    返回修改
+                </button>
+                <button @click="calculateResult()" 
+                        :disabled="!confirmDeclaration"
+                        :class="confirmDeclaration ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'"
+                        class="flex-1 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    查看结果
+                </button>
+            </div>
+        </div>
+
+        <!-- 结果页 - 通过 (R4-R5) -->
+        <div x-show="currentStep === 'result-pass'" x-transition class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
+                    <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">风险测评完成</h2>
+                <p class="text-xl text-green-600 font-semibold">✓ 符合产品要求</p>
+            </div>
+
+            <!-- 测评结果卡片 -->
+            <div class="mb-6 p-6 bg-green-50 border-2 border-green-500 rounded-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">测评结果</h3>
+                    <span class="px-4 py-2 bg-green-600 text-white font-semibold rounded-full" x-text="riskLevel"></span>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-600 text-sm">风险等级</p>
+                    <p class="text-gray-900 font-semibold text-lg" x-text="riskType"></p>
+                </div>
+                <p class="text-gray-700 text-sm" x-text="riskDescription"></p>
+            </div>
+
+            <!-- 温馨提示 -->
+            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <p class="font-semibold text-blue-800 mb-1">温馨提示：</p>
+                <p class="text-blue-700 text-sm">测评结果有效期为1年，若有效期内公司情况有变化也可以重新测评。</p>
+            </div>
+
+            <button @click="proceedToNextStep()" 
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                继续完成认证
+            </button>
+        </div>
+
+        <!-- 结果页 - 不通过 (R1-R3) -->
+        <div x-show="currentStep === 'result-fail'" x-transition class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
+                    <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">风险测评完成</h2>
+                <p class="text-xl text-red-600 font-semibold">✗ 不符合产品要求</p>
+            </div>
+
+            <!-- 测评结果卡片 -->
+            <div class="mb-6 p-6 bg-red-50 border-2 border-red-500 rounded-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">测评结果</h3>
+                    <span class="px-4 py-2 bg-red-600 text-white font-semibold rounded-full" x-text="riskLevel"></span>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-600 text-sm">风险等级</p>
+                    <p class="text-gray-900 font-semibold text-lg" x-text="riskType"></p>
+                </div>
+                <p class="text-gray-700 text-sm" x-text="riskDescription"></p>
+            </div>
+
+            <!-- 不符合要求说明 -->
+            <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                <div class="flex items-start">
+                    <span class="text-xl mr-2">✗</span>
+                    <div>
+                        <p class="font-semibold text-red-800 mb-1">不符合产品要求</p>
+                        <p class="text-red-700 text-sm mb-2">根据监管要求，本RWA产品为高风险产品，仅适合成长型（R4）及以上的机构投资者参与。</p>
+                        <p class="text-red-700 text-sm">您的机构风险承受能力评估结果为<span class="font-semibold" x-text="riskType"></span>，暂不符合本产品的投资要求。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作提示 -->
+            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <p class="font-semibold text-blue-800 mb-2">您可以选择：</p>
+                <ul class="text-blue-700 text-sm space-y-1">
+                    <li>• 重新测评（如果您认为测评结果不准确）</li>
+                    <li>• 退出认证（我们会为您推荐更适合的产品）</li>
+                </ul>
+            </div>
+
+            <div class="flex space-x-4">
+                <button @click="retakeAssessment()" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    重新测评
+                </button>
+                <button @click="exitAssessment()" class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    退出认证
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function riskAssessment() {
+            return {
+                currentStep: 'welcome',
+                currentQuestion: 0,
+                answers: Array(10).fill(null),
+                totalScore: 0,
+                riskLevel: '',
+                riskType: '',
+                riskDescription: '',
+                suitableProducts: '',
+                confirmDeclaration: false,
+
+                questions: [
+                    {
+                        question: '1. 贵机构的类型是？',
+                        options: [
+                            { text: '初创企业（成立3年以内）', score: 1 },
+                            { text: '成长型企业（成立3-10年）', score: 3 },
+                            { text: '成熟企业（成立10年以上）', score: 5 },
+                            { text: '金融机构或投资机构', score: 5 },
+                            { text: '上市公司或大型集团', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '2. 贵机构的总资产规模？',
+                        options: [
+                            { text: '100万-500万美元', score: 1 },
+                            { text: '500万-1000万美元', score: 2 },
+                            { text: '1000万-5000万美元', score: 3 },
+                            { text: '5000万-1亿美元', score: 4 },
+                            { text: '1亿美元以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '3. 贵机构的投资经验如何？',
+                        options: [
+                            { text: '无投资经验', score: 1 },
+                            { text: '1年以下', score: 2 },
+                            { text: '1-3年', score: 3 },
+                            { text: '3-5年', score: 4 },
+                            { text: '5年以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '4. 贵机构是否有专业的投资团队或投资顾问？',
+                        options: [
+                            { text: '没有专业团队，由管理层决策', score: 1 },
+                            { text: '有兼职人员负责投资', score: 2 },
+                            { text: '有1-2名专职投资人员', score: 3 },
+                            { text: '有3-5人的专业投资团队', score: 4 },
+                            { text: '有5人以上的专业投资团队或聘请外部专业投资顾问', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '5. 贵机构的投资目的是？',
+                        options: [
+                            { text: '资产保值，保本为主', score: 1 },
+                            { text: '稳定增值，追求稳定收益', score: 2 },
+                            { text: '资产增值，愿意承担一定风险', score: 3 },
+                            { text: '追求高收益，可承受较大波动', score: 4 },
+                            { text: '战略投资或激进投资，追求最大收益', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '6. 贵机构计划的投资期限是？',
+                        options: [
+                            { text: '6个月以内', score: 1 },
+                            { text: '6-12个月', score: 2 },
+                            { text: '1-3年', score: 3 },
+                            { text: '3-5年', score: 4 },
+                            { text: '5年以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '7. 贵机构可用于本次投资的资金占总资产的比例？',
+                        options: [
+                            { text: '5%以下', score: 1 },
+                            { text: '5%-10%', score: 2 },
+                            { text: '10%-20%', score: 3 },
+                            { text: '20%-30%', score: 4 },
+                            { text: '30%以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '8. 如果投资在短期内下跌20%，贵机构会？',
+                        options: [
+                            { text: '立即全部退出止损', score: 1 },
+                            { text: '减少投资规模', score: 2 },
+                            { text: '继续持有，观望市场', score: 3 },
+                            { text: '适当增加投资，分摊成本', score: 4 },
+                            { text: '大幅增加投资，把握机会', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '9. 贵机构能承受的最大投资亏损比例是？',
+                        options: [
+                            { text: '不能承受任何亏损', score: 1 },
+                            { text: '5%以内', score: 2 },
+                            { text: '5%-15%', score: 3 },
+                            { text: '15%-30%', score: 4 },
+                            { text: '30%以上', score: 5 }
+                        ]
+                    },
+                    {
+                        question: '10. 贵机构对高风险投资产品（如衍生品、杠杆产品）的了解程度？',
+                        options: [
+                            { text: '完全不了解', score: 1 },
+                            { text: '了解基础知识', score: 2 },
+                            { text: '有一定了解', score: 3 },
+                            { text: '比较了解', score: 4 },
+                            { text: '非常了解，有实际投资经验', score: 5 }
+                        ]
+                    }
+                ],
+
+                startAssessment() {
+                    this.currentStep = 'questionnaire';
+                },
+
+                selectAnswer(index) {
+                    this.answers[this.currentQuestion] = index;
+                },
+
+                nextQuestion() {
+                    if (this.answers[this.currentQuestion] !== null && this.currentQuestion < 9) {
+                        this.currentQuestion++;
+                    }
+                },
+
+                previousQuestion() {
+                    if (this.currentQuestion > 0) {
+                        this.currentQuestion--;
+                    }
+                },
+
+                showDeclaration() {
+                    this.currentStep = 'declaration';
+                    this.confirmDeclaration = false;
+                },
+
+                calculateResult() {
+                    // 计算总分
+                    this.totalScore = 0;
+                    this.answers.forEach((answerIndex, questionIndex) => {
+                        if (answerIndex !== null) {
+                            this.totalScore += this.questions[questionIndex].options[answerIndex].score;
+                        }
+                    });
+
+                    // 确定风险等级
+                    if (this.totalScore <= 18) {
+                        this.riskLevel = 'R1';
+                        this.riskType = '保守型';
+                        this.riskDescription = '贵机构风险承受能力较低，适合稳健保守的投资策略。';
+                        this.suitableProducts = '货币基金、国债、银行存款、保本理财';
+                        this.currentStep = 'result-fail';
+                    } else if (this.totalScore <= 26) {
+                        this.riskLevel = 'R2';
+                        this.riskType = '稳健型';
+                        this.riskDescription = '贵机构具备一定风险承受能力，适合稳健型投资策略。';
+                        this.suitableProducts = '债券基金、稳健型理财、定期存款';
+                        this.currentStep = 'result-fail';
+                    } else if (this.totalScore <= 34) {
+                        this.riskLevel = 'R3';
+                        this.riskType = '平衡型';
+                        this.riskDescription = '贵机构具备中等风险承受能力，适合平衡型投资策略。';
+                        this.suitableProducts = '混合基金、指数基金、平衡型理财';
+                        this.currentStep = 'result-fail';
+                    } else if (this.totalScore <= 42) {
+                        this.riskLevel = 'R4';
+                        this.riskType = '成长型';
+                        this.riskDescription = '贵机构具备较高风险承受能力，适合成长型投资策略，可参与高风险投资产品。';
+                        this.suitableProducts = '股票基金、股票、高收益债券、RWA产品';
+                        this.currentStep = 'result-pass';
+                    } else {
+                        this.riskLevel = 'R5';
+                        this.riskType = '进取型';
+                        this.riskDescription = '贵机构具备极高风险承受能力，适合进取型投资策略，可参与各类高风险高收益产品。';
+                        this.suitableProducts = '期货、期权、杠杆产品、衍生品、RWA产品';
+                        this.currentStep = 'result-pass';
+                    }
+                },
+
+                retakeAssessment() {
+                    // 重置所有数据
+                    this.currentStep = 'welcome';
+                    this.currentQuestion = 0;
+                    this.answers = Array(10).fill(null);
+                    this.totalScore = 0;
+                    this.confirmDeclaration = false;
+                },
+
+                exitAssessment() {
+                    alert('感谢您的参与。我们将为您推荐更适合的产品。');
+                    // 这里可以跳转到其他页面
+                },
+
+                proceedToNextStep() {
+                    alert('测评完成！继续后续认证流程...');
+                    // 这里可以跳转到下一个认证环节
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

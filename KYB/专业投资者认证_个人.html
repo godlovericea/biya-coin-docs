@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业投资者认证 - 个人</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="professionalInvestorApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">专业投资者认证（个人）</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="page='home'">首页</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home' && page !== 'status'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">认证进度</span>
+                    <span class="text-sm text-gray-500">上传证明材料并确认声明</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证首页 -->
+        <section x-show="page==='home'" x-transition>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80" alt="专业投资者" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-xl font-semibold mb-2">专业投资者认证</h2>
+                <p class="mb-6 text-gray-600 text-center max-w-md">根据监管要求，参与特定投资产品需要完成专业投资者认证。</p>
+                
+                <div class="w-full max-w-2xl mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>什么是专业投资者？</strong>
+                        </p>
+                        <p class="text-sm text-gray-700 mb-2">
+                            专业投资者是指具备专业投资知识和经验，能够自行判断投资风险并承担投资结果的投资者。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6 mb-4">
+                        <h3 class="font-medium mb-4 text-gray-800 text-lg">专业投资者认证标准：</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-red-500 pl-4 py-2 bg-red-50">
+                                <div class="font-medium text-red-800 mb-1">必要条件（必须同时满足）</div>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• 个人或与配偶共同拥有超过<strong>100万美元</strong>的净资产</li>
+                                    <li>• 初始投资额不低于<strong>10万美元</strong></li>
+                                    <li>• 同意被作为专业投资者对待</li>
+                                </ul>
+                            </div>
+
+                            <div class="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                                <div class="font-medium text-blue-800 mb-1">专业资格（满足其一即可）</div>
+                                <div class="text-sm text-gray-700 mb-2">日常业务涉及收购或处置与基金财产相同类别的财产：</div>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>• <strong>金融机构从业：</strong>过去曾受雇于或正在受雇于金融机构（银行、券商、资管公司等），并在专业投资领域有显著的经验</li>
+                                    <li>• <strong>企业高管：</strong>本身是或曾经是大型企业的高级管理人员，其职责涉及投资活动</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                        <p class="text-sm text-yellow-700 mb-2">
+                            <strong>重要提示：</strong>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• 必须同时满足净资产要求和专业资格要求</li>
+                            <li>• 请准备好相关证明材料的扫描件或照片</li>
+                            <li>• 所有材料必须真实有效</li>
+                            <li>• 支持格式：PDF、JPG、PNG（单个文件不超过10MB）</li>
+                            <li>• 审核时间：1-3个工作日</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="w-full max-w-md py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='upload'">开始认证</button>
+            </div>
+        </section>
+
+
+        <!-- 上传证明材料页 -->
+        <section x-show="page==='upload'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">上传证明材料</h2>
+                
+                <div class="mb-6">
+                    <!-- 必须上传的材料 -->
+                    <div class="mb-6">
+                        <h3 class="font-medium text-gray-800 mb-3">财务资格证明（必须）：</h3>
+                        
+                        <!-- 净资产证明 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">1. 净资产证明 <span class="text-red-500">*</span></label>
+                            <div class="text-xs text-gray-600 mb-2">个人或与配偶共同拥有≥100万美元的净资产证明</div>
+                            
+                            <div class="bg-purple-50 border-l-4 border-purple-400 p-3 mb-3">
+                                <p class="text-xs text-purple-700 mb-2"><strong>📅 有效期说明（灵活模式）：</strong></p>
+                                <ul class="text-xs text-purple-700 space-y-1">
+                                    <li>• <strong>银行存款证明/证券账户证明</strong>（1个月内开具）：认证有效期<strong>6个月</strong></li>
+                                    <li>• <strong>银行对账单</strong>（3个月内账单）：认证有效期<strong>6个月</strong></li>
+                                    <li>• <strong>房产评估报告</strong>（6个月内评估）：认证有效期<strong>1年</strong></li>
+                                    <li>• <strong>综合资产证明</strong>（1个月内开具）：认证有效期<strong>1年</strong> ⭐推荐</li>
+                                </ul>
+                            </div>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" @click="triggerFileUpload('netAsset')">
+                                <div x-show="!uploadedFiles.netAsset">
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-600">点击上传净资产证明</p>
+                                </div>
+                                <div x-show="uploadedFiles.netAsset" class="text-sm">
+                                    <svg class="w-8 h-8 mx-auto text-green-500 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="font-medium" x-text="uploadedFiles.netAsset?.name"></p>
+                                    <button class="text-blue-600 text-xs mt-1" @click.stop="removeFile('netAsset')">重新上传</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 专业资格证明 -->
+                    <div class="mb-6">
+                        <h3 class="font-medium text-gray-800 mb-3">专业资格证明（必须）：</h3>
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4 text-sm text-blue-700">
+                            <p class="mb-2">请提供专业资格证明。可接受的证明材料包括：</p>
+                            <ul class="list-disc list-inside space-y-1 text-xs">
+                                <li>金融机构在职证明或工作证明</li>
+                                <li>企业高管任职证明或职责说明</li>
+                                <li>券商账户持仓证明或交易记录</li>
+                                <li>基金投资记录或持有证明</li>
+                                <li>其他能证明您具有投资经验的材料</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">2. 专业资格证明 <span class="text-red-500">*</span></label>
+                            
+                            <div class="bg-purple-50 border-l-4 border-purple-400 p-3 mb-3">
+                                <p class="text-xs text-purple-700 mb-2"><strong>📅 有效期说明（灵活模式）：</strong></p>
+                                <ul class="text-xs text-purple-700 space-y-1">
+                                    <li>• <strong>金融从业资格证书</strong>（CFA/FRM等）：<strong>跟随证书有效期</strong> ⭐推荐</li>
+                                    <li>• <strong>执业资格证书</strong>（律师/会计师等）：<strong>跟随证书有效期</strong> ⭐推荐</li>
+                                    <li>• <strong>学位证书</strong>（金融/经济专业硕士及以上）：<strong>长期有效</strong> ⭐⭐推荐</li>
+                                    <li>• <strong>工作证明</strong>（金融机构工作满3年）：认证有效期<strong>1年</strong></li>
+                                </ul>
+                            </div>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" @click="triggerFileUpload('qualification')">
+                                <div x-show="!uploadedFiles.qualification">
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-600">点击上传专业资格证明</p>
+                                    <p class="text-xs text-gray-500 mt-1">在职证明/任职证明/券商持仓/基金投资记录等</p>
+                                </div>
+                                <div x-show="uploadedFiles.qualification" class="text-sm">
+                                    <svg class="w-8 h-8 mx-auto text-green-500 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="font-medium" x-text="uploadedFiles.qualification?.name"></p>
+                                    <button class="text-blue-600 text-xs mt-1" @click.stop="removeFile('qualification')">重新上传</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="file" id="netAssetInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileUpload($event, 'netAsset')">
+                    <input type="file" id="qualificationInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileUpload($event, 'qualification')">
+                </div>
+
+                <!-- 声明确认 -->
+                <div class="border-t pt-6 mt-6">
+                    <h3 class="font-medium text-gray-800 mb-4">声明确认</h3>
+                    <div class="bg-gray-50 rounded p-4">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" x-model="form.confirmProfessional" class="mt-1 mr-3">
+                            <span class="text-sm text-gray-700">
+                                本人同意被作为专业投资者对待，并理解专业投资者的权利和义务。
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 mt-6">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canProceedToFinalDeclaration()"
+                            :class="{'opacity-50': !canProceedToFinalDeclaration()}"
+                            @click="goToFinalDeclaration()">提交专业投资者认证</button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 最终声明确认页 -->
+        <section x-show="page==='final-declaration'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-6">最终确认</h2>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-6">
+                    <p class="text-sm text-yellow-800 mb-3">
+                        <strong>请仔细阅读并确认以下声明：</strong>
+                    </p>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        本人确认以上信息真实、准确、完整，并了解提供虚假信息可能承担的法律后果。本人已充分了解投资风险，并自愿承担投资结果。
+                    </p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <label class="flex items-start cursor-pointer">
+                        <input type="checkbox" x-model="form.confirmFinalDeclaration" class="mt-1 mr-3">
+                        <span class="text-sm text-gray-700">
+                            本人已阅读并同意上述声明
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='upload'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!form.confirmFinalDeclaration"
+                            :class="{'opacity-50': !form.confirmFinalDeclaration}"
+                            @click="submitApplication()">提交全部认证</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 认证状态页 -->
+        <section x-show="page==='status'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">申请提交成功！</h2>
+                    <p class="text-gray-600">您的专业投资者认证申请已提交，我们将在1-3个工作日内完成审核。</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h3 class="font-medium mb-4">申请信息摘要</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">上传材料：</span>
+                            <span class="font-medium text-green-600">✓ 已上传</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-medium" x-text="submissionTime"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">当前状态：</span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">审核中</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>接下来会发生什么？</strong>
+                    </p>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• 我们的专业团队将审核您提交的证明材料</li>
+                        <li>• 核实净资产和初始投资额证明的真实性</li>
+                        <li>• 验证您的专业资格和投资经验</li>
+                        <li>• 如果需要补充材料，我们会通过邮件通知您</li>
+                        <li>• 审核通过后，您将获得专业投资者认证资格</li>
+                        <li>• 您可以随时在账户中查看认证进度</li>
+                    </ul>
+                </div>
+
+                <button class="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="resetForm()">完成</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function professionalInvestorApp() {
+            return {
+                page: 'home',
+                uploadedFiles: {
+                    netAsset: null,
+                    qualification: null
+                },
+                submissionTime: '',
+                
+                form: {
+                    confirmProfessional: false,
+                    confirmFinalDeclaration: false
+                },
+
+                // 触发文件上传
+                triggerFileUpload(type) {
+                    const inputId = type + 'Input';
+                    document.getElementById(inputId).click();
+                },
+
+                // 处理文件上传
+                handleFileUpload(event, type) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                            alert('文件大小不能超过10MB');
+                            return;
+                        }
+
+                        const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('只支持 PDF、JPG、PNG 格式的文件');
+                            return;
+                        }
+
+                        this.uploadedFiles[type] = file;
+                    }
+                },
+
+                // 删除文件
+                removeFile(type) {
+                    this.uploadedFiles[type] = null;
+                    const inputId = type + 'Input';
+                    document.getElementById(inputId).value = '';
+                },
+
+                // 检查是否可以进入最终声明页
+                canProceedToFinalDeclaration() {
+                    return this.uploadedFiles.netAsset && 
+                           this.uploadedFiles.qualification && 
+                           this.form.confirmProfessional;
+                },
+
+                // 跳转到最终声明页
+                goToFinalDeclaration() {
+                    this.page = 'final-declaration';
+                },
+
+                // 提交申请
+                submitApplication() {
+                    const now = new Date();
+                    this.submissionTime = now.toLocaleString('zh-CN', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    this.page = 'status';
+                    alert('专业投资者认证申请提交成功！\n\n我们将在1-3个工作日内完成审核。\n您将通过邮件和短信收到审核结果通知。');
+                },
+
+                // 重置表单
+                resetForm() {
+                    this.page = 'home';
+                    this.uploadedFiles = {
+                        netAsset: null,
+                        qualification: null
+                    };
+                    this.submissionTime = '';
+                    this.form = {
+                        confirmProfessional: false,
+                        confirmFinalDeclaration: false
+                    };
+                    document.getElementById('netAssetInput').value = '';
+                    document.getElementById('qualificationInput').value = '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

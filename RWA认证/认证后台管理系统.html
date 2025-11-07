@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证后台管理系统</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-item:hover { background-color: #EBF8FF; }
+        .sidebar-item.active { background-color: #3182CE; color: white; }
+    </style>
+</head>
+<body class="bg-gray-100" x-data="adminApp()">
+
+    <div class="flex h-screen">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-white shadow-lg">
+            <div class="p-6 border-b">
+                <h1 class="text-xl font-bold text-gray-800">认证管理系统</h1>
+                <p class="text-xs text-gray-500 mt-1">Admin Dashboard</p>
+            </div>
+
+            <nav class="p-4">
+                <div class="mb-2">
+                    <button @click="currentPage = 'dashboard'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition"
+                            :class="{'active': currentPage === 'dashboard'}">
+                        <span class="text-sm font-medium">📊 仪表盘</span>
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-4">认证管理</div>
+                    <button @click="currentPage = 'kyc'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'kyc'}">
+                        <span class="text-sm">👤 KYC补充信息</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('kyc')"></span>
+                    </button>
+                    <button @click="currentPage = 'kyb'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'kyb'}">
+                        <span class="text-sm">🏢 KYB机构认证</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('kyb')"></span>
+                    </button>
+                    <button @click="currentPage = 'ubo'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'ubo'}">
+                        <span class="text-sm">👥 UBO认证</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('ubo')"></span>
+                    </button>
+                    <button @click="currentPage = 'compliance-personal'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'compliance-personal'}">
+                        <span class="text-sm">🔍 合规审查(个人)</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('compliance-personal')"></span>
+                    </button>
+                    <button @click="currentPage = 'compliance-enterprise'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'compliance-enterprise'}">
+                        <span class="text-sm">🔎 合规审查(机构)</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('compliance-enterprise')"></span>
+                    </button>
+                    <button @click="currentPage = 'professional-personal'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'professional-personal'}">
+                        <span class="text-sm">💼 专业投资者(个人)</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('professional-personal')"></span>
+                    </button>
+                    <button @click="currentPage = 'professional-institutional'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition mb-1"
+                            :class="{'active': currentPage === 'professional-institutional'}">
+                        <span class="text-sm">🏛️ 专业投资者(机构)</span>
+                        <span class="float-right text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full" x-text="getPendingCount('professional-institutional')"></span>
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-4">综合审查</div>
+                    <button @click="currentPage = 'rwa-review'; viewingDetail = false;" 
+                            class="sidebar-item w-full text-left px-4 py-2 rounded transition"
+                            :class="{'active': currentPage === 'rwa-review'}">
+                        <span class="text-sm">🔍 RWA审查</span>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="absolute bottom-0 w-64 p-4 border-t bg-gray-50">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                        A
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium">管理员</div>
+                        <div class="text-xs text-gray-500">admin@system.com</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- 顶部栏 -->
+            <header class="bg-white shadow-sm">
+                <div class="px-8 py-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800" x-text="getPageTitle()"></h2>
+                        <p class="text-sm text-gray-500 mt-1" x-text="getPageSubtitle()"></p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 hover:bg-gray-100 rounded-lg relative">
+                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <div class="text-right">
+                            <div class="text-sm font-medium">管理员</div>
+                            <div class="text-xs text-gray-500">超级管理员</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <div class="p-8">
+                
+                <!-- 仪表盘 -->
+                <div x-show="currentPage === 'dashboard'" x-transition>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- 统计卡片 -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-3xl">👤</div>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">待处理</span>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-800" x-text="getTotalPending()"></div>
+                            <div class="text-sm text-gray-500">待审核申请</div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-3xl">✅</div>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">今日</span>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-800">12</div>
+                            <div class="text-sm text-gray-500">今日已审核</div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-3xl">⚠️</div>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">紧急</span>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-800">3</div>
+                            <div class="text-sm text-gray-500">即将过期</div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-3xl">📊</div>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">本月</span>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-800">186</div>
+                            <div class="text-sm text-gray-500">本月审核总数</div>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold mb-4">近期待审核</h3>
+                            <div class="space-y-3">
+                                <template x-for="item in getRecentPending()" :key="item.id">
+                                    <div @click="viewDetail(item)" class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer transition hover:shadow-md">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold" x-text="item.userAccount.charAt(0).toUpperCase()"></div>
+                                            <div>
+                                                <div class="font-medium text-sm" x-text="item.userAccount"></div>
+                                                <div class="text-xs text-gray-500">
+                                                    <span x-text="item.email || item.contact || '-'"></span>
+                                                    <span class="mx-1">·</span>
+                                                    <span x-text="item.type"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                                            <span>查看详情</span>
+                                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold mb-4">认证类型分布</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">KYC补充信息</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full">
+                                            <div class="h-2 bg-blue-500 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">15</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">KYB机构认证</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full">
+                                            <div class="h-2 bg-green-500 rounded-full" style="width: 30%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">10</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">UBO认证</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full">
+                                            <div class="h-2 bg-yellow-500 rounded-full" style="width: 25%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">8</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">合规审查</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full">
+                                            <div class="h-2 bg-purple-500 rounded-full" style="width: 35%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">12</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">专业投资者认证</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-32 h-2 bg-gray-200 rounded-full">
+                                            <div class="h-2 bg-red-500 rounded-full" style="width: 20%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">7</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 认证列表页面（通用模板） -->
+                <div x-show="currentPage !== 'dashboard' && currentPage !== 'settings' && currentPage !== 'rwa-review' && !viewingDetail" x-transition>
+                    <!-- 筛选和搜索 -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">用户账号</label>
+                                <input type="text" x-model="searchQuery" placeholder="搜索用户账号、邮箱..." class="w-full border rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">申请渠道</label>
+                                <select x-model="filterChannel" class="w-full border rounded px-3 py-2">
+                                    <option value="">全部渠道</option>
+                                    <option value="钱包">钱包</option>
+                                    <option value="US">US</option>
+                                    <option value="RWA">RWA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">状态</label>
+                                <select x-model="filterStatus" class="w-full border rounded px-3 py-2">
+                                    <option value="">全部状态</option>
+                                    <option value="pending">待审核</option>
+                                    <option value="approved">已通过</option>
+                                    <option value="rejected">已驳回</option>
+                                    <option value="supplement">需补充材料</option>
+                                    <option value="supplement_submitted">补充材料待审核</option>
+                                    <option value="expired">已过期</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">开始时间</label>
+                                <input type="date" x-model="filterStartDate" class="w-full border rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">结束时间</label>
+                                <input type="date" x-model="filterEndDate" class="w-full border rounded px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 列表 -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户账号</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申请渠道</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提交时间</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-for="item in getFilteredList()" :key="item.id">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900" x-text="item.userAccount"></div>
+                                            <div class="text-xs text-gray-500" x-text="item.email || item.contact || '-'"></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                  :class="{
+                                                      'bg-purple-100 text-purple-800': item.channel === '钱包',
+                                                      'bg-blue-100 text-blue-800': item.channel === 'US',
+                                                      'bg-green-100 text-green-800': item.channel === 'RWA'
+                                                  }"
+                                                  x-text="item.channel">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900" x-text="item.submitTime"></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                  :class="{
+                                                      'bg-yellow-100 text-yellow-800': item.status === 'pending',
+                                                      'bg-green-100 text-green-800': item.status === 'approved',
+                                                      'bg-red-100 text-red-800': item.status === 'rejected',
+                                                      'bg-blue-100 text-blue-800': item.status === 'supplement',
+                                                      'bg-orange-100 text-orange-800': item.status === 'supplement_submitted',
+                                                      'bg-gray-100 text-gray-800': item.status === 'expired'
+                                                  }"
+                                                  x-text="getStatusText(item.status)">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <button @click="viewDetail(item)" class="text-blue-600 hover:text-blue-900 font-medium mr-3">查看详情</button>
+                                            <button x-show="item.status === 'pending' || item.status === 'supplement_submitted'" @click="quickApprove(item)" class="text-green-600 hover:text-green-900 font-medium mr-3">快速通过</button>
+                                            <button x-show="item.status === 'pending' || item.status === 'supplement_submitted'" @click="quickReject(item)" class="text-red-600 hover:text-red-900 font-medium">快速驳回</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 分页 -->
+                    <div class="bg-white rounded-lg shadow mt-4 px-6 py-4 flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            显示 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 共 <span class="font-medium" x-text="getFilteredList().length"></span> 条
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border rounded hover:bg-gray-50">上一页</button>
+                            <button class="px-3 py-1 border rounded bg-blue-600 text-white">1</button>
+                            <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border rounded hover:bg-gray-50">下一页</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 详情页面 -->
+                <div x-show="viewingDetail && selectedItem" x-transition>
+                    <div class="mb-6">
+                        <button @click="viewingDetail = false; selectedItem = null" class="text-blue-600 hover:text-blue-800 flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            返回列表
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 左侧：详细信息 -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- 基本信息 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">基本信息</h3>
+                                <template x-if="selectedItem">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm text-gray-500">用户账号</label>
+                                            <p class="font-medium text-blue-600" x-text="selectedItem.userAccount"></p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm text-gray-500">申请渠道</label>
+                                            <p>
+                                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                      :class="{
+                                                          'bg-purple-100 text-purple-800': selectedItem.channel === '钱包',
+                                                          'bg-blue-100 text-blue-800': selectedItem.channel === 'US',
+                                                          'bg-green-100 text-green-800': selectedItem.channel === 'RWA'
+                                                      }"
+                                                      x-text="selectedItem.channel">
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm text-gray-500">提交时间</label>
+                                            <p class="font-medium" x-text="selectedItem.submitTime"></p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm text-gray-500">当前状态</label>
+                                            <p>
+                                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                      :class="{
+                                                          'bg-yellow-100 text-yellow-800': selectedItem.status === 'pending',
+                                                          'bg-green-100 text-green-800': selectedItem.status === 'approved',
+                                                          'bg-red-100 text-red-800': selectedItem.status === 'rejected',
+                                                          'bg-blue-100 text-blue-800': selectedItem.status === 'supplement',
+                                                          'bg-orange-100 text-orange-800': selectedItem.status === 'supplement_submitted',
+                                                          'bg-gray-100 text-gray-800': selectedItem.status === 'expired'
+                                                      }"
+                                                      x-text="getStatusText(selectedItem.status)">
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <label class="text-sm text-gray-500">认证类型</label>
+                                            <p class="font-medium" x-text="selectedItem.type"></p>
+                                        </div>
+                                        <div class="col-span-2" x-show="selectedItem.supplementReason">
+                                            <label class="text-sm text-gray-500">补充材料说明</label>
+                                            <p class="font-medium text-orange-600" x-text="selectedItem.supplementReason || '-'"></p>
+                                        </div>
+                                        <div class="col-span-2" x-show="selectedItem.rejectReason">
+                                            <label class="text-sm text-gray-500">驳回原因</label>
+                                            <p class="font-medium text-red-600" x-text="selectedItem.rejectReason || '-'"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- 详细数据 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">详细数据</h3>
+                                <template x-if="selectedItem">
+                                    <div class="space-y-4">
+                                        <template x-for="(value, key) in selectedItem.details" :key="key">
+                                            <div class="border-b pb-3">
+                                                <label class="text-sm text-gray-500" x-text="key"></label>
+                                                <p class="font-medium mt-1" x-text="value"></p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- UBO详细信息 -->
+                            <div x-show="selectedItem && selectedItem.uboDetails" class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">UBO详细信息</h3>
+                                
+                                <!-- 有UBO人员的情况 -->
+                                <template x-if="selectedItem && selectedItem.uboDetails && selectedItem.uboDetails.hasPersonnel">
+                                    <div>
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                                            <div class="flex items-center">
+                                                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                <span class="text-green-800 font-medium">该机构已提供UBO人员信息</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- 股东信息 -->
+                                        <template x-if="selectedItem.uboDetails.shareholders && selectedItem.uboDetails.shareholders.length > 0">
+                                            <div class="mb-6">
+                                                <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                                    <span class="text-xl mr-2">👥</span>
+                                                    25%以上股东
+                                                </h4>
+                                                <div class="space-y-2">
+                                                    <template x-for="(shareholder, index) in selectedItem.uboDetails.shareholders" :key="index">
+                                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                                            <div class="flex items-center justify-between">
+                                                                <div class="flex items-center space-x-3">
+                                                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm" x-text="shareholder.name.charAt(0)"></div>
+                                                                    <div>
+                                                                        <p class="font-medium text-sm text-gray-900" x-text="shareholder.name"></p>
+                                                                        <p class="text-xs text-gray-600">持股比例：<span class="font-semibold text-blue-600" x-text="shareholder.percentage"></span></p>
+                                                                    </div>
+                                                                </div>
+                                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">股东</span>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                        <!-- 实际控制人信息 -->
+                                        <template x-if="selectedItem.uboDetails.actualControllers && selectedItem.uboDetails.actualControllers.length > 0">
+                                            <div>
+                                                <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                                    <span class="text-xl mr-2">👔</span>
+                                                    实际控制人
+                                                </h4>
+                                                <div class="space-y-2">
+                                                    <template x-for="(controller, index) in selectedItem.uboDetails.actualControllers" :key="index">
+                                                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                                            <div class="flex items-center justify-between">
+                                                                <div class="flex items-center space-x-3">
+                                                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold text-sm" x-text="controller.name.charAt(0)"></div>
+                                                                    <div>
+                                                                        <p class="font-medium text-sm text-gray-900" x-text="controller.name"></p>
+                                                                        <p class="text-xs text-gray-600">职位：<span class="font-semibold text-green-600" x-text="controller.position"></span></p>
+                                                                    </div>
+                                                                </div>
+                                                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">实际控制人</span>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <!-- 无UBO人员的情况 -->
+                                <template x-if="selectedItem && selectedItem.uboDetails && !selectedItem.uboDetails.hasPersonnel">
+                                    <div>
+                                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                                            <div class="flex items-start">
+                                                <svg class="w-5 h-5 text-orange-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                </svg>
+                                                <div>
+                                                    <span class="text-orange-800 font-medium">该机构无符合条件的股东和实际控制人</span>
+                                                    <p class="text-sm text-orange-700 mt-1">已提供说明及证明文件</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 原因说明 -->
+                                        <div class="mb-4">
+                                            <h4 class="text-md font-semibold text-gray-800 mb-2 flex items-center">
+                                                <span class="text-xl mr-2">📝</span>
+                                                原因说明
+                                            </h4>
+                                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                                <p class="text-gray-700 text-sm leading-relaxed" x-text="selectedItem.uboDetails.reason"></p>
+                                            </div>
+                                        </div>
+
+                                        <!-- 证明文件 -->
+                                        <div>
+                                            <h4 class="text-md font-semibold text-gray-800 mb-2 flex items-center">
+                                                <span class="text-xl mr-2">📎</span>
+                                                证明文件
+                                                <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="selectedItem.uboDetails.proofFiles.length + ' 个文件'"></span>
+                                            </h4>
+                                            <div class="space-y-2">
+                                                <template x-for="(file, index) in selectedItem.uboDetails.proofFiles" :key="index">
+                                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                                                        <div class="flex items-center space-x-3">
+                                                            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                            </svg>
+                                                            <div>
+                                                                <p class="font-medium text-sm text-gray-900" x-text="file.name"></p>
+                                                                <p class="text-xs text-gray-500" x-text="file.size"></p>
+                                                            </div>
+                                                        </div>
+                                                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">查看</button>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- 上传文件 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">上传文件</h3>
+                                <div class="space-y-3">
+                                    <template x-if="selectedItem && selectedItem.files && selectedItem.files.length > 0">
+                                        <template x-for="file in selectedItem.files" :key="file.name">
+                                            <div class="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+                                                <div class="flex items-center space-x-3">
+                                                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                    <div>
+                                                        <p class="font-medium text-sm" x-text="file.name"></p>
+                                                        <p class="text-xs text-gray-500" x-text="file.type"></p>
+                                                    </div>
+                                                </div>
+                                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">查看</button>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <template x-if="!selectedItem || !selectedItem.files || selectedItem.files.length === 0">
+                                        <div class="text-center py-8 text-gray-500">
+                                            <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <p class="text-sm">暂无上传文件</p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- 补充材料（仅在补充材料已提交状态显示） -->
+                            <div x-show="selectedItem && selectedItem.status === 'supplement_submitted' && selectedItem.supplementFiles && selectedItem.supplementFiles.length > 0" class="bg-white rounded-lg shadow p-6 border-2 border-orange-200">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-orange-600">📎 补充材料</h3>
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">新上传</span>
+                                </div>
+                                <div class="space-y-3">
+                                    <template x-if="selectedItem && selectedItem.supplementFiles">
+                                        <template x-for="file in selectedItem.supplementFiles" :key="file.name">
+                                            <div class="flex items-center justify-between p-3 border-2 border-orange-200 bg-orange-50 rounded hover:bg-orange-100">
+                                                <div class="flex items-center space-x-3">
+                                                    <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                    <div>
+                                                        <div class="flex items-center space-x-2">
+                                                            <p class="font-medium text-sm" x-text="file.name"></p>
+                                                            <span class="px-2 py-0.5 bg-orange-600 text-white text-xs rounded">补充</span>
+                                                        </div>
+                                                        <p class="text-xs text-gray-600" x-text="file.type"></p>
+                                                        <p class="text-xs text-gray-500" x-text="'上传时间：' + (file.uploadTime || '刚刚')"></p>
+                                                    </div>
+                                                </div>
+                                                <button class="text-orange-600 hover:text-orange-800 text-sm font-medium">查看</button>
+                                            </div>
+                                        </template>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：审核操作 -->
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">审核操作</h3>
+                                
+                                <template x-if="selectedItem && (selectedItem.status === 'pending' || selectedItem.status === 'supplement_submitted')">
+                                    <div class="space-y-4">
+                                        <!-- 状态提示 -->
+                                        <div x-show="selectedItem.status === 'supplement_submitted'" class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                                            <p class="text-sm text-orange-800">
+                                                <span class="font-semibold">📌 补充材料已提交</span><br>
+                                                <span class="text-xs">用户已提交补充材料，请审核</span>
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">审核结果</label>
+                                            <select x-model="reviewAction" class="w-full border rounded px-3 py-2">
+                                                <option value="">请选择审核结果</option>
+                                                <option value="approved">✅ 通过</option>
+                                                <option value="rejected">❌ 驳回</option>
+                                                <option value="supplement">📝 需补充材料</option>
+                                            </select>
+                                        </div>
+
+                                        <div x-show="reviewAction === 'rejected'">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">驳回原因 <span class="text-red-500">*</span></label>
+                                            <textarea x-model="reviewComment" rows="4" class="w-full border rounded px-3 py-2" placeholder="请输入驳回原因..."></textarea>
+                                        </div>
+
+                                        <div x-show="reviewAction === 'supplement'">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">需补充的材料说明</label>
+                                            <textarea x-model="reviewComment" rows="3" class="w-full border rounded px-3 py-2" placeholder="请说明需要补充哪些材料..."></textarea>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">身份验证码 <span class="text-red-500">*</span></label>
+                                            <input type="text" x-model="verificationCode" class="w-full border rounded px-3 py-2" placeholder="请输入身份验证器的6位验证码" maxlength="6">
+                                            <p class="text-xs text-gray-500 mt-1">请使用您的身份验证器APP生成验证码</p>
+                                        </div>
+
+                                        <button @click="submitReview()" 
+                                                :disabled="!reviewAction"
+                                                :class="{'opacity-50 cursor-not-allowed': !reviewAction}"
+                                                class="w-full py-3 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition">
+                                            提交审核
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <template x-if="selectedItem && selectedItem.status !== 'pending' && selectedItem.status !== 'supplement_submitted'">
+                                    <div class="text-center py-8">
+                                        <div class="text-4xl mb-4">
+                                            <span x-show="selectedItem.status === 'approved'">✅</span>
+                                            <span x-show="selectedItem.status === 'rejected'">❌</span>
+                                            <span x-show="selectedItem.status === 'supplement'">📝</span>
+                                            <span x-show="selectedItem.status === 'expired'">⏰</span>
+                                        </div>
+                                        <p class="text-gray-600">
+                                            <span x-show="selectedItem.status === 'approved'">该申请已通过审核</span>
+                                            <span x-show="selectedItem.status === 'rejected'">该申请已被驳回</span>
+                                            <span x-show="selectedItem.status === 'supplement'">等待用户补充材料</span>
+                                            <span x-show="selectedItem.status === 'expired'">该认证已过期</span>
+                                        </p>
+                                        <p class="text-sm text-gray-500 mt-2" x-text="'状态：' + getStatusText(selectedItem.status)"></p>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- 审核历史 -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">审核历史</h3>
+                                <div class="space-y-4">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0 w-2 bg-blue-500 rounded-full"></div>
+                                        <div class="ml-4 pb-4">
+                                            <div class="flex items-center mb-1">
+                                                <span class="font-medium">系统</span>
+                                                <span class="mx-2 text-gray-400">·</span>
+                                                <span class="text-sm text-gray-500">2025-11-05 14:23</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600">用户提交认证申请</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RWA审查页面 -->
+                <div x-show="currentPage === 'rwa-review'" x-transition>
+                    <!-- 个人/机构切换 -->
+                    <div class="bg-white rounded-lg shadow p-4 mb-6">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm font-medium text-gray-700">认证类型：</span>
+                            <div class="flex bg-gray-100 rounded-lg p-1">
+                                <button @click="rwaType = 'personal'" 
+                                        class="px-6 py-2 rounded-md text-sm font-medium transition"
+                                        :class="rwaType === 'personal' ? 'bg-white text-blue-600 shadow' : 'text-gray-600 hover:text-gray-900'">
+                                    👤 个人认证
+                                </button>
+                                <button @click="rwaType = 'institutional'" 
+                                        class="px-6 py-2 rounded-md text-sm font-medium transition"
+                                        :class="rwaType === 'institutional' ? 'bg-white text-blue-600 shadow' : 'text-gray-600 hover:text-gray-900'">
+                                    🏢 机构认证
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <h3 class="text-lg font-semibold mb-4">筛选</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">用户账号</label>
+                                <input type="text" x-model="rwaSearchQuery" placeholder="搜索用户账号、邮箱..." class="w-full border rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">申请渠道</label>
+                                <select x-model="rwaFilterChannel" class="w-full border rounded px-3 py-2">
+                                    <option value="">全部渠道</option>
+                                    <option value="钱包">钱包</option>
+                                    <option value="US">US</option>
+                                    <option value="RWA">RWA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">认证状态</label>
+                                <select x-model="rwaFilterStatus" class="w-full border rounded px-3 py-2">
+                                    <option value="">全部状态</option>
+                                    <option value="approved">已通过</option>
+                                    <option value="rejected">已驳回</option>
+                                    <option value="pending">待审核</option>
+                                    <option value="supplement">补充材料</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">开始时间</label>
+                                <input type="date" x-model="rwaFilterStartDate" class="w-full border rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">结束时间</label>
+                                <input type="date" x-model="rwaFilterEndDate" class="w-full border rounded px-3 py-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 个人认证表格 -->
+                    <div x-show="rwaType === 'personal'" class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">账号</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提交时间</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KYC</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KYC补充</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">合规审查</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">住址证明</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">专业投资者</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">风险测评结果</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">认证状态</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-for="review in getRWAPersonalReviews()" :key="review.userAccount">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900" x-text="review.userAccount"></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="review.submitTime"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('kyc', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.kyc === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.kyc === 'pending',
+                                                      'bg-red-100 text-red-800': review.kyc === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.kyc === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.kyc === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.kyc)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('kyc', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.kycSupplement === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.kycSupplement === 'pending',
+                                                      'bg-red-100 text-red-800': review.kycSupplement === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.kycSupplement === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.kycSupplement === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.kycSupplement)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('compliance-personal', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.compliance === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.compliance === 'pending',
+                                                      'bg-red-100 text-red-800': review.compliance === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.compliance === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.compliance === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.compliance)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('address', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.address === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.address === 'pending',
+                                                      'bg-red-100 text-red-800': review.address === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.address === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.address === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.address)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('professional-personal', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.professional === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.professional === 'pending',
+                                                      'bg-red-100 text-red-800': review.professional === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.professional === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.professional === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.professional)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full"
+                                                  :class="{
+                                                      'bg-red-100 text-red-800': review.riskLevel === 'R1',
+                                                      'bg-orange-100 text-orange-800': review.riskLevel === 'R2',
+                                                      'bg-yellow-100 text-yellow-800': review.riskLevel === 'R3',
+                                                      'bg-green-100 text-green-800': review.riskLevel === 'R4',
+                                                      'bg-blue-100 text-blue-800': review.riskLevel === 'R5',
+                                                      'bg-gray-100 text-gray-500': !review.riskLevel
+                                                  }"
+                                                  x-text="review.riskLevel || '未测评'">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': calculateCertificationStatus(review, 'personal') === '已通过',
+                                                      'bg-red-100 text-red-800': calculateCertificationStatus(review, 'personal') === '未通过',
+                                                      'bg-yellow-100 text-yellow-800': calculateCertificationStatus(review, 'personal') === '待审核'
+                                                  }"
+                                                  x-text="calculateCertificationStatus(review, 'personal')">
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 机构认证表格 -->
+                    <div x-show="rwaType === 'institutional'" class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">账号</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提交时间</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KYB</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">合规审查</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UBO</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">账户操作人</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">专业投资者</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">风险测评结果</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">认证状态</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-for="review in getRWAInstitutionalReviews()" :key="review.userAccount">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900" x-text="review.userAccount"></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="review.submitTime"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('kyb', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.kyb === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.kyb === 'pending',
+                                                      'bg-red-100 text-red-800': review.kyb === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.kyb === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.kyb === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.kyb)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('compliance-enterprise', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.compliance === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.compliance === 'pending',
+                                                      'bg-red-100 text-red-800': review.compliance === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.compliance === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.compliance === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.compliance)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('ubo', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.ubo === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.ubo === 'pending',
+                                                      'bg-red-100 text-red-800': review.ubo === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.ubo === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.ubo === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.ubo)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <!-- 账户操作人状态，如果是UBO人员则与UBO状态同步 -->
+                                            <template x-if="review.operator">
+                                                <button class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                      :class="{
+                                                          'bg-green-100 text-green-800': (review.operator.isSameAsUBO ? review.ubo : review.operator.status) === 'approved',
+                                                          'bg-yellow-100 text-yellow-800': (review.operator.isSameAsUBO ? review.ubo : review.operator.status) === 'pending',
+                                                          'bg-red-100 text-red-800': (review.operator.isSameAsUBO ? review.ubo : review.operator.status) === 'rejected',
+                                                          'bg-blue-100 text-blue-800': (review.operator.isSameAsUBO ? review.ubo : review.operator.status) === 'supplement',
+                                                          'bg-gray-100 text-gray-500': (review.operator.isSameAsUBO ? review.ubo : review.operator.status) === 'not_started'
+                                                      }"
+                                                      x-text="getStatusText(review.operator.isSameAsUBO ? review.ubo : review.operator.status)">
+                                                </button>
+                                            </template>
+                                            <template x-if="!review.operator">
+                                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-500">
+                                                    未开始
+                                                </span>
+                                            </template>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button @click="jumpToPage('professional-institutional', review.userAccount)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': review.professional === 'approved',
+                                                      'bg-yellow-100 text-yellow-800': review.professional === 'pending',
+                                                      'bg-red-100 text-red-800': review.professional === 'rejected',
+                                                      'bg-blue-100 text-blue-800': review.professional === 'supplement',
+                                                      'bg-gray-100 text-gray-500': review.professional === 'not_started'
+                                                  }"
+                                                  x-text="getStatusText(review.professional)">
+                                            </button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full"
+                                                  :class="{
+                                                      'bg-red-100 text-red-800': review.riskLevel === 'R1',
+                                                      'bg-orange-100 text-orange-800': review.riskLevel === 'R2',
+                                                      'bg-yellow-100 text-yellow-800': review.riskLevel === 'R3',
+                                                      'bg-green-100 text-green-800': review.riskLevel === 'R4',
+                                                      'bg-blue-100 text-blue-800': review.riskLevel === 'R5',
+                                                      'bg-gray-100 text-gray-500': !review.riskLevel
+                                                  }"
+                                                  x-text="review.riskLevel || '未测评'">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full"
+                                                  :class="{
+                                                      'bg-green-100 text-green-800': calculateCertificationStatus(review, 'institutional') === '已通过',
+                                                      'bg-red-100 text-red-800': calculateCertificationStatus(review, 'institutional') === '未通过',
+                                                      'bg-yellow-100 text-yellow-800': calculateCertificationStatus(review, 'institutional') === '待审核'
+                                                  }"
+                                                  x-text="calculateCertificationStatus(review, 'institutional')">
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function adminApp() {
+            return {
+                currentPage: 'dashboard',
+                viewingDetail: false,
+                selectedItem: null,
+                filterStatus: '',
+                filterChannel: '',
+                searchQuery: '',
+                reviewAction: '',
+                reviewComment: '',
+                verificationCode: '',
+                rwaSearchQuery: '',
+                rwaFilterStatus: '',
+                rwaFilterChannel: '',
+                rwaFilterStartDate: '',
+                rwaFilterEndDate: '',
+                filterStartDate: '',
+                filterEndDate: '',
+                rwaType: 'personal', // 默认显示个人认证
+
+                // 模拟数据
+                data: {
+                    'kyc': [
+                        { id: 'KYC-2025110501', name: '张三', email: 'zhang@example.com', userAccount: 'zhang_san_2023', channel: 'RWA', submitTime: '2025-11-05 10:23', status: 'pending', type: 'KYC补充信息', details: { '居住国家': '美国', '出生地': '中国北京', '职业': '软件工程师', '行业': '科技/IT', '资金来源': '工资收入' }, files: [{ name: 'residence_proof.pdf', type: 'PDF文档' }] },
+                        { id: 'KYC-2025110502', name: '李四', email: 'li@example.com', userAccount: 'lisi_finance', channel: 'US', submitTime: '2025-11-04 15:45', status: 'approved', type: 'KYC补充信息', details: { '居住国家': '加拿大', '出生地': '中国上海', '职业': '金融分析师' }, files: [] },
+                        { id: 'KYC-2025110503', name: 'John Smith', email: 'john@example.com', userAccount: 'john_smith_us', channel: '钱包', submitTime: '2025-11-03 09:12', status: 'supplement', type: 'KYC补充信息', details: { '居住国家': '美国', '职业': '企业主' }, files: [], supplementReason: '需要补充出生地证明文件' },
+                        { id: 'KYC-2025110504', name: '王五', email: 'wang@example.com', userAccount: 'wang_wu_2024', channel: 'RWA', submitTime: '2025-11-02 14:30', status: 'supplement_submitted', type: 'KYC补充信息', details: { '居住国家': '中国', '出生地': '中国广东', '职业': '医生' }, files: [{ name: 'id_card.pdf', type: 'PDF文档' }], supplementFiles: [{ name: 'birth_certificate.pdf', type: 'PDF文档', uploadTime: '2025-11-03 10:15' }], supplementReason: '已补充出生地证明，等待审核' },
+                        { id: 'KYC-2025110505', name: 'Lisa Wang', email: 'lisa@example.com', userAccount: 'lisa_wang', channel: 'US', submitTime: '2025-11-01 11:20', status: 'rejected', type: 'KYC补充信息', details: { '居住国家': '美国', '职业': '学生' }, files: [], rejectReason: '资金来源证明不符合要求' },
+                        { id: 'KYC-2025110506', name: '赵六', email: 'zhao@example.com', userAccount: 'zhao_liu_old', channel: '钱包', submitTime: '2024-10-15 09:00', status: 'expired', type: 'KYC补充信息', details: { '居住国家': '新加坡', '职业': '会计师' }, files: [] },
+                    ],
+                    'kyb': [
+                        { id: 'KYB-2025110501', name: 'Tech Innovations Inc.', contact: '+1-555-0123', userAccount: 'tech_innovations', channel: 'RWA', submitTime: '2025-11-05 11:30', status: 'pending', type: 'KYB机构认证', details: { '公司名称': 'Tech Innovations Inc.', '注册号': '123456789', '注册国家': '美国', '公司类型': 'LLC' }, files: [{ name: 'business_license.pdf', type: 'PDF文档' }, { name: 'registration_cert.pdf', type: 'PDF文档' }] },
+                        { id: 'KYB-2025110502', name: 'Global Finance Corp.', contact: '+1-555-0456', userAccount: 'global_finance_corp', channel: 'US', submitTime: '2025-11-04 14:20', status: 'approved', type: 'KYB机构认证', details: { '公司名称': 'Global Finance Corp.', '注册号': '987654321', '注册国家': '美国' }, files: [] },
+                        { id: 'KYB-2025110503', name: 'Smart Tech Ltd.', contact: '+86-10-8888', userAccount: 'smart_tech_cn', channel: '钱包', submitTime: '2025-11-03 10:15', status: 'supplement', type: 'KYB机构认证', details: { '公司名称': 'Smart Tech Ltd.', '注册号': '91110000XXXXX', '注册国家': '中国' }, files: [], supplementReason: '需补充税务登记证' },
+                        { id: 'KYB-2025110504', name: 'Future Systems Inc.', contact: '+1-555-7890', userAccount: 'future_systems', channel: 'RWA', submitTime: '2025-11-02 16:45', status: 'supplement_submitted', type: 'KYB机构认证', details: { '公司名称': 'Future Systems Inc.', '注册国家': '美国' }, files: [{ name: 'business_license.pdf', type: 'PDF文档' }], supplementFiles: [{ name: 'tax_document.pdf', type: 'PDF文档', uploadTime: '2025-11-03 14:20' }, { name: 'tax_certificate_2024.pdf', type: 'PDF文档', uploadTime: '2025-11-03 14:22' }], supplementReason: '已补充税务文件，待审核' },
+                        { id: 'KYB-2025110505', name: 'Old Company Ltd.', contact: '+1-555-1111', userAccount: 'old_company', channel: 'US', submitTime: '2025-10-30 13:20', status: 'rejected', type: 'KYB机构认证', details: { '公司名称': 'Old Company Ltd.' }, files: [], rejectReason: '注册文件与系统记录不匹配' },
+                        { id: 'KYB-2025110506', name: 'Expired Corp.', contact: '+1-555-9999', userAccount: 'expired_corp', channel: '钱包', submitTime: '2024-09-20 10:00', status: 'expired', type: 'KYB机构认证', details: { '公司名称': 'Expired Corp.' }, files: [] },
+                    ],
+                    'ubo': [
+                        { id: 'UBO-2025110501', name: 'Tech Innovations Inc.', contact: 'ubo@tech.com', userAccount: 'tech_innovations', channel: 'RWA', submitTime: '2025-11-05 13:45', status: 'pending', type: 'UBO认证', details: { '股东数量': '1人', '持股25%以上': '是', '实际控制人': '0人' }, files: [{ name: 'shareholder_list.pdf', type: 'PDF文档' }], uboDetails: { hasPersonnel: true, shareholders: [{ name: '张三', percentage: '40%' }], actualControllers: [] } },
+                        { id: 'UBO-2025110502', name: 'Global Finance Corp.', contact: 'ubo@global.com', userAccount: 'global_finance_corp', channel: 'US', submitTime: '2025-11-04 15:30', status: 'approved', type: 'UBO认证', details: { '股东数量': '2人', '持股25%以上': '是', '实际控制人': '0人' }, files: [], uboDetails: { hasPersonnel: true, shareholders: [{ name: '李四', percentage: '50%' }, { name: '王五', percentage: '30%' }], actualControllers: [] } },
+                        { id: 'UBO-2025110503', name: 'Future Systems Inc.', contact: 'ubo@future.com', userAccount: 'future_systems', channel: '钱包', submitTime: '2025-11-03 16:30', status: 'approved', type: 'UBO认证', details: { '股东数量': '0人', '持股25%以上': '否', '实际控制人': '1人' }, files: [], uboDetails: { hasPersonnel: true, shareholders: [], actualControllers: [{ name: '赵六', position: '董事长' }] } },
+                        { id: 'UBO-2025110504', name: 'Asset Management Inc.', contact: 'ubo@asset.com', userAccount: 'asset_mgmt', channel: 'RWA', submitTime: '2025-11-02 11:20', status: 'approved', type: 'UBO认证', details: { '无UBO人员': '是' }, files: [{ name: '公司章程.pdf', type: 'PDF文档' }, { name: '母公司控制证明.pdf', type: 'PDF文档' }, { name: '律师意见书.pdf', type: 'PDF文档' }], uboDetails: { hasPersonnel: false, reason: '本公司为特殊目的公司(SPV)，无实际股东和实际控制人，由母公司全资控制。根据相关法律法规，作为SPV无需披露个人股东信息。', proofFiles: [{ name: '公司章程.pdf', size: '2.3 MB' }, { name: '母公司控制证明.pdf', size: '1.8 MB' }, { name: '律师意见书.pdf', size: '3.5 MB' }] } },
+                        { id: 'UBO-2025110505', name: 'Venture Capital Ltd.', contact: 'ubo@venture.com', userAccount: 'venture_capital', channel: 'US', submitTime: '2025-10-31 09:45', status: 'approved', type: 'UBO认证', details: { '无UBO人员': '是' }, files: [{ name: '国有企业证明.pdf', type: 'PDF文档' }, { name: '政府持股文件.pdf', type: 'PDF文档' }], uboDetails: { hasPersonnel: false, reason: '本公司为政府全资拥有的国有企业，无需披露个人股东信息。所有股权由政府机构持有，符合国有企业管理规定。', proofFiles: [{ name: '国有企业证明.pdf', size: '1.5 MB' }, { name: '政府持股文件.pdf', size: '2.1 MB' }] } },
+                        { id: 'UBO-2025110506', name: 'Old Holdings', contact: 'ubo@old.com', userAccount: 'old_holdings', channel: '钱包', submitTime: '2024-08-15 14:00', status: 'expired', type: 'UBO认证', details: { '股东数量': '2人' }, files: [] },
+                    ],
+                    'compliance-personal': [
+                        { id: 'COMP-P-2025110501', name: 'Michael Johnson', email: 'michael@example.com', userAccount: 'michael_j_2024', channel: 'US', submitTime: '2025-11-05 09:15', status: 'pending', type: '合规审查(个人)', details: { '出生国家': '美国', '出生州': 'California', '纳税居住国': '美国', '检查范围': '制裁名单 + PEP + 负面媒体' }, files: [] },
+                        { id: 'COMP-P-2025110502', name: 'Sarah Williams', email: 'sarah@example.com', userAccount: 'sarah_williams_uk', channel: 'RWA', submitTime: '2025-11-04 11:40', status: 'approved', type: '合规审查(个人)', details: { '出生国家': '英国', '检查结果': 'Clear - 无风险' }, files: [] },
+                        { id: 'COMP-P-2025110503', name: '陈明', email: 'chen@example.com', userAccount: 'chen_ming_2024', channel: '钱包', submitTime: '2025-11-03 14:25', status: 'supplement', type: '合规审查(个人)', details: { '出生国家': '中国', '纳税居住国': '中国' }, files: [], supplementReason: '需补充纳税证明文件' },
+                        { id: 'COMP-P-2025110504', name: 'James Lee', email: 'james@example.com', userAccount: 'james_lee', channel: 'US', submitTime: '2025-11-02 10:30', status: 'supplement_submitted', type: '合规审查(个人)', details: { '出生国家': '加拿大', '纳税居住国': '美国' }, files: [{ name: 'passport.pdf', type: 'PDF文档' }], supplementFiles: [{ name: 'tax_proof.pdf', type: 'PDF文档', uploadTime: '2025-11-03 11:45' }], supplementReason: '已补充纳税证明，待审核' },
+                        { id: 'COMP-P-2025110505', name: 'Anna Smith', email: 'anna@example.com', userAccount: 'anna_smith', channel: 'RWA', submitTime: '2025-10-29 16:50', status: 'rejected', type: '合规审查(个人)', details: { '出生国家': '俄罗斯' }, files: [], rejectReason: '合规审查发现风险项' },
+                        { id: 'COMP-P-2025110506', name: '李华', email: 'lihua@example.com', userAccount: 'li_hua_old', channel: '钱包', submitTime: '2024-07-10 09:00', status: 'expired', type: '合规审查(个人)', details: { '出生国家': '中国' }, files: [] },
+                    ],
+                    'compliance-enterprise': [
+                        { id: 'COMP-E-2025110501', name: 'Digital Solutions LLC', contact: 'compliance@digital.com', userAccount: 'digital_solutions', channel: 'US', submitTime: '2025-11-05 14:50', status: 'pending', type: '合规审查(企业)', details: { 'EIN': '12-3456789', '注册州': 'Delaware (DE)', '营业城市': 'New York', '检查范围': '制裁名单 + PEP + 负面媒体' }, files: [] },
+                        { id: 'COMP-E-2025110502', name: 'Secure Finance Inc.', contact: 'compliance@secure.com', userAccount: 'secure_finance', channel: 'RWA', submitTime: '2025-11-04 13:15', status: 'approved', type: '合规审查(企业)', details: { 'EIN': '98-7654321', '注册州': 'California (CA)', '检查结果': 'Clear' }, files: [] },
+                        { id: 'COMP-E-2025110503', name: 'Trading Corp', contact: 'compliance@trading.com', userAccount: 'trading_corp', channel: '钱包', submitTime: '2025-11-03 11:40', status: 'supplement', type: '合规审查(企业)', details: { 'EIN': '45-1234567', '注册州': 'New York (NY)' }, files: [], supplementReason: '需补充企业受益人信息' },
+                        { id: 'COMP-E-2025110504', name: 'Tech Ventures LLC', contact: 'compliance@techventures.com', userAccount: 'tech_ventures', channel: 'US', submitTime: '2025-11-02 15:20', status: 'supplement_submitted', type: '合规审查(企业)', details: { 'EIN': '78-9876543', '注册州': 'Texas (TX)' }, files: [{ name: 'business_registration.pdf', type: 'PDF文档' }], supplementFiles: [{ name: 'beneficiary_info.pdf', type: 'PDF文档', uploadTime: '2025-11-03 16:10' }, { name: 'ownership_structure.pdf', type: 'PDF文档', uploadTime: '2025-11-03 16:12' }], supplementReason: '已补充受益人信息，待审核' },
+                        { id: 'COMP-E-2025110505', name: 'Risk Company Inc.', contact: 'compliance@risk.com', userAccount: 'risk_company', channel: 'RWA', submitTime: '2025-10-28 10:10', status: 'rejected', type: '合规审查(企业)', details: { 'EIN': '11-2233445' }, files: [], rejectReason: '合规审查发现制裁名单匹配' },
+                        { id: 'COMP-E-2025110506', name: 'Old Business LLC', contact: 'compliance@oldbiz.com', userAccount: 'old_business', channel: '钱包', submitTime: '2024-06-20 14:30', status: 'expired', type: '合规审查(企业)', details: { 'EIN': '99-8877665' }, files: [] },
+                    ],
+                    'professional-personal': [
+                        { id: 'PRO-P-2025110501', name: 'David Chen', email: 'david@example.com', userAccount: 'david_chen_pro', channel: '钱包', submitTime: '2025-11-05 10:05', status: 'pending', type: '专业投资者认证(个人)', details: { '净资产证明': '已上传', '专业资格证明': '金融机构在职证明', '初始投资额': '10万美元以上' }, files: [{ name: 'net_asset_proof.pdf', type: 'PDF文档' }, { name: 'professional_cert.pdf', type: 'PDF文档' }] },
+                        { id: 'PRO-P-2025110502', name: 'Emily Zhang', email: 'emily@example.com', userAccount: 'emily_investor', channel: 'RWA', submitTime: '2025-11-04 13:25', status: 'approved', type: '专业投资者认证(个人)', details: { '净资产证明': '已审核通过', '专业资格证明': '基金投资记录' }, files: [] },
+                        { id: 'PRO-P-2025110503', name: '刘强', email: 'liu@example.com', userAccount: 'liu_qiang', channel: 'US', submitTime: '2025-11-03 15:40', status: 'supplement', type: '专业投资者认证(个人)', details: { '净资产证明': '已上传', '专业资格证明': '待补充' }, files: [], supplementReason: '需补充专业资格证明文件' },
+                        { id: 'PRO-P-2025110504', name: 'Robert Wang', email: 'robert@example.com', userAccount: 'robert_wang_inv', channel: '钱包', submitTime: '2025-11-02 12:15', status: 'supplement_submitted', type: '专业投资者认证(个人)', details: { '净资产证明': '已上传', '专业资格证明': '已补充' }, files: [{ name: 'net_asset_proof.pdf', type: 'PDF文档' }], supplementFiles: [{ name: 'qualification_cert.pdf', type: 'PDF文档', uploadTime: '2025-11-03 08:20' }, { name: 'work_experience.pdf', type: 'PDF文档', uploadTime: '2025-11-03 08:22' }], supplementReason: '已补充专业资格证明，待审核' },
+                        { id: 'PRO-P-2025110505', name: 'Tom Li', email: 'tom@example.com', userAccount: 'tom_li', channel: 'RWA', submitTime: '2025-10-30 09:30', status: 'rejected', type: '专业投资者认证(个人)', details: { '净资产证明': '不符合要求' }, files: [], rejectReason: '净资产未达到100万美元标准' },
+                        { id: 'PRO-P-2025110506', name: '周杰', email: 'zhou@example.com', userAccount: 'zhou_jie_old', channel: 'US', submitTime: '2024-05-15 11:00', status: 'expired', type: '专业投资者认证(个人)', details: { '净资产证明': '已过期' }, files: [] },
+                    ],
+                    'professional-institutional': [
+                        { id: 'PRO-I-2025110501', name: 'Investment Partners LLC', contact: 'invest@partners.com', userAccount: 'investment_partners', channel: 'US', submitTime: '2025-11-05 15:20', status: 'pending', type: '专业投资者认证(机构)', details: { '机构总资产': '≥100万美元', '资产证明': '已上传银行资产证明', '初始投资额': '已声明≥10万美元' }, files: [{ name: 'total_asset_proof.pdf', type: 'PDF文档' }] },
+                        { id: 'PRO-I-2025110502', name: 'Capital Fund Management', contact: 'contact@capital.com', userAccount: 'capital_fund', channel: 'RWA', submitTime: '2025-11-04 14:10', status: 'approved', type: '专业投资者认证(机构)', details: { '机构总资产': '≥100万美元', '资产证明': '已审核通过' }, files: [] },
+                        { id: 'PRO-I-2025110503', name: 'Venture Capital Ltd.', contact: 'vc@venture.com', userAccount: 'venture_capital', channel: '钱包', submitTime: '2025-11-03 10:50', status: 'supplement', type: '专业投资者认证(机构)', details: { '机构总资产': '待确认', '资产证明': '待补充' }, files: [], supplementReason: '需补充最新财务审计报告' },
+                        { id: 'PRO-I-2025110504', name: 'Asset Management Inc.', contact: 'asset@management.com', userAccount: 'asset_mgmt', channel: 'US', submitTime: '2025-11-02 13:35', status: 'supplement_submitted', type: '专业投资者认证(机构)', details: { '机构总资产': '≥100万美元', '资产证明': '已补充' }, files: [{ name: 'business_license.pdf', type: 'PDF文档' }, { name: 'bank_statement.pdf', type: 'PDF文档' }], supplementFiles: [{ name: 'audit_report_2024.pdf', type: 'PDF文档', uploadTime: '2025-11-03 13:50' }, { name: 'financial_statement_2024.pdf', type: 'PDF文档', uploadTime: '2025-11-03 13:52' }], supplementReason: '已补充审计报告，待审核' },
+                        { id: 'PRO-I-2025110505', name: 'Small Fund LLC', contact: 'small@fund.com', userAccount: 'small_fund', channel: 'RWA', submitTime: '2025-10-29 16:20', status: 'rejected', type: '专业投资者认证(机构)', details: { '机构总资产': '<100万美元' }, files: [], rejectReason: '机构总资产未达到100万美元标准' },
+                        { id: 'PRO-I-2025110506', name: 'Legacy Investments', contact: 'legacy@invest.com', userAccount: 'legacy_invest', channel: '钱包', submitTime: '2024-04-10 10:00', status: 'expired', type: '专业投资者认证(机构)', details: { '机构总资产': '已过期' }, files: [] },
+                    ],
+                },
+
+                // RWA个人认证审查数据
+                rwaPersonalReviews: [
+                    { userAccount: 'zhang_san_2023', submitTime: '2025-11-05 10:23', kyc: 'approved', kycSupplement: 'pending', compliance: 'not_started', address: 'not_started', professional: 'not_started', riskLevel: null, certificationStatus: 'pending' },
+                    { userAccount: 'lisi_finance', submitTime: '2025-11-04 15:45', kyc: 'approved', kycSupplement: 'approved', compliance: 'approved', address: 'approved', professional: 'approved', riskLevel: 'R5', certificationStatus: 'approved' },
+                    { userAccount: 'john_smith_us', submitTime: '2025-11-03 09:12', kyc: 'approved', kycSupplement: 'approved', compliance: 'pending', address: 'approved', professional: 'not_started', riskLevel: null, certificationStatus: 'pending' },
+                    { userAccount: 'wang_wu_2024', submitTime: '2025-11-02 14:30', kyc: 'approved', kycSupplement: 'supplement', compliance: 'approved', address: 'approved', professional: 'approved', riskLevel: 'R3', certificationStatus: 'supplement' },
+                    { userAccount: 'lisa_wang', submitTime: '2025-11-01 11:20', kyc: 'approved', kycSupplement: 'approved', compliance: 'rejected', address: 'pending', professional: 'not_started', riskLevel: null, certificationStatus: 'rejected' },
+                ],
+
+                // RWA机构认证审查数据
+                rwaInstitutionalReviews: [
+                    { userAccount: 'tech_innovations', submitTime: '2025-11-05 11:30', kyb: 'pending', compliance: 'not_started', ubo: 'pending', uboDetails: { hasPersonnel: true, shareholders: [{ name: '张三', percentage: '40%' }], actualControllers: [] }, operator: null, professional: 'not_started', riskLevel: null, certificationStatus: 'pending' },
+                    { userAccount: 'global_finance_corp', submitTime: '2025-11-04 14:20', kyb: 'approved', compliance: 'approved', ubo: 'approved', uboDetails: { hasPersonnel: true, shareholders: [{ name: '李四', percentage: '50%' }, { name: '王五', percentage: '30%' }], actualControllers: [] }, operator: { isSameAsUBO: true, name: '张三' }, professional: 'approved', riskLevel: 'R5', certificationStatus: 'approved' },
+                    { userAccount: 'future_systems', submitTime: '2025-11-03 16:45', kyb: 'approved', compliance: 'pending', ubo: 'approved', uboDetails: { hasPersonnel: true, shareholders: [], actualControllers: [{ name: '赵六', position: '董事长' }] }, operator: { isSameAsUBO: false, status: 'approved' }, professional: 'not_started', riskLevel: null, certificationStatus: 'pending' },
+                    { userAccount: 'asset_mgmt', submitTime: '2025-11-02 13:35', kyb: 'approved', compliance: 'approved', ubo: 'approved', uboDetails: { hasPersonnel: false, reason: '本公司为特殊目的公司(SPV)，无实际股东和实际控制人，由母公司全资控制。', proofFiles: [{ name: '公司章程.pdf', size: '2.3 MB' }, { name: '母公司控制证明.pdf', size: '1.8 MB' }, { name: '律师意见书.pdf', size: '3.5 MB' }] }, operator: { isSameAsUBO: true, name: 'John Smith' }, professional: 'supplement', riskLevel: 'R2', certificationStatus: 'supplement' },
+                    { userAccount: 'venture_capital', submitTime: '2025-11-03 10:50', kyb: 'approved', compliance: 'rejected', ubo: 'approved', uboDetails: { hasPersonnel: false, reason: '本公司为政府全资拥有的国有企业，无需披露个人股东信息。', proofFiles: [{ name: '国有企业证明.pdf', size: '1.5 MB' }, { name: '政府持股文件.pdf', size: '2.1 MB' }] }, operator: { isSameAsUBO: false, status: 'pending' }, professional: 'not_started', riskLevel: null, certificationStatus: 'rejected' },
+                ],
+
+                getPendingCount(type) {
+                    return this.data[type]?.filter(item => item.status === 'pending' || item.status === 'supplement_submitted').length || 0;
+                },
+
+                getTotalPending() {
+                    let total = 0;
+                    Object.keys(this.data).forEach(type => {
+                        total += this.getPendingCount(type);
+                    });
+                    return total;
+                },
+
+                getRecentPending() {
+                    let pending = [];
+                    Object.keys(this.data).forEach(type => {
+                        pending = pending.concat(this.data[type].filter(item => item.status === 'pending' || item.status === 'supplement_submitted'));
+                    });
+                    // 按提交时间排序（最新的在前）
+                    pending.sort((a, b) => new Date(b.submitTime) - new Date(a.submitTime));
+                    return pending.slice(0, 5);
+                },
+
+                getPageTitle() {
+                    const titles = {
+                        'dashboard': '仪表盘',
+                        'kyc': 'KYC补充信息',
+                        'kyb': 'KYB机构认证',
+                        'ubo': 'UBO认证',
+                        'compliance-personal': '合规审查(个人)',
+                        'compliance-enterprise': '合规审查(企业)',
+                        'professional-personal': '专业投资者认证(个人)',
+                        'professional-institutional': '专业投资者认证(机构)',
+                        'rwa-review': 'RWA综合审查'
+                    };
+                    return titles[this.currentPage] || '';
+                },
+
+                getPageSubtitle() {
+                    const subtitles = {
+                        'dashboard': '查看所有认证申请的概览和统计',
+                        'kyc': '管理个人KYC补充信息认证申请',
+                        'kyb': '管理机构KYB认证申请',
+                        'ubo': '管理最终受益所有人认证申请',
+                        'compliance-personal': '管理个人合规审查申请',
+                        'compliance-enterprise': '管理企业合规审查申请',
+                        'professional-personal': '管理个人专业投资者认证申请',
+                        'professional-institutional': '管理机构专业投资者认证申请',
+                        'rwa-review': '查看用户的整体认证进度和最终状态',
+                        'settings': '配置系统参数和权限'
+                    };
+                    return subtitles[this.currentPage] || '';
+                },
+
+                getFilteredList() {
+                    let list = this.data[this.currentPage] || [];
+                    
+                    // 状态筛选
+                    if (this.filterStatus) {
+                        list = list.filter(item => item.status === this.filterStatus);
+                    }
+                    
+                    // 渠道筛选
+                    if (this.filterChannel) {
+                        list = list.filter(item => item.channel === this.filterChannel);
+                    }
+                    
+                    // 搜索筛选
+                    if (this.searchQuery) {
+                        const query = this.searchQuery.toLowerCase();
+                        list = list.filter(item => 
+                            (item.userAccount && item.userAccount.toLowerCase().includes(query)) ||
+                            (item.email && item.email.toLowerCase().includes(query)) ||
+                            (item.contact && item.contact.toLowerCase().includes(query))
+                        );
+                    }
+                    
+                    return list;
+                },
+
+                getStatusText(status) {
+                    const statusMap = {
+                        'pending': '待审核',
+                        'approved': '已通过',
+                        'rejected': '已驳回',
+                        'supplement': '需补充材料',
+                        'supplement_submitted': '补充材料待审核',
+                        'expired': '已过期',
+                        'not_started': '未开始'
+                    };
+                    return statusMap[status] || status;
+                },
+
+                getFinalStatusText(status) {
+                    const statusMap = {
+                        'completed': '已完成',
+                        'in_progress': '进行中',
+                        'pending': '待处理',
+                        'rejected': '已驳回'
+                    };
+                    return statusMap[status] || status;
+                },
+
+                getRWAReviews() {
+                    let reviews = this.rwaReviews;
+                    
+                    // 用户账号搜索
+                    if (this.rwaSearchQuery) {
+                        const query = this.rwaSearchQuery.toLowerCase();
+                        reviews = reviews.filter(review => 
+                            review.userAccount.toLowerCase().includes(query)
+                        );
+                    }
+                    
+                    // 最终状态筛选
+                    if (this.rwaFilterStatus) {
+                        reviews = reviews.filter(review => review.finalStatus === this.rwaFilterStatus);
+                    }
+                    
+                    // 渠道筛选
+                    if (this.rwaFilterChannel) {
+                        reviews = reviews.filter(review => review.channel === this.rwaFilterChannel);
+                    }
+                    
+                    return reviews;
+                },
+
+                getRWAPersonalReviews() {
+                    let reviews = this.rwaPersonalReviews;
+                    
+                    // 用户账号搜索
+                    if (this.rwaSearchQuery) {
+                        const query = this.rwaSearchQuery.toLowerCase();
+                        reviews = reviews.filter(review => 
+                            review.userAccount.toLowerCase().includes(query)
+                        );
+                    }
+                    
+                    // 认证状态筛选
+                    if (this.rwaFilterStatus) {
+                        reviews = reviews.filter(review => review.certificationStatus === this.rwaFilterStatus);
+                    }
+                    
+                    return reviews;
+                },
+
+                getRWAInstitutionalReviews() {
+                    let reviews = this.rwaInstitutionalReviews;
+                    
+                    // 用户账号搜索
+                    if (this.rwaSearchQuery) {
+                        const query = this.rwaSearchQuery.toLowerCase();
+                        reviews = reviews.filter(review => 
+                            review.userAccount.toLowerCase().includes(query)
+                        );
+                    }
+                    
+                    // 认证状态筛选
+                    if (this.rwaFilterStatus) {
+                        reviews = reviews.filter(review => review.certificationStatus === this.rwaFilterStatus);
+                    }
+                    
+                    return reviews;
+                },
+
+                jumpToPage(pageType, userAccount) {
+                    // 跳转到对应的认证页面，并直接打开详情
+                    this.currentPage = pageType;
+                    
+                    // 查找该用户的认证数据
+                    const item = this.data[pageType]?.find(i => i.userAccount === userAccount);
+                    
+                    if (item) {
+                        // 直接打开详情页
+                        this.viewDetail(item);
+                    } else {
+                        // 如果找不到，显示列表并搜索
+                        this.viewingDetail = false;
+                        this.searchQuery = userAccount;
+                    }
+                },
+
+                calculateCertificationStatus(review, type) {
+                    // 检查各个阶段的状态
+                    let statuses = [];
+                    
+                    if (type === 'personal') {
+                        statuses = [review.kyc, review.kycSupplement, review.compliance, review.address, review.professional];
+                    } else if (type === 'institutional') {
+                        statuses = [review.kyb, review.compliance, review.ubo, review.professional];
+                        // 账户操作人状态（如果存在）
+                        if (review.operator) {
+                            statuses.push(review.operator.isSameAsUBO ? review.ubo : review.operator.status);
+                        }
+                    }
+                    
+                    // 检查是否有过期或驳回的
+                    if (statuses.some(s => s === 'expired' || s === 'rejected')) {
+                        return '未通过';
+                    }
+                    
+                    // 检查是否有待审核的
+                    if (statuses.some(s => s === 'pending' || s === 'supplement' || s === 'not_started')) {
+                        return '待审核';
+                    }
+                    
+                    // 检查是否全部通过
+                    if (statuses.every(s => s === 'approved')) {
+                        // 检查风险测评等级
+                        if (review.riskLevel === 'R4' || review.riskLevel === 'R5') {
+                            return '已通过';
+                        } else if (review.riskLevel) {
+                            return '未通过';
+                        } else {
+                            return '待审核';
+                        }
+                    }
+                    
+                    return '待审核';
+                },
+
+                updateRWAStatus(review, newStatus) {
+                    review.certificationStatus = newStatus;
+                    alert(`用户 ${review.userAccount} 的认证状态已更新为：${this.getStatusText(newStatus)}`);
+                },
+
+                viewDetail(item) {
+                    this.selectedItem = item;
+                    this.viewingDetail = true;
+                    this.reviewAction = '';
+                    this.reviewComment = '';
+                    this.verificationCode = '';
+                },
+
+                quickApprove(item) {
+                    if (confirm(`确定要快速通过 ${item.userAccount} 的认证申请吗？`)) {
+                        item.status = 'approved';
+                        alert('审核通过！已发送通知邮件。');
+                    }
+                },
+
+                quickReject(item) {
+                    const reason = prompt(`请输入驳回理由（${item.userAccount}）：`);
+                    if (reason) {
+                        item.status = 'rejected';
+                        alert('已驳回申请！已发送通知邮件。');
+                    }
+                },
+
+                submitReview() {
+                    if (!this.reviewAction) {
+                        alert('请选择审核结果');
+                        return;
+                    }
+                    
+                    // 只在驳回时需要填写审核意见
+                    if (this.reviewAction === 'rejected' && !this.reviewComment) {
+                        alert('请填写驳回原因');
+                        return;
+                    }
+                    
+                    // 所有操作都需要验证码
+                    if (!this.verificationCode) {
+                        alert('请输入身份验证码');
+                        return;
+                    }
+                    
+                    if (this.verificationCode.length !== 6) {
+                        alert('验证码必须是6位数字');
+                        return;
+                    }
+
+                    if (confirm('确定提交审核结果吗？')) {
+                        this.selectedItem.status = this.reviewAction;
+                        alert('审核结果已提交！系统将自动发送通知邮件给用户。');
+                        this.viewingDetail = false;
+                        this.selectedItem = null;
+                        this.reviewAction = '';
+                        this.reviewComment = '';
+                        this.verificationCode = '';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC个人认证系统 - 智能识别版</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scan-line {
+            animation: scan 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="kycApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">KYC 个人认证</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="resetAndGoHome()">首页</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">认证进度</span>
+                    <span class="text-sm text-gray-500" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${getProgressPercentage()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>选择证件</span>
+                    <span>拍摄证件</span>
+                    <span>人脸识别</span>
+                    <span>确认信息</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <section x-show="page==='home'" x-transition x-cloak>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80" alt="KYC认证" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-2xl font-semibold mb-3">智能KYC身份认证</h2>
+                <p class="mb-6 text-gray-600 text-center max-w-md">通过AI智能识别技术，快速完成身份认证。整个过程仅需2-3分钟。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>认证流程：</strong>
+                        </p>
+                        <div class="text-sm text-gray-700 space-y-2">
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">1</span>
+                                <span>选择证件类型（身份证/护照）</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">2</span>
+                                <span>拍摄证件照片（AI自动识别）</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">3</span>
+                                <span>人脸识别验证（活体检测）</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">4</span>
+                                <span>确认信息并提交</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                        <p class="text-sm text-green-700 mb-2">
+                            <strong>智能特性：</strong>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>✓ OCR智能识别证件信息</li>
+                            <li>✓ AI人脸比对技术</li>
+                            <li>✓ 实时活体检测</li>
+                            <li>✓ 即时返回认证结果</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="w-full max-w-md py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='select-id-type'">开始认证</button>
+            </div>
+        </section>
+
+        <!-- 第1步：选择证件类型 -->
+        <section x-show="page==='select-id-type'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 1/4：选择证件类型</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>请选择您要使用的证件类型</strong>
+                    </p>
+                    <p class="text-xs text-gray-600 mt-1">请确保证件在有效期内，照片清晰可见</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- 身份证 -->
+                    <button @click="selectIdType('id_card')" 
+                            :class="idType === 'id_card' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-300 hover:border-blue-400'"
+                            class="border-2 rounded-xl p-6 text-center transition duration-200">
+                        <div class="text-5xl mb-3">🪪</div>
+                        <div class="font-bold text-lg mb-2">身份证</div>
+                        <div class="text-sm text-gray-600">中华人民共和国居民身份证</div>
+                        <div x-show="idType === 'id_card'" class="mt-3">
+                            <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">✓ 已选择</span>
+                        </div>
+                    </button>
+
+                    <!-- 护照 -->
+                    <button @click="selectIdType('passport')" 
+                            :class="idType === 'passport' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-300 hover:border-blue-400'"
+                            class="border-2 rounded-xl p-6 text-center transition duration-200">
+                        <div class="text-5xl mb-3">🛂</div>
+                        <div class="font-bold text-lg mb-2">护照</div>
+                        <div class="text-sm text-gray-600">中国护照 / 外国护照</div>
+                        <div x-show="idType === 'passport'" class="mt-3">
+                            <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">✓ 已选择</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!idType"
+                            :class="{'opacity-50 cursor-not-allowed': !idType}"
+                            @click="goToCapture()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第2步：拍摄证件 -->
+        <section x-show="page==='capture-id'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 2/4：拍摄证件照片</h2>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-700 mb-2">
+                        <strong>拍摄要求：</strong>
+                    </p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>• 请在光线充足的环境下拍摄</li>
+                        <li>• 确保证件四角完整，信息清晰可读</li>
+                        <li>• 避免反光、模糊或遮挡</li>
+                        <li x-show="idType === 'id_card'">• 请分别拍摄身份证正面和反面</li>
+                    </ul>
+                </div>
+
+                <!-- 拍摄身份证正面 -->
+                <div class="mb-6" x-show="idType === 'id_card'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        身份证正面 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="idFrontCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="captureIdFront()">
+                        <template x-if="!idFrontCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄身份证正面</p>
+                                <p class="text-xs text-gray-500">包含照片、姓名、身份证号等信息的一面</p>
+                            </div>
+                        </template>
+                        <template x-if="idFrontCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 身份证正面已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 拍摄身份证反面 -->
+                <div class="mb-6" x-show="idType === 'id_card'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        身份证反面 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="idBackCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="captureIdBack()">
+                        <template x-if="!idBackCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄身份证反面</p>
+                                <p class="text-xs text-gray-500">包含签发机关、有效期限等信息的一面</p>
+                            </div>
+                        </template>
+                        <template x-if="idBackCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 身份证反面已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 拍摄护照 -->
+                <div class="mb-6" x-show="idType === 'passport'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        护照信息页 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="passportCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="capturePassport()">
+                        <template x-if="!passportCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄护照信息页</p>
+                                <p class="text-xs text-gray-500">包含照片、姓名、护照号等个人信息的页面</p>
+                            </div>
+                        </template>
+                        <template x-if="passportCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 护照信息页已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- OCR识别进度 -->
+                <div x-show="isOCRProcessing" class="mb-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-blue-900">正在识别证件信息...</p>
+                                <p class="text-xs text-blue-700 mt-1">AI正在智能识别您的证件内容，请稍候</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='select-id-type'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canProceedToFaceRecognition()"
+                            :class="{'opacity-50 cursor-not-allowed': !canProceedToFaceRecognition()}"
+                            @click="startOCR()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第3步：人脸识别 -->
+        <section x-show="page==='face-recognition'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 3/4：人脸识别验证</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>人脸识别说明：</strong>
+                    </p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>• 请正对摄像头，确保光线充足</li>
+                        <li>• 摘下眼镜、帽子等遮挡物</li>
+                        <li>• 保持自然表情，不要遮挡面部</li>
+                        <li>• 系统将进行活体检测和人脸比对</li>
+                    </ul>
+                </div>
+
+                <!-- 摄像头预览区域 -->
+                <div class="mb-6">
+                    <div class="relative border-2 rounded-lg overflow-hidden bg-gray-900"
+                         :class="faceRecognitionStatus === 'success' ? 'border-green-500' : faceRecognitionStatus === 'failed' ? 'border-red-500' : 'border-blue-500'">
+                        
+                        <!-- 模拟摄像头画面 -->
+                        <div class="aspect-video flex items-center justify-center relative">
+                            <template x-if="!isFaceRecognizing && faceRecognitionStatus === ''">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    <p class="text-lg font-semibold">点击下方按钮开始人脸识别</p>
+                                </div>
+                            </template>
+
+                            <!-- 识别中状态 -->
+                            <template x-if="isFaceRecognizing">
+                                <div class="text-center text-white w-full">
+                                    <div class="relative">
+                                        <svg class="w-32 h-32 mx-auto mb-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <!-- 扫描线动画 -->
+                                        <div class="absolute inset-0 overflow-hidden">
+                                            <div class="scan-line h-0.5 bg-blue-500 shadow-lg shadow-blue-500/50"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-lg font-semibold mb-2">正在进行人脸识别...</p>
+                                    <p class="text-sm text-gray-300" x-text="recognitionStep"></p>
+                                </div>
+                            </template>
+
+                            <!-- 识别成功 -->
+                            <template x-if="faceRecognitionStatus === 'success'">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-lg font-semibold text-green-500">✓ 人脸识别成功</p>
+                                    <p class="text-sm text-gray-300 mt-2">人脸比对通过，相似度：98.5%</p>
+                                </div>
+                            </template>
+
+                            <!-- 识别失败 -->
+                            <template x-if="faceRecognitionStatus === 'failed'">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-lg font-semibold text-red-500">✗ 人脸识别失败</p>
+                                    <p class="text-sm text-gray-300 mt-2">请确保光线充足，面部清晰可见</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="text-center mb-6">
+                    <button x-show="!isFaceRecognizing && faceRecognitionStatus !== 'success'" 
+                            @click="startFaceRecognition()"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition shadow-lg">
+                        <span x-show="faceRecognitionStatus !== 'failed'">开始人脸识别</span>
+                        <span x-show="faceRecognitionStatus === 'failed'">重新识别</span>
+                    </button>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='capture-id'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="faceRecognitionStatus !== 'success'"
+                            :class="{'opacity-50 cursor-not-allowed': faceRecognitionStatus !== 'success'}"
+                            @click="page='confirm-info'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第4步：确认信息 -->
+        <section x-show="page==='confirm-info'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 4/4：确认个人信息</h2>
+                
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <p class="text-sm text-green-700 mb-2">
+                        <strong>信息识别完成：</strong>
+                    </p>
+                    <p class="text-xs text-gray-700">以下信息由AI自动识别，请仔细核对。如有错误请修改后提交。</p>
+                </div>
+
+                <!-- OCR识别的信息 -->
+                <div class="space-y-4 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">姓名</label>
+                            <input type="text" x-model="ocrData.name" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">性别</label>
+                            <select x-model="ocrData.gender" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">民族</label>
+                            <input type="text" x-model="ocrData.ethnicity" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">出生日期</label>
+                            <input type="text" x-model="ocrData.birthDate" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">身份证号 / 护照号</label>
+                        <input type="text" x-model="ocrData.idNumber" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">地址</label>
+                        <textarea x-model="ocrData.address" rows="2"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4" x-show="idType === 'id_card'">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">签发机关</label>
+                            <input type="text" x-model="ocrData.issuingAuthority" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">有效期限</label>
+                            <input type="text" x-model="ocrData.validPeriod" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='face-recognition'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="submitVerification()">确认提交</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 认证结果页 - 通过 -->
+        <section x-show="page==='result-passed'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-green-600 mb-3">🎉 认证通过！</h2>
+                    <p class="text-gray-600 text-lg">您的身份认证已成功完成</p>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-400 p-6 rounded-r-lg mb-6">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-green-600 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-green-700 font-semibold mb-2">自动认证成功</p>
+                            <p class="text-sm text-gray-700">
+                                系统已通过AI智能验证您的身份信息，所有验证项目均已通过。您现在可以使用平台的所有功能。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">认证详情</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">认证姓名：</span>
+                            <span class="font-semibold text-gray-800" x-text="ocrData.name"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">证件号码：</span>
+                            <span class="font-mono text-gray-800" x-text="maskIdNumber(ocrData.idNumber)"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">认证时间：</span>
+                            <span class="font-semibold text-gray-800" x-text="new Date().toLocaleString('zh-CN')"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">认证编号：</span>
+                            <span class="font-mono text-sm text-gray-800">KYC-<span x-text="Math.random().toString(36).substr(2, 8).toUpperCase()"></span></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">认证状态：</span>
+                            <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                ✓ 已通过
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="resetAndGoHome()" 
+                        class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                    返回首页
+                </button>
+            </div>
+        </section>
+
+        <!-- 认证结果页 - 需要人工审核 -->
+        <section x-show="page==='result-manual-review'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-16 h-16 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-yellow-600 mb-3">需要人工审核</h2>
+                    <p class="text-gray-600">您的认证申请已提交，需要人工审核</p>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg mb-6">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-yellow-700 font-semibold mb-2">为什么需要人工审核？</p>
+                            <p class="text-sm text-gray-700 mb-2">
+                                系统在自动验证过程中检测到以下情况，需要人工审核员进一步确认：
+                            </p>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• 人脸相似度略低于自动通过阈值（85%-95%）</li>
+                                <li>• 证件照片质量需要人工确认</li>
+                                <li>• 部分OCR信息需要人工校对</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">申请信息</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">申请人：</span>
+                            <span class="font-semibold text-gray-800" x-text="ocrData.name"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-semibold text-gray-800" x-text="new Date().toLocaleString('zh-CN')"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">申请ID：</span>
+                            <span class="font-mono text-sm text-gray-800">KYC-<span x-text="Math.random().toString(36).substr(2, 8).toUpperCase()"></span></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">审核状态：</span>
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                                待人工审核
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-5 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-3">审核说明</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>审核团队将在1-3个工作日内完成审核</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>审核结果将通过邮件和站内通知发送给您</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>如需补充材料，我们会及时联系您</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button @click="resetAndGoHome()" 
+                        class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                    返回首页
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function kycApp() {
+            return {
+                page: 'home',
+                
+                // 证件类型
+                idType: '', // 'id_card' or 'passport'
+                
+                // 拍摄状态
+                idFrontCaptured: false,
+                idBackCaptured: false,
+                passportCaptured: false,
+                
+                // OCR处理状态
+                isOCRProcessing: false,
+                
+                // 人脸识别状态
+                isFaceRecognizing: false,
+                faceRecognitionStatus: '', // '', 'success', 'failed'
+                recognitionStep: '',
+                
+                // OCR识别的数据
+                ocrData: {
+                    name: '张三',
+                    gender: '男',
+                    ethnicity: '汉',
+                    birthDate: '1990年1月1日',
+                    idNumber: '110101199001011234',
+                    address: '北京市东城区长安街1号',
+                    issuingAuthority: '北京市公安局东城分局',
+                    validPeriod: '2020.01.01-2030.01.01'
+                },
+
+                // ========== 方法 ==========
+                
+                selectIdType(type) {
+                    this.idType = type;
+                    console.log('选择证件类型:', type);
+                },
+
+                goToCapture() {
+                    this.page = 'capture-id';
+                },
+
+                captureIdFront() {
+                    console.log('拍摄身份证正面');
+                    // 模拟拍摄
+                    setTimeout(() => {
+                        this.idFrontCaptured = true;
+                    }, 500);
+                },
+
+                captureIdBack() {
+                    console.log('拍摄身份证反面');
+                    // 模拟拍摄
+                    setTimeout(() => {
+                        this.idBackCaptured = true;
+                    }, 500);
+                },
+
+                capturePassport() {
+                    console.log('拍摄护照');
+                    // 模拟拍摄
+                    setTimeout(() => {
+                        this.passportCaptured = true;
+                    }, 500);
+                },
+
+                canProceedToFaceRecognition() {
+                    if (this.idType === 'id_card') {
+                        return this.idFrontCaptured && this.idBackCaptured;
+                    } else if (this.idType === 'passport') {
+                        return this.passportCaptured;
+                    }
+                    return false;
+                },
+
+                startOCR() {
+                    console.log('开始OCR识别');
+                    this.isOCRProcessing = true;
+                    
+                    // 模拟OCR识别过程
+                    setTimeout(() => {
+                        this.isOCRProcessing = false;
+                        
+                        // 模拟识别结果
+                        if (this.idType === 'passport') {
+                            this.ocrData = {
+                                name: 'ZHANG San',
+                                gender: '男',
+                                ethnicity: '-',
+                                birthDate: '1990-01-01',
+                                idNumber: 'E12345678',
+                                address: 'Beijing, China',
+                                issuingAuthority: 'Ministry of Public Security',
+                                validPeriod: '2020-01-01 - 2030-01-01'
+                            };
+                        }
+                        
+                        this.page = 'face-recognition';
+                    }, 2000);
+                },
+
+                startFaceRecognition() {
+                    console.log('开始人脸识别');
+                    this.isFaceRecognizing = true;
+                    this.faceRecognitionStatus = '';
+                    
+                    // 模拟识别步骤
+                    const steps = [
+                        '正在启动摄像头...',
+                        '检测人脸位置...',
+                        '进行活体检测...',
+                        '提取面部特征...',
+                        '与证件照片比对中...',
+                        '分析相似度...'
+                    ];
+                    
+                    let currentStep = 0;
+                    const stepInterval = setInterval(() => {
+                        if (currentStep < steps.length) {
+                            this.recognitionStep = steps[currentStep];
+                            currentStep++;
+                        } else {
+                            clearInterval(stepInterval);
+                            
+                            // 模拟识别结果（80%概率成功）
+                            const success = Math.random() > 0.2;
+                            
+                            setTimeout(() => {
+                                this.isFaceRecognizing = false;
+                                this.faceRecognitionStatus = success ? 'success' : 'failed';
+                            }, 500);
+                        }
+                    }, 800);
+                },
+
+                submitVerification() {
+                    console.log('提交认证信息');
+                    
+                    // 模拟自动判断结果
+                    // 90%概率直接通过，10%需要人工审核
+                    const autoPassed = Math.random() > 0.1;
+                    
+                    if (autoPassed) {
+                        this.page = 'result-passed';
+                    } else {
+                        this.page = 'result-manual-review';
+                    }
+                },
+
+                maskIdNumber(idNumber) {
+                    if (!idNumber) return '';
+                    const len = idNumber.length;
+                    if (len <= 8) return idNumber;
+                    return idNumber.substring(0, 4) + '****' + idNumber.substring(len - 4);
+                },
+
+                resetAndGoHome() {
+                    // 重置所有状态
+                    this.page = 'home';
+                    this.idType = '';
+                    this.idFrontCaptured = false;
+                    this.idBackCaptured = false;
+                    this.passportCaptured = false;
+                    this.isOCRProcessing = false;
+                    this.isFaceRecognizing = false;
+                    this.faceRecognitionStatus = '';
+                    this.recognitionStep = '';
+                    
+                    this.ocrData = {
+                        name: '张三',
+                        gender: '男',
+                        ethnicity: '汉',
+                        birthDate: '1990年1月1日',
+                        idNumber: '110101199001011234',
+                        address: '北京市东城区长安街1号',
+                        issuingAuthority: '北京市公安局东城分局',
+                        validPeriod: '2020.01.01-2030.01.01'
+                    };
+                },
+
+                getProgressPercentage() {
+                    if (this.page === 'select-id-type') return 10;
+                    if (this.page === 'capture-id') return 35;
+                    if (this.page === 'face-recognition') return 65;
+                    if (this.page === 'confirm-info') return 90;
+                    if (this.page === 'result-passed' || this.page === 'result-manual-review') return 100;
+                    return 0;
+                },
+
+                getProgressText() {
+                    if (this.page === 'select-id-type') return '第1步：选择证件类型';
+                    if (this.page === 'capture-id') return '第2步：拍摄证件照片';
+                    if (this.page === 'face-recognition') return '第3步：人脸识别验证';
+                    if (this.page === 'confirm-info') return '第4步：确认个人信息';
+                    if (this.page === 'result-passed') return '认证完成：已通过';
+                    if (this.page === 'result-manual-review') return '认证完成：待人工审核';
+                    return '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

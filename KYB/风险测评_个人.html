@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人风险测评</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div x-data="riskAssessment()" class="max-w-md mx-auto bg-white min-h-screen">
+        <!-- 头部 -->
+        <div class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center z-10">
+            <button @click="goBack()" class="mr-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <h1 class="text-lg font-semibold">风险测评</h1>
+        </div>
+
+        <!-- 进度条 -->
+        <div x-show="currentStep > 0" class="sticky top-[57px] bg-white px-4 py-3 border-b border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">测评进度</span>
+                <span class="text-sm font-semibold text-purple-600" x-text="currentStep + '/' + totalQuestions"></span>
+            </div>
+            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-300" 
+                     :style="`width: ${(currentStep / totalQuestions) * 100}%`"></div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="p-4">
+            <!-- 0. 欢迎页 -->
+            <div x-show="currentStep === 0" x-transition>
+                <div class="text-center py-8">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-4">风险承受能力测评</h2>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        为了帮助您更好地了解自己的风险承受能力，<br>
+                        请如实填写以下问题。<br>
+                        测评大约需要 3-5 分钟。
+                    </p>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="text-sm text-blue-800">
+                            <p class="font-semibold mb-1">重要提示</p>
+                            <ul class="list-disc list-inside space-y-1 text-xs">
+                                <li>测评结果仅供参考，不构成投资建议</li>
+                                <li>请根据真实情况填写，以获得准确评估</li>
+                                <li>测评结果有效期为一年</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="startAssessment()" 
+                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all">
+                    开始测评
+                </button>
+            </div>
+
+            <!-- 问题页面 -->
+            <template x-for="(question, index) in questions" :key="index">
+                <div x-show="currentStep === index + 1" x-transition>
+                    <div class="mb-6">
+                        <div class="text-sm text-purple-600 font-semibold mb-2" x-text="'问题 ' + (index + 1)"></div>
+                        <h3 class="text-lg font-bold mb-4" x-text="question.title"></h3>
+                        <p x-show="question.description" class="text-sm text-gray-500 mb-4" x-text="question.description"></p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="(option, optIndex) in question.options" :key="optIndex">
+                            <label class="block">
+                                <input type="radio" 
+                                       :name="'q' + index" 
+                                       :value="option.score"
+                                       x-model.number="answers[index]"
+                                       class="hidden peer">
+                                <div class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all
+                                            peer-checked:border-purple-500 peer-checked:bg-purple-50
+                                            hover:border-purple-300">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-gray-300 
+                                                    peer-checked:border-purple-500 peer-checked:bg-purple-500
+                                                    flex items-center justify-center mr-3 mt-0.5">
+                                            <svg class="w-3 h-3 text-white hidden peer-checked:block" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="font-medium text-gray-900" x-text="option.label"></div>
+                                            <div x-show="option.detail" class="text-xs text-gray-500 mt-1" x-text="option.detail"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </template>
+                    </div>
+
+                    <div class="flex gap-3 mt-8">
+                        <button @click="previousQuestion()" 
+                                x-show="currentStep > 1"
+                                class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all">
+                            上一题
+                        </button>
+                        <button @click="nextQuestion()" 
+                                :disabled="answers[index] === null"
+                                :class="answers[index] !== null ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-300 cursor-not-allowed'"
+                                class="flex-1 text-white py-3 rounded-xl font-semibold transition-all">
+                            <span x-text="currentStep < totalQuestions ? '下一题' : '提交'"></span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- 结果页面 -->
+            <div x-show="currentStep === totalQuestions + 1" x-transition>
+                <div class="text-center py-8">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center"
+                         :class="getRiskLevelColor()">
+                        <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">测评完成</h2>
+                    <p class="text-gray-600 mb-8">您的风险承受能力等级为</p>
+                </div>
+
+                <!-- 风险等级卡片 -->
+                <div class="rounded-2xl p-6 mb-6"
+                     :class="getRiskLevelBgColor()">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold mb-2" x-text="getRiskLevel()"></div>
+                        <div class="text-sm opacity-90 mb-4" x-text="'得分：' + totalScore + ' 分'"></div>
+                        <div class="inline-block px-4 py-2 bg-white bg-opacity-30 rounded-full text-sm font-medium"
+                             x-text="getRiskLevelEnglish()"></div>
+                    </div>
+                </div>
+
+                <!-- 等级说明 -->
+                <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                    <div class="flex items-start mb-3">
+                        <svg class="w-5 h-5 text-purple-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <div class="font-semibold text-gray-900 mb-1">等级说明</div>
+                            <div class="text-sm text-gray-600" x-text="getRiskDescription()"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 适合产品 -->
+                <div class="bg-blue-50 rounded-xl p-4 mb-6">
+                    <div class="flex items-start mb-3">
+                        <svg class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"></path>
+                            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"></path>
+                            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"></path>
+                        </svg>
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-900 mb-2">适合的产品类型</div>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="product in getSuitableProducts()" :key="product">
+                                    <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-medium text-gray-700" x-text="product"></span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 风险提示 -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-amber-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="text-sm text-amber-800">
+                            <p class="font-semibold mb-1">风险提示</p>
+                            <p class="text-xs">投资有风险，入市需谨慎。本测评结果仅供参考，不构成投资建议。请根据自身实际情况谨慎决策。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 有效期提示 -->
+                <div class="text-center text-sm text-gray-500 mb-6">
+                    <p>测评结果有效期至：<span class="font-semibold" x-text="getExpiryDate()"></span></p>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="space-y-3">
+                    <button @click="confirmResult()" 
+                            class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 rounded-xl font-semibold shadow-lg">
+                        确认结果
+                    </button>
+                    <button @click="retakeAssessment()" 
+                            class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
+                        重新测评
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function riskAssessment() {
+            return {
+                currentStep: 0,
+                totalQuestions: 10,
+                answers: Array(10).fill(null),
+                totalScore: 0,
+                
+                questions: [
+                    {
+                        title: '您的年龄是？',
+                        description: '',
+                        options: [
+                            { label: '18-30岁', score: 5 },
+                            { label: '31-40岁', score: 4 },
+                            { label: '41-50岁', score: 3 },
+                            { label: '51-60岁', score: 2 },
+                            { label: '60岁以上', score: 1 }
+                        ]
+                    },
+                    {
+                        title: '您的年收入水平是？',
+                        description: '包括工资、奖金、投资收益等所有收入',
+                        options: [
+                            { label: '10万元以下', score: 1 },
+                            { label: '10-30万元', score: 2 },
+                            { label: '30-50万元', score: 3 },
+                            { label: '50-100万元', score: 4 },
+                            { label: '100万元以上', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '您的投资经验如何？',
+                        description: '',
+                        options: [
+                            { label: '没有投资经验', score: 1 },
+                            { label: '1年以下', score: 2 },
+                            { label: '1-3年', score: 3 },
+                            { label: '3-5年', score: 4 },
+                            { label: '5年以上', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '您投资的主要目的是？',
+                        description: '',
+                        options: [
+                            { label: '资产保值，保本为主', score: 1 },
+                            { label: '稳定增值，追求稳定收益', score: 2 },
+                            { label: '资产增值，愿意承担一定风险', score: 3 },
+                            { label: '追求高收益，可承受较大波动', score: 4 },
+                            { label: '激进投资，追求最大收益', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '您计划的投资期限是？',
+                        description: '',
+                        options: [
+                            { label: '3个月以内', score: 1 },
+                            { label: '3-6个月', score: 2 },
+                            { label: '6-12个月', score: 3 },
+                            { label: '1-3年', score: 4 },
+                            { label: '3年以上', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '您可用于投资的资金占总资产的比例？',
+                        description: '',
+                        options: [
+                            { label: '10%以下', score: 1 },
+                            { label: '10%-30%', score: 2 },
+                            { label: '30%-50%', score: 3 },
+                            { label: '50%-70%', score: 4 },
+                            { label: '70%以上', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '如果您的投资在短期内下跌20%，您会？',
+                        description: '',
+                        options: [
+                            { label: '立即全部卖出止损', score: 1 },
+                            { label: '卖出大部分，保留少量', score: 2 },
+                            { label: '继续持有，观望', score: 3 },
+                            { label: '适当补仓，分摊成本', score: 4 },
+                            { label: '大量补仓，把握机会', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '您对金融产品的了解程度？',
+                        description: '包括股票、基金、债券、衍生品等',
+                        options: [
+                            { label: '完全不了解', score: 1 },
+                            { label: '了解基础知识', score: 2 },
+                            { label: '有一定了解', score: 3 },
+                            { label: '比较了解', score: 4 },
+                            { label: '非常了解', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '您能承受的最大亏损比例是？',
+                        description: '',
+                        options: [
+                            { label: '不能承受任何亏损', score: 1 },
+                            { label: '5%以内', score: 2 },
+                            { label: '5%-15%', score: 3 },
+                            { label: '15%-30%', score: 4 },
+                            { label: '30%以上', score: 5 }
+                        ]
+                    },
+                    {
+                        title: '以下哪种说法最符合您的投资态度？',
+                        description: '',
+                        options: [
+                            { label: '安全第一，本金不能有任何损失', score: 1 },
+                            { label: '希望稳定收益，可接受小幅波动', score: 2 },
+                            { label: '追求平衡，收益和风险相匹配', score: 3 },
+                            { label: '追求较高收益，可承受较大风险', score: 4 },
+                            { label: '追求最高收益，愿意承担高风险', score: 5 }
+                        ]
+                    }
+                ],
+
+                startAssessment() {
+                    this.currentStep = 1;
+                },
+
+                nextQuestion() {
+                    if (this.answers[this.currentStep - 1] === null) return;
+                    
+                    if (this.currentStep < this.totalQuestions) {
+                        this.currentStep++;
+                    } else {
+                        // 计算总分
+                        this.totalScore = this.answers.reduce((sum, score) => sum + score, 0);
+                        this.currentStep++;
+                    }
+                },
+
+                previousQuestion() {
+                    if (this.currentStep > 1) {
+                        this.currentStep--;
+                    }
+                },
+
+                goBack() {
+                    if (this.currentStep > 0) {
+                        this.currentStep--;
+                    } else {
+                        window.history.back();
+                    }
+                },
+
+                getRiskLevel() {
+                    if (this.totalScore <= 15) return '保守型';
+                    if (this.totalScore <= 25) return '稳健型';
+                    if (this.totalScore <= 35) return '平衡型';
+                    if (this.totalScore <= 45) return '成长型';
+                    return '进取型';
+                },
+
+                getRiskLevelEnglish() {
+                    if (this.totalScore <= 15) return 'Conservative';
+                    if (this.totalScore <= 25) return 'Steady';
+                    if (this.totalScore <= 35) return 'Balanced';
+                    if (this.totalScore <= 45) return 'Growth';
+                    return 'Aggressive';
+                },
+
+                getRiskDescription() {
+                    if (this.totalScore <= 15) return '您的风险承受能力较低，适合投资低风险产品，以保本为主要目标。';
+                    if (this.totalScore <= 25) return '您希望获得稳定收益，可以承受较小的本金波动风险。';
+                    if (this.totalScore <= 35) return '您追求收益与风险的平衡，可以接受一定程度的本金波动。';
+                    if (this.totalScore <= 45) return '您追求较高收益，能够承受较大的投资波动和本金损失风险。';
+                    return '您追求高收益，能够承受较大风险，包括本金的重大损失。';
+                },
+
+                getSuitableProducts() {
+                    if (this.totalScore <= 15) return ['货币基金', '国债', '银行存款', '低风险理财'];
+                    if (this.totalScore <= 25) return ['债券基金', '稳健型理财', '定期存款', '低风险信托'];
+                    if (this.totalScore <= 35) return ['混合基金', '指数基金', '平衡型理财', '优质债券'];
+                    if (this.totalScore <= 45) return ['股票基金', '股票投资', '成长型基金', '高收益债券'];
+                    return ['股票', '期货', '期权', '杠杆产品', '高风险衍生品'];
+                },
+
+                getRiskLevelColor() {
+                    if (this.totalScore <= 15) return 'bg-green-100 text-green-600';
+                    if (this.totalScore <= 25) return 'bg-blue-100 text-blue-600';
+                    if (this.totalScore <= 35) return 'bg-purple-100 text-purple-600';
+                    if (this.totalScore <= 45) return 'bg-orange-100 text-orange-600';
+                    return 'bg-red-100 text-red-600';
+                },
+
+                getRiskLevelBgColor() {
+                    if (this.totalScore <= 15) return 'bg-gradient-to-br from-green-400 to-green-500 text-white';
+                    if (this.totalScore <= 25) return 'bg-gradient-to-br from-blue-400 to-blue-500 text-white';
+                    if (this.totalScore <= 35) return 'bg-gradient-to-br from-purple-400 to-purple-500 text-white';
+                    if (this.totalScore <= 45) return 'bg-gradient-to-br from-orange-400 to-orange-500 text-white';
+                    return 'bg-gradient-to-br from-red-400 to-red-500 text-white';
+                },
+
+                getExpiryDate() {
+                    const date = new Date();
+                    date.setFullYear(date.getFullYear() + 1);
+                    return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                },
+
+                confirmResult() {
+                    alert('风险测评结果已保存！');
+                    // 这里可以添加保存逻辑
+                },
+
+                retakeAssessment() {
+                    this.currentStep = 0;
+                    this.answers = Array(10).fill(null);
+                    this.totalScore = 0;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

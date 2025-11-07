@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02-快速参考手册</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#项目管理快速参考手册" class="toc-link">项目管理快速参考手册</a>
+    <li class="toc-item toc-level-2">
+      <a href="#工时评估速查" class="toc-link">⚡ 工时评估速查</a>
+    <li class="toc-item toc-level-3">
+      <a href="#三点估算公式" class="toc-link">三点估算公式</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#故事点参考" class="toc-link">故事点参考</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#缓冲时间分配" class="toc-link">缓冲时间分配</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#任务拆解检查清单" class="toc-link">📋 任务拆解检查清单</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#moscow优先级" class="toc-link">🎯 MoSCoW优先级</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#风险评估矩阵" class="toc-link">🔴 风险评估矩阵</a>
+    <li class="toc-item toc-level-3">
+      <a href="#应对策略4t" class="toc-link">应对策略4T</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#会议速查" class="toc-link">📅 会议速查</a>
+    <li class="toc-item toc-level-3">
+      <a href="#每日站会-15分钟" class="toc-link">每日站会（15分钟）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#周报关键内容" class="toc-link">周报关键内容</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#进度跟踪公式" class="toc-link">📈 进度跟踪公式</a>
+    <li class="toc-item toc-level-3">
+      <a href="#进度偏差" class="toc-link">进度偏差</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#预计完成时间" class="toc-link">预计完成时间</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#smart原则" class="toc-link">🎨 SMART原则</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#敏捷迭代流程" class="toc-link">🔄 敏捷迭代流程</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#风险触发条件" class="toc-link">🚨 风险触发条件</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#沟通黄金法则" class="toc-link">💡 沟通黄金法则</a>
+    <li class="toc-item toc-level-3">
+      <a href="#向上汇报-管理层" class="toc-link">向上汇报（管理层）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#向下管理-团队" class="toc-link">向下管理（团队）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#关键指标监控" class="toc-link">📊 关键指标监控</a>
+    <li class="toc-item toc-level-3">
+      <a href="#开发指标" class="toc-link">开发指标</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#质量指标" class="toc-link">质量指标</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#进度指标" class="toc-link">进度指标</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#时间管理技巧" class="toc-link">⏱️ 时间管理技巧</a>
+    <li class="toc-item toc-level-3">
+      <a href="#时间分配-pm" class="toc-link">时间分配（PM）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#会议控制" class="toc-link">会议控制</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常用工具" class="toc-link">🛠️ 常用工具</a>
+    <li class="toc-item toc-level-3">
+      <a href="#项目管理" class="toc-link">项目管理</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#时间追踪" class="toc-link">时间追踪</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#协作沟通" class="toc-link">协作沟通</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#必备文档清单" class="toc-link">📚 必备文档清单</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#第一次做pm的首周计划" class="toc-link">🎯 第一次做PM的首周计划</a>
+    <li class="toc-item toc-level-3">
+      <a href="#day-1-2-了解全貌" class="toc-link">Day 1-2：了解全貌</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#day-3-4-制定计划" class="toc-link">Day 3-4：制定计划</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#day-5-启动会议" class="toc-link">Day 5：启动会议</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常见错误与避坑" class="toc-link">🚩 常见错误与避坑</a>
+    <li class="toc-item toc-level-3">
+      <a href="#过于乐观的估算" class="toc-link">❌ 过于乐观的估算</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#计划过于细致" class="toc-link">❌ 计划过于细致</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#忽视沟通成本" class="toc-link">❌ 忽视沟通成本</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#不敢说不" class="toc-link">❌ 不敢说&quot;不&quot;</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#微观管理" class="toc-link">❌ 微观管理</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#推荐书单-精简版" class="toc-link">📖 推荐书单（精简版）</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常用计算公式" class="toc-link">🔢 常用计算公式</a>
+    <li class="toc-item toc-level-3">
+      <a href="#工期计算" class="toc-link">工期计算</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#团队效率" class="toc-link">团队效率</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#偏差系数" class="toc-link">偏差系数</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#项目生命周期速览" class="toc-link">🎬 项目生命周期速览</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常用术语" class="toc-link">💬 常用术语</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#应急决策树" class="toc-link">⚙️ 应急决策树</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#成功pm的5个习惯" class="toc-link">🌟 成功PM的5个习惯</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#紧急联系人清单-模板" class="toc-link">📞 紧急联系人清单（模板）</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#持续学习路径" class="toc-link">🎓 持续学习路径</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#打印贴墙提醒" class="toc-link">📌 打印贴墙提醒</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#使用建议" class="toc-link">使用建议</a>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="项目管理快速参考手册">项目管理快速参考手册</h1>
+<blockquote>
+<p>一页纸搞定项目管理关键要点</p>
+</blockquote>
+<hr>
+<h2 id="工时评估速查">⚡ 工时评估速查</h2>
+<h3 id="三点估算公式">三点估算公式</h3>
+<pre><code>期望工时 = (乐观值 + 4×最可能值 + 悲观值) / 6
+对外承诺 = 期望工时 × 1.5
+</code></pre>
+<h3 id="故事点参考">故事点参考</h3>
+<pre><code>1点 = 0.5天  |  修改文案、调整样式
+2点 = 1天    |  简单表单、基础组件
+3点 = 2-3天  |  CRUD功能
+5点 = 4-5天  |  用户认证、权限系统
+8点 = 1周    |  支付集成、复杂业务
+13点 = 2周   |  需要拆分！
+</code></pre>
+<h3 id="缓冲时间分配">缓冲时间分配</h3>
+<pre><code>核心开发：60%
+测试联调：15%
+需求变更：10%
+技术风险：10%
+会议沟通：5%
+</code></pre>
+<hr>
+<h2 id="任务拆解检查清单">📋 任务拆解检查清单</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 单个任务 0.5-3 天</li>
+<li><input disabled="" type="checkbox"> 每个任务有唯一负责人</li>
+<li><input disabled="" type="checkbox"> 有明确的完成标准（DoD）</li>
+<li><input disabled="" type="checkbox"> 标注了依赖关系</li>
+<li><input disabled="" type="checkbox"> 使用MoSCoW标注优先级</li>
+<li><input disabled="" type="checkbox"> 识别了关键路径</li>
+<li><input disabled="" type="checkbox"> 高风险任务有应对预案</li>
+</ul>
+<hr>
+<h2 id="moscow优先级">🎯 MoSCoW优先级</h2>
+<pre><code>P0 Must Have     → 核心功能，MVP必需
+P1 Should Have   → 重要但不紧急
+P2 Could Have    → 锦上添花
+Won&#39;t Have       → 明确排除
+</code></pre>
+<hr>
+<h2 id="风险评估矩阵">🔴 风险评估矩阵</h2>
+<pre><code>风险分数 = 概率(1-5) × 影响(1-5)
+
+0-5分：  🟢 接受并监控
+6-12分： 🟡 制定应对计划
+13-25分：🔴 立即采取行动
+</code></pre>
+<h3 id="应对策略4t">应对策略4T</h3>
+<pre><code>Transfer   → 外包、购买保险
+Tolerate   → 接受风险，准备预算
+Treat      → 降低概率或影响
+Terminate  → 改变方案，避开风险
+</code></pre>
+<hr>
+<h2 id="会议速查">📅 会议速查</h2>
+<h3 id="每日站会-15分钟">每日站会（15分钟）</h3>
+<pre><code>1. 昨天完成了什么？
+2. 今天计划做什么？
+3. 遇到什么阻碍？
+</code></pre>
+<h3 id="周报关键内容">周报关键内容</h3>
+<pre><code>✅ 本周完成（用数据说话）
+🚧 进行中任务（进度百分比）
+📅 下周计划（具体任务）
+⚠️ 风险与问题（用红黄绿标识）
+📊 数据指标（进度、Bug、覆盖率）
+</code></pre>
+<hr>
+<h2 id="进度跟踪公式">📈 进度跟踪公式</h2>
+<h3 id="进度偏差">进度偏差</h3>
+<pre><code>进度偏差 = 实际进度 - 计划进度
+进度偏差率 = 进度偏差 / 计划进度 × 100%
+
+-5%以内：🟢 正常
+-5%到-10%：🟡 轻微延期
+-10%以上：🔴 严重延期
+</code></pre>
+<h3 id="预计完成时间">预计完成时间</h3>
+<pre><code>剩余工时 = 总工时 × (1 - 实际进度)
+预计完成日期 = 当前日期 + 剩余工时/团队人数
+</code></pre>
+<hr>
+<h2 id="smart原则">🎨 SMART原则</h2>
+<pre><code>S - Specific      具体的
+M - Measurable    可衡量的
+A - Achievable    可实现的
+R - Relevant      相关的
+T - Time-bound    有时限的
+</code></pre>
+<hr>
+<h2 id="敏捷迭代流程">🔄 敏捷迭代流程</h2>
+<pre><code>迭代规划会议 → 每日站会 → 开发 → 评审 → 回顾 → 下一迭代
+
+迭代周期：1-2周
+每日站会：固定时间15分钟
+Sprint评审：演示成果
+Sprint回顾：改进流程
+</code></pre>
+<hr>
+<h2 id="风险触发条件">🚨 风险触发条件</h2>
+<pre><code>进度延期     → 实际进度落后&gt;5%
+Bug爆发      → P0/P1超过10个
+人员流失     → 核心成员提离职
+性能问题     → 接口响应&gt;1秒
+第三方故障   → 成功率&lt;95%
+</code></pre>
+<hr>
+<h2 id="沟通黄金法则">💡 沟通黄金法则</h2>
+<h3 id="向上汇报-管理层">向上汇报（管理层）</h3>
+<pre><code>✅ 结论先行（先说结果）
+✅ 数据支持（用数字说话）
+✅ 方案选择（提供2-3个方案）
+✅ 风险透明（不要报喜不报忧）
+</code></pre>
+<h3 id="向下管理-团队">向下管理（团队）</h3>
+<pre><code>✅ 目标清晰（为什么做）
+✅ 信任授权（怎么做由他们决定）
+✅ 及时反馈（STAR模型）
+✅ 定期1对1（了解状态）
+</code></pre>
+<hr>
+<h2 id="关键指标监控">📊 关键指标监控</h2>
+<h3 id="开发指标">开发指标</h3>
+<pre><code>代码提交频率  → 每周50-100次
+代码审查率    → 90%以上
+单元测试覆盖率 → 80%以上
+</code></pre>
+<h3 id="质量指标">质量指标</h3>
+<pre><code>P0 Bug数量    → 0个
+P1 Bug数量    → &lt;3个
+P2 Bug数量    → &lt;10个
+</code></pre>
+<h3 id="进度指标">进度指标</h3>
+<pre><code>任务按时完成率 → 85%以上
+迭代交付率     → 90%以上
+需求变更率     → &lt;20%
+</code></pre>
+<hr>
+<h2 id="时间管理技巧">⏱️ 时间管理技巧</h2>
+<h3 id="时间分配-pm">时间分配（PM）</h3>
+<pre><code>编码/技术：    20%（保持技术感）
+计划跟踪：    25%（排期、更新进度）
+会议沟通：    30%（站会、评审、汇报）
+问题解决：    15%（救火、协调）
+学习思考：    10%（提升自己）
+</code></pre>
+<h3 id="会议控制">会议控制</h3>
+<pre><code>✅ 提前发议程
+✅ 准时开始和结束
+✅ 会议纪要（决策、行动项）
+✅ 跟进行动项的完成
+</code></pre>
+<hr>
+<h2 id="常用工具">🛠️ 常用工具</h2>
+<h3 id="项目管理">项目管理</h3>
+<pre><code>Jira      → 敏捷开发
+Trello    → 轻量级看板
+Notion    → 文档+任务一体化
+禅道      → 国产综合工具
+</code></pre>
+<h3 id="时间追踪">时间追踪</h3>
+<pre><code>Toggl     → 个人工时
+Clockify  → 团队工时（免费）
+</code></pre>
+<h3 id="协作沟通">协作沟通</h3>
+<pre><code>飞书/钉钉  → 企业协作
+Slack     → 国际团队
+Zoom      → 视频会议
+</code></pre>
+<hr>
+<h2 id="必备文档清单">📚 必备文档清单</h2>
+<pre><code>项目启动阶段：
+- [ ] 项目章程
+- [ ] 需求文档
+- [ ] 技术方案
+- [ ] WBS任务分解
+
+开发阶段：
+- [ ] 每日站会记录
+- [ ] 项目周报
+- [ ] 风险登记表
+- [ ] 变更管理记录
+
+结束阶段：
+- [ ] 测试报告
+- [ ] 部署文档
+- [ ] 项目复盘
+</code></pre>
+<hr>
+<h2 id="第一次做pm的首周计划">🎯 第一次做PM的首周计划</h2>
+<h3 id="day-1-2-了解全貌">Day 1-2：了解全貌</h3>
+<pre><code>- [ ] 阅读需求文档
+- [ ] 了解团队成员（技能、经验）
+- [ ] 了解技术架构
+- [ ] 明确项目目标和成功标准
+</code></pre>
+<h3 id="day-3-4-制定计划">Day 3-4：制定计划</h3>
+<pre><code>- [ ] WBS任务拆解
+- [ ] 工时评估（三点估算法）
+- [ ] 识别关键路径和依赖
+- [ ] 风险识别（头脑风暴）
+</code></pre>
+<h3 id="day-5-启动会议">Day 5：启动会议</h3>
+<pre><code>- [ ] 召开项目启动会
+- [ ] 确认分工和排期
+- [ ] 建立沟通机制（站会时间、周报格式）
+- [ ] 分配首批任务
+</code></pre>
+<hr>
+<h2 id="常见错误与避坑">🚩 常见错误与避坑</h2>
+<h3 id="过于乐观的估算">❌ 过于乐观的估算</h3>
+<pre><code>错误：&quot;这个简单，1天搞定&quot;
+正确：使用三点估算，考虑悲观情况
+</code></pre>
+<h3 id="计划过于细致">❌ 计划过于细致</h3>
+<pre><code>错误：2个月项目拆成500个任务
+正确：近期详细，远期粗略；颗粒度1-3天
+</code></pre>
+<h3 id="忽视沟通成本">❌ 忽视沟通成本</h3>
+<pre><code>错误：3人10天的活=1人30天
+正确：预留15-25%的沟通协调时间
+</code></pre>
+<h3 id="不敢说不">❌ 不敢说&quot;不&quot;</h3>
+<pre><code>错误：产品提需求全部答应
+正确：走变更流程，评估影响，用数据说话
+</code></pre>
+<h3 id="微观管理">❌ 微观管理</h3>
+<pre><code>错误：频繁询问进度，干涉技术细节
+正确：信任团队，聚焦结果，关键点深入
+</code></pre>
+<hr>
+<h2 id="推荐书单-精简版">📖 推荐书单（精简版）</h2>
+<pre><code>入门必读：
+1. 《人月神话》 - 软件工程圣经
+2. 《敏捷革命》 - 理解Scrum
+
+进阶阅读：
+3. 《关键对话》 - 沟通技巧
+4. 《高效能人士的七个习惯》 - 自我管理
+</code></pre>
+<hr>
+<h2 id="常用计算公式">🔢 常用计算公式</h2>
+<h3 id="工期计算">工期计算</h3>
+<pre><code>理论工期 = 总工时 / 团队人数
+实际工期 = 理论工期 × 沟通系数(1.2-1.5)
+对外承诺 = 实际工期 × 1.3
+</code></pre>
+<h3 id="团队效率">团队效率</h3>
+<pre><code>布鲁克斯定律：向延期项目增加人手会让项目更延期
+
+2人团队沟通路径：1条
+3人团队沟通路径：3条
+5人团队沟通路径：10条
+N人团队沟通路径：N×(N-1)/2
+
+建议：团队不超过7人（2 pizza team）
+</code></pre>
+<h3 id="偏差系数">偏差系数</h3>
+<pre><code>偏差系数 = Σ(实际工时/预估工时) / 项目数
+下次预估 = 初步预估 × 偏差系数
+</code></pre>
+<hr>
+<h2 id="项目生命周期速览">🎬 项目生命周期速览</h2>
+<pre><code>启动阶段（5%）
+├─ 项目章程
+├─ 干系人识别
+└─ 目标确认
+
+规划阶段（10%）
+├─ 需求分析
+├─ 任务拆解
+├─ 工时评估
+├─ 风险识别
+└─ 排期计划
+
+执行阶段（75%）
+├─ 任务分配
+├─ 进度跟踪
+├─ 问题解决
+└─ 变更管理
+
+收尾阶段（10%）
+├─ 测试验收
+├─ 部署上线
+├─ 项目复盘
+└─ 经验沉淀
+</code></pre>
+<hr>
+<h2 id="常用术语">💬 常用术语</h2>
+<pre><code>WBS     → Work Breakdown Structure（工作分解结构）
+DoD     → Definition of Done（完成的定义）
+MVP     → Minimum Viable Product（最小可行产品）
+POC     → Proof of Concept（概念验证）
+CPM     → Critical Path Method（关键路径法）
+PERT    → Program Evaluation and Review Technique（计划评审技术）
+Sprint  → 迭代周期（通常1-2周）
+Scrum   → 敏捷开发框架
+Backlog → 待办事项列表
+Burndown→ 燃尽图（剩余工作量）
+</code></pre>
+<hr>
+<h2 id="应急决策树">⚙️ 应急决策树</h2>
+<pre><code>项目延期怎么办？
+
+1. 评估延期原因
+   ├─ 工时低估 → 增加缓冲时间
+   ├─ 需求变更 → 砍需求或延期
+   ├─ 技术难题 → 寻求技术支持
+   └─ 人员不足 → 增加人力或延期
+
+2. 可选方案
+   ├─ 方案A：加班赶进度
+   ├─ 方案B：减少功能范围
+   ├─ 方案C：增加人力
+   └─ 方案D：延期上线
+
+3. 决策标准
+   ├─ 质量不能妥协
+   ├─ 核心功能必须有
+   └─ 团队健康要保证
+</code></pre>
+<hr>
+<h2 id="成功pm的5个习惯">🌟 成功PM的5个习惯</h2>
+<pre><code>1. 早上第一件事：查看风险登记表
+2. 每天固定时间：15分钟站会
+3. 每周五下午：写周报+思考改进点
+4. 每次会议后：立即整理会议纪要
+5. 每月至少一次：与每个成员1对1深聊
+</code></pre>
+<hr>
+<h2 id="紧急联系人清单-模板">📞 紧急联系人清单（模板）</h2>
+<pre><code>项目经理：      [姓名] [电话]
+技术负责人：    [姓名] [电话]
+产品负责人：    [姓名] [电话]
+测试负责人：    [姓名] [电话]
+运维负责人：    [姓名] [电话]
+部门领导：      [姓名] [电话]
+
+外部依赖：
+第三方技术支持： [联系方式]
+客户方对接人：   [联系方式]
+</code></pre>
+<hr>
+<h2 id="持续学习路径">🎓 持续学习路径</h2>
+<pre><code>第1个月：学理论（读书、看课程）
+第2-3个月：小项目实践（2-3人团队）
+第4-6个月：中型项目（5人以上团队）
+第6个月+：复盘总结，建立自己的方法论
+</code></pre>
+<hr>
+<h2 id="打印贴墙提醒">📌 打印贴墙提醒</h2>
+<pre><code>┌─────────────────────────────────────┐
+│  项目成功三要素                       │
+│                                       │
+│  1. 清晰的目标（为什么做）            │
+│  2. 合理的计划（怎么做）              │
+│  3. 高效的执行（做到位）              │
+│                                       │
+│  PM的职责：让对的人在对的时间         │
+│            做对的事                   │
+└─────────────────────────────────────┘
+</code></pre>
+<hr>
+<p><em>快速参考手册 v1.0</em><br><em>建议打印或设为浏览器书签，随时查阅</em></p>
+<hr>
+<h2 id="使用建议">使用建议</h2>
+<ol>
+<li><strong>新手阶段</strong>：每天看一遍，快速建立知识框架</li>
+<li><strong>实践阶段</strong>：遇到问题时翻阅对应章节</li>
+<li><strong>熟练阶段</strong>：定期回顾，查缺补漏</li>
+<li><strong>导师阶段</strong>：分享给新PM，帮助他们快速上手</li>
+</ol>
+<p><strong>这不是全部，但是足够开始！</strong> 🚀</p>
+
+</div>
+</body>
+</html>

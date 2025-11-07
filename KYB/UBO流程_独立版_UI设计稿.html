@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBO认证流程UI设计稿</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .canvas-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .canvas-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .screen-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 300px;
+            height: 650px;
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .phone-notch {
+            width: 120px;
+            height: 25px;
+            background-color: #000;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .status-bar {
+            height: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: #000;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 5;
+        }
+
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .header .back-arrow {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .header .title {
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .screen-label {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .info-box-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 4px;
+        }
+
+        .info-box-text {
+            font-size: 10px;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .info-box-yellow {
+            background-color: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+        .info-box-yellow .info-box-title {
+            color: #92400e;
+        }
+
+        .step-list {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .step-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #2196f3;
+            border-radius: 50%;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 15px auto;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .button-primary {
+            background-color: #000000;
+            color: #fff;
+        }
+
+        .button-secondary {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .button-blue {
+            background-color: #2196f3;
+            color: #fff;
+        }
+
+        .button-green {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .progress-bar {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            height: 6px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: #000;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .person-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .person-card-blue {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .person-card-green {
+            background-color: #e8f5e9;
+            border-color: #28a745;
+        }
+
+        .person-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .person-info {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .ubo-badge {
+            background-color: #2196f3;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .director-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            color: #999;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: start;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-text {
+            font-size: 10px;
+            color: #333;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <h1 class="canvas-title">UBO认证流程UI设计稿</h1>
+        
+        <!-- 第一行：首页 + 添加人员 + 已添加股东 + 身份认证 -->
+        <div class="screen-row">
+            <!-- 1. 首页 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">UBO认证</div>
+                    </div>
+                    <div class="content">
+                        <div class="welcome-section">
+                            <div class="welcome-title">UBO身份认证流程</div>
+                            <div class="welcome-desc">根据反洗钱法规要求，需要识别并认证最终受益所有人（UBO）或实际控制人的身份</div>
+                            
+                            <div class="info-box">
+                                <div class="info-box-title">什么是UBO？</div>
+                                <div class="info-box-text">最终受益所有人（Ultimate Beneficial Owner）是指直接或间接持有企业25%以上股权，或通过其他方式对企业实施实际控制的自然人</div>
+                            </div>
+
+                            <div class="info-box info-box-yellow">
+                                <div class="info-box-title">填写说明：</div>
+                                <div class="info-box-text">请添加<strong>全部</strong>25%以上的股东；可添加实际控制人信息（如董事长、CEO等）；两者可独立填写</div>
+                            </div>
+
+                            <div class="step-list">
+                                <div class="step-item">
+                                    <div class="step-dot"></div>
+                                    <span>1. 添加股东和实际控制人信息</span>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-dot"></div>
+                                    <span>2. UBO/实际控制人身份认证</span>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-dot"></div>
+                                    <span>3. UBO/实际控制人声明确认</span>
+                                </div>
+                            </div>
+                            
+                            <button class="button button-primary">开始认证</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">1. 认证首页</div>
+            </div>
+
+            <!-- 2. 添加人员信息 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">添加人员信息</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 33%"></div>
+                        </div>
+                        <div class="progress-text">第1步：添加人员信息</div>
+                        <div class="progress-steps">
+                            <span>人员信息</span>
+                            <span>身份认证</span>
+                            <span>声明确认</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 12px;">
+                            <div class="info-box-title">重要提示</div>
+                            <div class="info-box-text">请根据公司股东结构图，填写持股25%以上的股东信息。请如实填写持股25%及以上的所有股东，包括直接和间接持股。</div>
+                        </div>
+
+                        <div class="info-box info-box-yellow" style="margin-bottom: 15px;">
+                            <div class="info-box-title">重要提示</div>
+                            <div class="info-box-text">请添加<strong>全部</strong>25%以上的股东；可添加实际控制人（如董事长、CEO等）；股东和实际控制人可以独立填写</div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div class="section-title" style="margin: 0;">股东信息（持股≥25%）</div>
+                            <button class="button button-blue" style="padding: 6px 12px; margin: 0; font-size: 12px;">+ 添加</button>
+                        </div>
+
+                        <div class="empty-state">
+                            <div style="font-size: 11px; margin-bottom: 4px;">暂无股东信息</div>
+                            <div style="font-size: 9px;">请根据股东结构图添加持股25%及以上的股东</div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; margin-top: 15px;">
+                            <div class="section-title" style="margin: 0;">实际控制人</div>
+                            <button class="button button-green" style="padding: 6px 12px; margin: 0; font-size: 12px;">+ 添加</button>
+                        </div>
+
+                        <div class="empty-state">
+                            <div style="font-size: 11px; margin-bottom: 4px;">暂无实际控制人信息</div>
+                            <div style="font-size: 9px; color: #6b7280;">可添加实际控制企业的高管信息</div>
+                        </div>
+
+                        <button class="button button-primary" style="opacity: 0.6; margin-top: 15px;">下一步</button>
+                    </div>
+                </div>
+                <div class="screen-label">2. 添加人员信息</div>
+            </div>
+
+            <!-- 3. 已添加股东信息 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">添加人员信息</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 33%"></div>
+                        </div>
+                        <div class="progress-text">第1步：添加人员信息</div>
+                        <div class="progress-steps">
+                            <span>人员信息</span>
+                            <span>身份认证</span>
+                            <span>声明确认</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 12px;">
+                            <div class="info-box-title">重要提示</div>
+                            <div class="info-box-text">请根据公司股东结构图，填写持股25%以上的股东信息</div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div class="section-title" style="margin: 0;">股东信息（持股≥25%）</div>
+                            <button class="button button-blue" style="padding: 6px 12px; margin: 0; font-size: 12px;">+ 添加</button>
+                        </div>
+
+                        <div class="person-card person-card-blue">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <div class="person-name">
+                                        张三
+                                        <span class="ubo-badge">UBO</span>
+                                    </div>
+                                    <div class="person-info">持股比例：40%</div>
+                                </div>
+                                <button style="color: #dc3545; font-size: 11px; background: none; border: none; cursor: pointer;">删除</button>
+                            </div>
+                        </div>
+
+                        <div class="person-card person-card-blue">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <div class="person-name">
+                                        李四
+                                        <span class="ubo-badge">UBO</span>
+                                    </div>
+                                    <div class="person-info">持股比例：30%</div>
+                                </div>
+                                <button style="color: #dc3545; font-size: 11px; background: none; border: none; cursor: pointer;">删除</button>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; margin-top: 15px;">
+                            <div class="section-title" style="margin: 0;">实际控制人</div>
+                            <button class="button button-green" style="padding: 6px 12px; margin: 0; font-size: 12px;">+ 添加</button>
+                        </div>
+
+                        <div class="person-card person-card-green">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <div class="person-name">
+                                        王五
+                                        <span class="director-badge">董事长</span>
+                                    </div>
+                                    <div class="person-info">实际控制人 - 执行董事</div>
+                                </div>
+                                <button style="color: #dc3545; font-size: 11px; background: none; border: none; cursor: pointer;">删除</button>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="margin-top: 15px;">下一步</button>
+                    </div>
+                </div>
+                <div class="screen-label">3. 已添加人员</div>
+            </div>
+
+            <!-- 4. 身份认证页 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">身份认证</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 66%"></div>
+                        </div>
+                        <div class="progress-text">第2步：UBO身份认证</div>
+                        <div class="progress-steps">
+                            <span>人员信息</span>
+                            <span>身份认证</span>
+                            <span>声明确认</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 15px;">
+                            <div class="info-box-title">身份认证说明</div>
+                            <div class="info-box-text">以下人员需要完成个人身份认证（KYC），请确保每位人员完成认证流程</div>
+                        </div>
+
+                        <div class="section-title">需要认证的人员：</div>
+
+                        <div class="person-card person-card-blue" style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="person-name">张三 <span class="ubo-badge">UBO</span></div>
+                                    <div class="person-info">持股比例：40%</div>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <svg style="width: 18px; height: 18px; color: #28a745; margin-right: 5px;" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span style="font-size: 10px; color: #28a745; font-weight: 600;">已完成</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="person-card person-card-blue" style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="person-name">李四 <span class="ubo-badge">UBO</span></div>
+                                    <div class="person-info">持股比例：30%</div>
+                                </div>
+                                <button class="button button-blue" style="padding: 6px 12px; margin: 0; font-size: 11px;">去认证</button>
+                            </div>
+                        </div>
+
+                        <div class="person-card person-card-green" style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="person-name">王五 <span class="director-badge">董事长</span></div>
+                                    <div class="person-info">实际控制人 - 执行董事</div>
+                                </div>
+                                <button class="button button-green" style="padding: 6px 12px; margin: 0; font-size: 11px;">去认证</button>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="opacity: 0.6; margin-top: 15px;">下一步</button>
+                    </div>
+                </div>
+                <div class="screen-label">4. 身份认证</div>
+            </div>
+        </div>
+
+        <!-- 第二行：声明确认 + 提交成功 + 审核通过 + 审核驳回 -->
+        <div class="screen-row">
+            <!-- 5. 声明确认 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">声明确认</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">第3步：UBO声明确认</div>
+                        <div class="progress-steps">
+                            <span>人员信息</span>
+                            <span>身份认证</span>
+                            <span>声明确认</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 15px;">
+                            <div class="info-box-title">UBO声明</div>
+                            <div class="info-box-text">请确认以下人员为企业的最终受益所有人（UBO），并对信息的真实性负责</div>
+                        </div>
+
+                        <div class="section-title">UBO人员列表：</div>
+
+                        <div class="person-card person-card-blue">
+                            <div class="person-name">张三 <span class="ubo-badge">UBO</span></div>
+                            <div class="person-info">持股比例：40%</div>
+                            <div style="font-size: 9px; color: #28a745; margin-top: 4px;">✓ 已完成身份认证</div>
+                        </div>
+
+                        <div class="person-card person-card-blue">
+                            <div class="person-name">李四 <span class="ubo-badge">UBO</span></div>
+                            <div class="person-info">持股比例：30%</div>
+                            <div style="font-size: 9px; color: #28a745; margin-top: 4px;">✓ 已完成身份认证</div>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; padding-top: 12px; margin-top: 15px;">
+                            <div class="section-title">声明确认</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="checkbox" checked>
+                                <div class="checkbox-text">本人确认以上UBO信息真实、准确、完整</div>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="checkbox" checked>
+                                <div class="checkbox-text">本人理解提供虚假信息可能承担的法律后果</div>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="checkbox">
+                                <div class="checkbox-text">本人同意遵守相关反洗钱法规要求</div>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="opacity: 0.6; margin-top: 10px;">提交申请</button>
+                    </div>
+                </div>
+                <div class="screen-label">5. 声明确认</div>
+            </div>
+
+            <!-- 6. 提交成功 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">UBO认证</div>
+                    </div>
+                    <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <svg style="width: 60px; height: 60px; color: #28a745; margin-bottom: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 10px;">提交成功！</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5;">您的UBO认证申请已成功提交<br>我们将在1-2个工作日内完成审核</div>
+
+                        <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; width: 100%; margin-bottom: 20px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">提交信息摘要</div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">UBO人数：</span>
+                                <span style="font-size: 11px; color: #333;">2人</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">实际控制人人数：</span>
+                                <span style="font-size: 11px; color: #333;">1人</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">提交时间：</span>
+                                <span style="font-size: 11px; color: #333;">2024-11-04 16:10</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 11px; color: #666;">当前状态：</span>
+                                <span style="background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 10px;">审核中</span>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary">完成</button>
+                    </div>
+                </div>
+                <div class="screen-label">6. 提交成功</div>
+            </div>
+
+            <!-- 7. 审核通过 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <svg style="width: 60px; height: 60px; color: #28a745; margin-bottom: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div style="font-size: 18px; font-weight: 600; color: #28a745; margin-bottom: 10px;">认证成功！</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 25px;">您的UBO认证已通过审核</div>
+
+                        <div style="background: #f8fff9; border: 1px solid #d4edda; border-radius: 8px; padding: 15px; width: 100%; margin-bottom: 20px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #155724; margin-bottom: 10px;">认证信息</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">UBO人数：2人</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">实际控制人人数：1人</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">认证时间：2024-11-05 11:20</div>
+                            <div style="font-size: 10px; color: #155724;">认证编号：UBO202411050001</div>
+                        </div>
+
+                        <div style="background: #e3f2fd; border-radius: 8px; padding: 12px; width: 100%; margin-bottom: 20px; text-align: left;">
+                            <div style="font-size: 11px; font-weight: 600; color: #1976d2; margin-bottom: 8px;">已认证的UBO人员：</div>
+                            <div style="font-size: 10px; color: #333; margin-bottom: 3px;">• 张三（持股40%）</div>
+                            <div style="font-size: 10px; color: #333;">• 李四（持股30%）</div>
+                        </div>
+
+                        <button class="button button-primary">确定</button>
+                    </div>
+                </div>
+                <div class="screen-label">7. 审核通过</div>
+            </div>
+
+            <!-- 8. 审核驳回 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px; color: #dc3545;">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px;" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span style="font-size: 16px; font-weight: 600;">认证未通过</span>
+                        </div>
+
+                        <div style="font-size: 12px; color: #666; margin-bottom: 12px;">您的UBO认证申请未能通过审核，原因如下：</div>
+
+                        <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #c53030; margin-bottom: 6px;">驳回原因：</div>
+                            <div style="font-size: 10px; color: #c53030; line-height: 1.5;">
+                                • UBO李四的身份认证信息不完整<br>
+                                • 股权比例与工商信息不符<br>
+                                • 缺少必要的股东结构说明文件
+                            </div>
+                        </div>
+
+                        <div style="background: #f8f9fa; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #495057; margin-bottom: 6px;">处理建议：</div>
+                            <div style="font-size: 10px; color: #495057; line-height: 1.4;">
+                                • 请确保所有UBO完成完整的KYC认证<br>
+                                • 核对股权比例信息<br>
+                                • 补充提供股东结构图或说明文件
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="margin-bottom: 5px;">重新提交</button>
+                        <div style="text-align: center;">
+                            <a href="#" style="font-size: 12px; color: #007bff; text-decoration: none;">联系客服</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">8. 审核驳回</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>住址证明认证流程UI设计稿</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .canvas-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .canvas-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .screen-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 300px;
+            height: 650px;
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .phone-notch {
+            width: 120px;
+            height: 25px;
+            background-color: #000;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .status-bar {
+            height: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: #000;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 5;
+        }
+
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .header .back-arrow {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .header .title {
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .screen-label {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .info-box-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 4px;
+        }
+
+        .info-box-text {
+            font-size: 10px;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .info-box-yellow {
+            background-color: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+        .info-box-yellow .info-box-title {
+            color: #92400e;
+        }
+
+        .requirement-list {
+            text-align: left;
+        }
+
+        .requirement-item {
+            font-size: 10px;
+            color: #333;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            display: flex;
+            align-items: start;
+        }
+
+        .button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 15px auto;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .button-primary {
+            background-color: #000000;
+            color: #fff;
+        }
+
+        .button-secondary {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .progress-bar {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            height: 6px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: #000;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .proof-type-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .proof-type-item:hover {
+            border-color: #000;
+        }
+
+        .proof-type-item.selected {
+            border-color: #000;
+            background-color: #f8f9fa;
+        }
+
+        .proof-type-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .proof-type-desc {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 6px;
+            padding: 20px 10px;
+            text-align: center;
+            margin-bottom: 12px;
+            background-color: #f9f9f9;
+        }
+
+        .upload-area.success {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+
+        .upload-icon {
+            width: 25px;
+            height: 25px;
+            margin: 0 auto 8px;
+            color: #666;
+        }
+
+        .upload-text {
+            font-size: 11px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .upload-subtext {
+            font-size: 9px;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .required {
+            color: #ff4d4f;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <h1 class="canvas-title">住址证明认证流程UI设计稿</h1>
+        
+        <!-- 第一行：首页 + 填写地址 + 上传文件 -->
+        <div class="screen-row">
+            <!-- 1. 首页 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">住址证明认证</div>
+                    </div>
+                    <div class="content">
+                        <div class="welcome-section">
+                            <div class="welcome-title">住址证明认证</div>
+                            <div class="welcome-desc">根据监管要求，需要验证您的居住地址<br>请上传有效的住址证明文件</div>
+                            
+                            <div class="info-box">
+                                <div class="info-box-title">什么是住址证明？</div>
+                                <div class="info-box-text">用于验证您当前居住地址的官方文件，通常包括您的姓名和完整地址信息</div>
+                            </div>
+
+                            <div style="background: #fff; border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 8px;">可接受的证明类型：</div>
+                                <div class="requirement-list">
+                                    <div class="requirement-item">
+                                        <svg style="width: 14px; height: 14px; color: #28a745; margin-right: 5px; flex-shrink: 0; margin-top: 1px;" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>水电煤气费账单（3个月内）</span>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <svg style="width: 14px; height: 14px; color: #28a745; margin-right: 5px; flex-shrink: 0; margin-top: 1px;" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>银行对账单（3个月内）</span>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <svg style="width: 14px; height: 14px; color: #28a745; margin-right: 5px; flex-shrink: 0; margin-top: 1px;" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>政府机构信件（3个月内）</span>
+                                    </div>
+                                    <div class="requirement-item">
+                                        <svg style="width: 14px; height: 14px; color: #28a745; margin-right: 5px; flex-shrink: 0; margin-top: 1px;" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>租赁合同或房产证明</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-box info-box-yellow">
+                                <div class="info-box-title">重要提示</div>
+                                <div class="requirement-list">
+                                    <div class="requirement-item">• 文件必须清晰可读</div>
+                                    <div class="requirement-item">• 必须显示全名和完整地址</div>
+                                    <div class="requirement-item">• 必须是近3个月内的文件</div>
+                                    <div class="requirement-item">• 支持PDF/JPG/PNG格式</div>
+                                </div>
+                            </div>
+                            
+                            <button class="button button-primary">开始认证</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">1. 认证首页</div>
+            </div>
+
+            <!-- 2. 填写地址信息 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">填写居住地址</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%"></div>
+                        </div>
+                        <div class="progress-text">第1步：填写居住地址</div>
+                        <div class="progress-steps">
+                            <span>填写地址</span>
+                            <span>上传证明</span>
+                            <span>提交完成</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 15px;">
+                            <div class="info-box-title">第1步</div>
+                            <div class="info-box-text">请填写您当前的居住地址，下一步需要上传证明文件来验证该地址</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">国家/地区 <span class="required">*</span></label>
+                            <input type="text" class="input-field" value="United States" placeholder="请选择国家/地区">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">省/州 <span class="required">*</span></label>
+                            <input type="text" class="input-field" value="California" placeholder="请输入省/州">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">城市 <span class="required">*</span></label>
+                            <input type="text" class="input-field" placeholder="例如：Los Angeles">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">详细地址 <span class="required">*</span></label>
+                            <input type="text" class="input-field" placeholder="例如：1234 Main St, Apt 567">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">邮政编码</label>
+                            <input type="text" class="input-field" placeholder="例如：90001">
+                        </div>
+
+                        <button class="button button-primary">下一步</button>
+                    </div>
+                </div>
+                <div class="screen-label">2. 填写居住地址</div>
+            </div>
+
+            <!-- 3. 上传证明文件 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">上传证明文件</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">第2步：上传证明文件</div>
+                        <div class="progress-steps">
+                            <span>填写地址</span>
+                            <span>上传证明</span>
+                            <span>提交完成</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 15px;">
+                            <div class="info-box-title">第2步</div>
+                            <div class="info-box-text">请上传证明文件来验证您的居住地址：California, Los Angeles, 1234 Main St</div>
+                        </div>
+
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 8px;">选择证明类型 <span class="required">*</span></div>
+                        <select class="input-field" style="margin-bottom: 10px;">
+                            <option>水电煤气费账单（需3个月内，认证有效期1年）</option>
+                            <option>银行对账单（需3个月内，认证有效期1年）</option>
+                            <option>通信服务账单（需3个月内，认证有效期1年）</option>
+                            <option>政府机构信件（需3个月内，认证有效期1年）</option>
+                            <option>租赁合同（跟随合同有效期）</option>
+                            <option>房产证明（认证有效期2-3年）</option>
+                        </select>
+                        
+                        <div style="background-color: #f3e8ff; border-left: 4px solid #9333ea; padding: 8px; margin-bottom: 15px; border-radius: 4px;">
+                            <div style="font-size: 10px; color: #6b21a8;">
+                                <strong>📅 有效期说明：</strong>不同文件类型的认证有效期不同，选择合适的文件类型可延长认证有效期。
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">上传文件 <span class="required">*</span></div>
+                        
+                        <div class="upload-area success">
+                            <svg class="upload-icon" fill="currentColor" viewBox="0 0 20 20" style="color: #28a745;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="upload-text" style="color: #28a745; font-weight: 600;">已选择文件</div>
+                            <div class="upload-subtext" style="color: #333; font-weight: 500;">bank_statement_oct2024.pdf (1.8 MB)</div>
+                            <div class="upload-subtext" style="color: #007bff; margin-top: 6px; cursor: pointer;">重新选择</div>
+                        </div>
+
+                        <div class="info-box info-box-yellow">
+                            <div class="info-box-title">文件要求</div>
+                            <div class="requirement-list">
+                                <div class="requirement-item">• 文件必须清晰可读</div>
+                                <div class="requirement-item">• 必须显示您的全名和完整地址</div>
+                                <div class="requirement-item">• 地址必须与上一步填写的地址一致</div>
+                                <div class="requirement-item">• 必须是近3个月内的文件</div>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary">提交申请</button>
+                    </div>
+                </div>
+                <div class="screen-label">3. 上传证明文件</div>
+            </div>
+        </div>
+
+        <!-- 第二行：上传中 + 提交成功 + 审核通过 + 审核驳回 -->
+        <div class="screen-row">
+            <!-- 4. 上传中状态 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">上传证明文件</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">第2步：上传证明文件</div>
+                        <div class="progress-steps">
+                            <span>填写地址</span>
+                            <span>上传证明</span>
+                            <span>提交完成</span>
+                        </div>
+
+                        <div class="info-box" style="margin-bottom: 15px;">
+                            <div class="info-box-title">第2步</div>
+                            <div class="info-box-text">请上传证明文件来验证您的居住地址</div>
+                        </div>
+
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 8px;">选择证明类型 <span class="required">*</span></div>
+                        <select class="input-field" style="margin-bottom: 10px;">
+                            <option>银行对账单（需3个月内，认证有效期1年）</option>
+                        </select>
+                        
+                        <div style="background-color: #f3e8ff; border-left: 4px solid #9333ea; padding: 8px; margin-bottom: 15px; border-radius: 4px;">
+                            <div style="font-size: 10px; color: #6b21a8;">
+                                <strong>📅 有效期说明：</strong>不同文件类型的认证有效期不同，选择合适的文件类型可延长认证有效期。
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">上传文件 <span class="required">*</span></div>
+                        
+                        <div class="upload-area" style="border-color: #f59e0b; background-color: #fffbeb;">
+                            <div style="width: 25px; height: 25px; border: 2px solid #f59e0b; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 8px;"></div>
+                            <div class="upload-text" style="color: #f59e0b; font-weight: 600;">上传中... 38%</div>
+                            <div class="upload-subtext" style="color: #92400e;">bank_statement_oct2024.pdf (1.8 MB)</div>
+                        </div>
+
+                        <div class="info-box info-box-yellow">
+                            <div class="info-box-title">文件要求</div>
+                            <div class="requirement-list">
+                                <div class="requirement-item">• 文件必须清晰可读</div>
+                                <div class="requirement-item">• 必须显示您的全名和完整地址</div>
+                                <div class="requirement-item">• 地址必须与上一步填写的地址一致</div>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="opacity: 0.6;" disabled>上传中...</button>
+                    </div>
+                </div>
+                <div class="screen-label">4. 上传中状态</div>
+            </div>
+
+            <!-- 5. 提交成功 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">住址证明认证</div>
+                    </div>
+                    <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <svg style="width: 60px; height: 60px; color: #28a745; margin-bottom: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 10px;">提交成功！</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5;">您的住址证明已成功提交<br>我们将在1-2个工作日内完成审核</div>
+
+                        <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; width: 100%; margin-bottom: 20px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">提交信息摘要</div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">证明类型：</span>
+                                <span style="font-size: 11px; color: #333;">银行对账单</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">上传文件：</span>
+                                <span style="font-size: 11px; color: #28a745; font-weight: 600;">✓ 已上传</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">提交时间：</span>
+                                <span style="font-size: 11px; color: #333;">2024-11-04 15:20</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 11px; color: #666;">当前状态：</span>
+                                <span style="background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 10px;">审核中</span>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary">完成</button>
+                    </div>
+                </div>
+                <div class="screen-label">5. 提交成功</div>
+            </div>
+
+            <!-- 6. 审核通过 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <svg style="width: 60px; height: 60px; color: #28a745; margin-bottom: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div style="font-size: 18px; font-weight: 600; color: #28a745; margin-bottom: 10px;">认证成功！</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 25px;">您的住址证明已通过审核</div>
+
+                        <div style="background: #f8fff9; border: 1px solid #d4edda; border-radius: 8px; padding: 15px; width: 100%; margin-bottom: 25px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #155724; margin-bottom: 10px;">认证信息</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">证明类型：银行对账单</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">认证时间：2024-11-05 09:30</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">认证地址：California, Los Angeles...</div>
+                            <div style="font-size: 10px; color: #155724;">认证编号：AP202411050001</div>
+                        </div>
+
+                        <button class="button button-primary">确定</button>
+                    </div>
+                </div>
+                <div class="screen-label">6. 审核通过</div>
+            </div>
+
+            <!-- 7. 审核驳回 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px; color: #dc3545;">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px;" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span style="font-size: 16px; font-weight: 600;">认证未通过</span>
+                        </div>
+
+                        <div style="font-size: 12px; color: #666; margin-bottom: 12px;">您的认证申请未能通过审核，原因如下：</div>
+
+                        <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #c53030; margin-bottom: 6px;">驳回原因：</div>
+                            <div style="font-size: 10px; color: #c53030; line-height: 1.5;">
+                                • 上传的文件不清晰<br>
+                                • 文件日期超过3个月<br>
+                                • 地址信息不完整
+                            </div>
+                        </div>
+
+                        <div style="background: #f8f9fa; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #495057; margin-bottom: 6px;">处理建议：</div>
+                            <div style="font-size: 10px; color: #495057; line-height: 1.4;">
+                                请上传近3个月内的清晰文件，并确保地址信息完整
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="margin-bottom: 5px;">重新提交</button>
+                        <div style="text-align: center;">
+                            <a href="#" style="font-size: 12px; color: #007bff; text-decoration: none;">联系客服</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">7. 审核驳回</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

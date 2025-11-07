@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业合规审核认证系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="enterpriseAMLApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">企业合规审核</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="page='home'">首页</button>
+                <button class="px-3 py-1 rounded hover:bg-gray-100" @click="page='history'">历史记录</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home' && page !== 'history'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">合规审核进度</span>
+                    <span class="text-sm text-gray-500" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${getProgressPercentage()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>补充信息</span>
+                    <span>提交成功</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <section x-show="page==='home'" x-transition>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80" alt="企业合规审核" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-xl font-semibold mb-2">企业合规审核</h2>
+                <p class="mb-4 text-gray-600 text-center">根据相关地区的合规要求，需要对企业进行合规性审核，确保符合监管要求。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>什么是合规审核？</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            根据相关地区的合规要求，需要对企业进行合规性审核，包括制裁名单筛查、政治公众人物关联审查以及负面媒体检查。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                        <p class="text-sm text-green-700 mb-2">
+                            <strong>已从KYB获取的信息：</strong>
+                        </p>
+                        <div class="text-sm text-gray-700 space-y-1">
+                            <div>• 公司名称：<span class="font-semibold" x-text="kybData.companyName"></span></div>
+                            <div>• 注册号：<span class="font-semibold" x-text="kybData.registrationNumber"></span></div>
+                            <div>• 注册国家：<span class="font-semibold" x-text="kybData.country"></span></div>
+                            <div>• 公司类型：<span class="font-semibold" x-text="kybData.companyType"></span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full max-w-md">
+                    <div class="mb-4">
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>1. 补充企业信息（符合相关地区监管要求）</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>2. 提交合规审核申请，等待审核</span>
+                        </div>
+                    </div>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='input'">开始认证</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 补充信息页面 -->
+        <section x-show="page==='input'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">请填写以下信息</h2>
+                <p class="text-gray-600 mb-6 text-sm">根据相关地区的合规要求，需要对企业进行合规性审核</p>
+                
+                <div class="space-y-6">
+                    <!-- EIN - 雇主识别号 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            雇主识别号（EIN）<span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">Employer Identification Number - 美国国税局分配的9位数字</p>
+                        <input type="text" 
+                               x-model="form.ein"
+                               placeholder="例如：12-3456789"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- State of Incorporation - 注册州 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            注册州（State of Incorporation）<span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">公司在美国的注册州</p>
+                        <select x-model="form.stateOfIncorporation"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">请选择州</option>
+                            <option value="AL">Alabama (AL)</option>
+                            <option value="AK">Alaska (AK)</option>
+                            <option value="AZ">Arizona (AZ)</option>
+                            <option value="AR">Arkansas (AR)</option>
+                            <option value="CA">California (CA)</option>
+                            <option value="CO">Colorado (CO)</option>
+                            <option value="CT">Connecticut (CT)</option>
+                            <option value="DE">Delaware (DE)</option>
+                            <option value="FL">Florida (FL)</option>
+                            <option value="GA">Georgia (GA)</option>
+                            <option value="HI">Hawaii (HI)</option>
+                            <option value="ID">Idaho (ID)</option>
+                            <option value="IL">Illinois (IL)</option>
+                            <option value="IN">Indiana (IN)</option>
+                            <option value="IA">Iowa (IA)</option>
+                            <option value="KS">Kansas (KS)</option>
+                            <option value="KY">Kentucky (KY)</option>
+                            <option value="LA">Louisiana (LA)</option>
+                            <option value="ME">Maine (ME)</option>
+                            <option value="MD">Maryland (MD)</option>
+                            <option value="MA">Massachusetts (MA)</option>
+                            <option value="MI">Michigan (MI)</option>
+                            <option value="MN">Minnesota (MN)</option>
+                            <option value="MS">Mississippi (MS)</option>
+                            <option value="MO">Missouri (MO)</option>
+                            <option value="MT">Montana (MT)</option>
+                            <option value="NE">Nebraska (NE)</option>
+                            <option value="NV">Nevada (NV)</option>
+                            <option value="NH">New Hampshire (NH)</option>
+                            <option value="NJ">New Jersey (NJ)</option>
+                            <option value="NM">New Mexico (NM)</option>
+                            <option value="NY">New York (NY)</option>
+                            <option value="NC">North Carolina (NC)</option>
+                            <option value="ND">North Dakota (ND)</option>
+                            <option value="OH">Ohio (OH)</option>
+                            <option value="OK">Oklahoma (OK)</option>
+                            <option value="OR">Oregon (OR)</option>
+                            <option value="PA">Pennsylvania (PA)</option>
+                            <option value="RI">Rhode Island (RI)</option>
+                            <option value="SC">South Carolina (SC)</option>
+                            <option value="SD">South Dakota (SD)</option>
+                            <option value="TN">Tennessee (TN)</option>
+                            <option value="TX">Texas (TX)</option>
+                            <option value="UT">Utah (UT)</option>
+                            <option value="VT">Vermont (VT)</option>
+                            <option value="VA">Virginia (VA)</option>
+                            <option value="WA">Washington (WA)</option>
+                            <option value="WV">West Virginia (WV)</option>
+                            <option value="WI">Wisconsin (WI)</option>
+                            <option value="WY">Wyoming (WY)</option>
+                        </select>
+                    </div>
+
+                    <!-- Business Street Address - 营业地址 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            营业街道地址（Business Street Address）<span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">公司实际营业的街道地址</p>
+                        <input type="text" 
+                               x-model="form.businessStreetAddress"
+                               placeholder="例如：1234 Main Street, Suite 567"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- City - 城市 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                城市（City）<span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   x-model="form.city"
+                                   placeholder="例如：New York"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+
+                        <!-- State - 州 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                州（State）<span class="text-red-500">*</span>
+                            </label>
+                            <select x-model="form.state"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="">请选择州</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="IA">Iowa</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisiana</option>
+                                <option value="ME">Maine</option>
+                                <option value="MD">Maryland</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MT">Montana</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NY">New York</option>
+                                <option value="NC">North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
+                                <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VT">Vermont</option>
+                                <option value="VA">Virginia</option>
+                                <option value="WA">Washington</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WY">Wyoming</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ZIP Code - 邮编 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            邮编（ZIP Code）<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               x-model="form.zipCode"
+                               placeholder="例如：10001"
+                               maxlength="10"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- 可选字段：DUNS Number -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            DUNS编号（DUNS Number）<span class="text-gray-400 text-xs ml-1">可选</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">邓白氏编码 - 9位数字的企业识别码</p>
+                        <input type="text" 
+                               x-model="form.dunsNumber"
+                               placeholder="例如：123456789"
+                               maxlength="9"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- 可选字段：NAICS Code -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            NAICS行业代码（NAICS Code）<span class="text-gray-400 text-xs ml-1">可选</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mb-2">北美行业分类系统代码</p>
+                        <input type="text" 
+                               x-model="form.naicsCode"
+                               placeholder="例如：541511"
+                               maxlength="6"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- 检查范围说明 -->
+                    <div class="border-t pt-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">合规审核范围</label>
+                        <div class="space-y-3 bg-gray-50 rounded-lg p-4">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <div class="font-semibold text-gray-800 text-sm">制裁名单 (Sanctions)</div>
+                                    <div class="text-xs text-gray-600">检查国际制裁组织名单</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <div class="font-semibold text-gray-800 text-sm">政治公众人物 (PEP)</div>
+                                    <div class="text-xs text-gray-600">检查企业关联人员</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <div class="font-semibold text-gray-800 text-sm">负面媒体 (Adverse Media)</div>
+                                    <div class="text-xs text-gray-600">不良新闻和媒体报道</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">系统将自动对以上所有项目进行检查</p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 mt-8">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="page='home'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            :disabled="!canSubmit()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmit()}"
+                            @click="startAMLCheck()">
+                        提交合规审核
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 提交成功页面 -->
+        <section x-show="page==='success'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">提交成功</h2>
+                    <p class="text-gray-600">您的企业合规审核信息已成功提交</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>下一步操作：</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        您的信息已提交至我们的合规团队。管理员将对您的企业合规审核进行审核，审核结果将通过邮件或站内通知发送给您。
+                    </p>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">提交信息</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">公司名称：</span>
+                            <span class="font-semibold text-gray-800" x-text="kybData.companyName"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">EIN：</span>
+                            <span class="font-semibold text-gray-800" x-text="form.ein"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">注册州：</span>
+                            <span class="font-semibold text-gray-800" x-text="form.stateOfIncorporation"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-semibold text-gray-800" x-text="new Date().toLocaleString('zh-CN')"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">申请ID：</span>
+                            <span class="font-mono text-sm text-gray-800">COMP-ERP-<span x-text="Math.random().toString(36).substr(2, 6).toUpperCase()"></span></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">审核状态：</span>
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                                待审核
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm">审核说明</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>系统将在后台进行合规审核（制裁名单、PEP、负面媒体）</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>管理员将在1-3个工作日内完成审核</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>审核结果会通过邮件和站内通知发送给您</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>认证通过后有效期为365天</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            @click="page='home'; resetForm()">
+                        完成
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 历史记录页面 -->
+        <section x-show="page==='history'" x-transition>
+            <div class="bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-6">合规审核历史记录</h2>
+                
+                <div class="space-y-4">
+                    <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-blue-300 transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <div class="font-bold text-lg text-gray-800">Tech Innovations Inc.</div>
+                                <div class="text-sm text-gray-500">2025-11-05 14:23:18</div>
+                            </div>
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full font-semibold">
+                                待审核
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+                            <div>
+                                <span class="text-gray-600">检查ID：</span>
+                                <span class="font-mono text-gray-800">COMP-ERP-5B8D2F</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">EIN：</span>
+                                <span class="font-semibold text-gray-800">12-3456789</span>
+                            </div>
+                        </div>
+                        <button class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                            查看详情 →
+                        </button>
+                    </div>
+
+                    <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-blue-300 transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <div class="font-bold text-lg text-gray-800">Global Finance Corp.</div>
+                                <div class="text-sm text-gray-500">2025-11-04 09:12:45</div>
+                            </div>
+                            <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full font-semibold">
+                                已通过
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+                            <div>
+                                <span class="text-gray-600">检查ID：</span>
+                                <span class="font-mono text-gray-800">COMP-ERP-7C4A1E</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">风险等级：</span>
+                                <span class="font-semibold text-green-600">低风险</span>
+                            </div>
+                        </div>
+                        <button class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                            查看详情 →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function enterpriseAMLApp() {
+            return {
+                page: 'home',
+                
+                // 从KYB获取的数据（模拟）
+                kybData: {
+                    companyName: 'Tech Innovations Inc.',
+                    registrationNumber: '123456789',
+                    country: '美国',
+                    companyType: '有限责任公司 (LLC)'
+                },
+                
+                // 补充信息表单（美国字段）
+                form: {
+                    ein: '',
+                    stateOfIncorporation: '',
+                    businessStreetAddress: '',
+                    city: '',
+                    state: '',
+                    zipCode: '',
+                    dunsNumber: '',
+                    naicsCode: ''
+                },
+
+                canSubmit() {
+                    return this.form.ein && 
+                           this.form.stateOfIncorporation && 
+                           this.form.businessStreetAddress && 
+                           this.form.city && 
+                           this.form.state && 
+                           this.form.zipCode;
+                },
+
+                startAMLCheck() {
+                    // 直接跳转到提交成功页面，无需中间检查进度页
+                    this.page = 'success';
+                },
+
+                resetForm() {
+                    this.form = {
+                        ein: '',
+                        stateOfIncorporation: '',
+                        businessStreetAddress: '',
+                        city: '',
+                        state: '',
+                        zipCode: '',
+                        dunsNumber: '',
+                        naicsCode: ''
+                    };
+                },
+
+                getProgressPercentage() {
+                    if (this.page === 'input') return 50;
+                    if (this.page === 'success') return 100;
+                    return 0;
+                },
+
+                getProgressText() {
+                    if (this.page === 'input') return '第1步：补充企业信息';
+                    if (this.page === 'success') return '第2步：提交成功';
+                    return '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWA个人认证系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scan-line {
+            animation: scan 2s ease-in-out infinite;
+        }
+        .file-upload-area {
+            transition: all 0.3s ease;
+        }
+        .file-upload-area:hover {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="rwaPersonalApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold tracking-tight text-blue-600">RWA 个人认证</h1>
+                <button @click="resetAndGoHome()" class="px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition">
+                    返回首页
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- 全局进度条 -->
+        <div x-show="currentStage !== 'home' && currentStage !== 'final-success'" class="mb-8" x-cloak>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm font-semibold text-gray-700">认证进度</span>
+                    <span class="text-sm text-blue-600 font-medium" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out" 
+                         :style="`width: ${getOverallProgress()}%`"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 mt-2">
+                    <span :class="{'text-blue-600 font-semibold': currentStage.startsWith('kyc-')}">KYC认证</span>
+                    <span :class="{'text-blue-600 font-semibold': currentStage.startsWith('kyc-supplement')}">补充信息</span>
+                    <span :class="{'text-blue-600 font-semibold': currentStage.startsWith('address-')}">住址证明</span>
+                    <span :class="{'text-blue-600 font-semibold': currentStage.startsWith('aml-')}">合规审查</span>
+                    <span :class="{'text-blue-600 font-semibold': currentStage.startsWith('investor-')}">专业投资者</span>
+                    <span :class="{'text-blue-600 font-semibold': currentStage.startsWith('risk-assessment')}">风险测评</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <section x-show="currentStage==='home'" x-transition x-cloak>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80" alt="RWA个人认证" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-2xl font-semibold mb-3">RWA个人认证</h2>
+                <p class="mb-6 text-gray-600 text-center max-w-md">完成RWA个人认证，解锁数字资产投资权限。我们将引导您完成身份认证、补充信息、住址证明、反洗钱和专业投资者认证的全流程。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>认证流程包括：</strong>
+                        </p>
+                        <div class="text-sm text-gray-700 space-y-2">
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">1</span>
+                                <span>KYC身份认证 - 验证个人身份</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">2</span>
+                                <span>补充个人信息 - 完善资料</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">3</span>
+                                <span>住址证明 - 验证居住地址</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">4</span>
+                                <span>合规审查 - 合规性检查</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">5</span>
+                                <span>专业投资者认证 - 资质证明</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-3">6</span>
+                                <span>风险测评 - 评估风险承受能力</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                        <p class="text-sm text-yellow-700 mb-2">
+                            <strong>预计完成时间：</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">约15-20分钟（准备好所有材料的情况下）</p>
+                    </div>
+                </div>
+                
+                <button class="w-full max-w-md py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="startCertification()">开始认证</button>
+            </div>
+        </section>
+
+        <!-- ============ 第一阶段：KYC身份认证 ============ -->
+        
+        <!-- KYC - 选择证件类型 -->
+        <section x-show="currentStage==='kyc-select-id-type'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 1/4：选择证件类型</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>请选择您要使用的证件类型</strong>
+                    </p>
+                    <p class="text-xs text-gray-600 mt-1">请确保证件在有效期内，照片清晰可见</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- 身份证 -->
+                    <button @click="selectIdType('id_card')" 
+                            :class="kycForm.idType === 'id_card' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-300 hover:border-blue-400'"
+                            class="border-2 rounded-xl p-6 text-center transition duration-200">
+                        <div class="text-5xl mb-3">🪪</div>
+                        <div class="font-bold text-lg mb-2">身份证</div>
+                        <div class="text-sm text-gray-600">中华人民共和国居民身份证</div>
+                        <div x-show="kycForm.idType === 'id_card'" class="mt-3">
+                            <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">✓ 已选择</span>
+                        </div>
+                    </button>
+
+                    <!-- 护照 -->
+                    <button @click="selectIdType('passport')" 
+                            :class="kycForm.idType === 'passport' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-300 hover:border-blue-400'"
+                            class="border-2 rounded-xl p-6 text-center transition duration-200">
+                        <div class="text-5xl mb-3">🛂</div>
+                        <div class="font-bold text-lg mb-2">护照</div>
+                        <div class="text-sm text-gray-600">中国护照 / 外国护照</div>
+                        <div x-show="kycForm.idType === 'passport'" class="mt-3">
+                            <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded-full">✓ 已选择</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStage='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!kycForm.idType"
+                            :class="{'opacity-50 cursor-not-allowed': !kycForm.idType}"
+                            @click="goToKYCCapture()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYC - 拍摄证件 -->
+        <section x-show="currentStage==='kyc-capture-id'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 2/4：拍摄证件照片</h2>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-700 mb-2">
+                        <strong>拍摄要求：</strong>
+                    </p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>• 请在光线充足的环境下拍摄</li>
+                        <li>• 确保证件四角完整，信息清晰可读</li>
+                        <li>• 避免反光、模糊或遮挡</li>
+                        <li x-show="kycForm.idType === 'id_card'">• 请分别拍摄身份证正面和反面</li>
+                    </ul>
+                </div>
+
+                <!-- 拍摄身份证正面 -->
+                <div class="mb-6" x-show="kycForm.idType === 'id_card'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        身份证正面 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="kycForm.idFrontCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="captureIdFront()">
+                        <template x-if="!kycForm.idFrontCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄身份证正面</p>
+                                <p class="text-xs text-gray-500">包含照片、姓名、身份证号等信息的一面</p>
+                            </div>
+                        </template>
+                        <template x-if="kycForm.idFrontCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 身份证正面已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 拍摄身份证反面 -->
+                <div class="mb-6" x-show="kycForm.idType === 'id_card'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        身份证反面 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="kycForm.idBackCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="captureIdBack()">
+                        <template x-if="!kycForm.idBackCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄身份证反面</p>
+                                <p class="text-xs text-gray-500">包含签发机关、有效期限等信息的一面</p>
+                            </div>
+                        </template>
+                        <template x-if="kycForm.idBackCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 身份证反面已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 拍摄护照 -->
+                <div class="mb-6" x-show="kycForm.idType === 'passport'">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        护照信息页 <span class="text-red-500">*</span>
+                    </label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition"
+                         :class="kycForm.passportCaptured ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'"
+                         @click="capturePassport()">
+                        <template x-if="!kycForm.passportCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-semibold mb-1">点击拍摄护照信息页</p>
+                                <p class="text-xs text-gray-500">包含照片、姓名、护照号等个人信息的页面</p>
+                            </div>
+                        </template>
+                        <template x-if="kycForm.passportCaptured">
+                            <div>
+                                <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-green-600 font-semibold">✓ 护照信息页已拍摄</p>
+                                <p class="text-xs text-gray-500 mt-1">点击重新拍摄</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- OCR识别进度 -->
+                <div x-show="kycForm.isOCRProcessing" class="mb-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-blue-900">正在识别证件信息...</p>
+                                <p class="text-xs text-blue-700 mt-1">AI正在智能识别您的证件内容，请稍候</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStage='kyc-select-id-type'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canProceedToFaceRecognition()"
+                            :class="{'opacity-50 cursor-not-allowed': !canProceedToFaceRecognition()}"
+                            @click="startOCR()">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYC - 人脸识别 -->
+        <section x-show="currentStage==='kyc-face-recognition'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 3/4：人脸识别验证</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>人脸识别说明：</strong>
+                    </p>
+                    <ul class="text-xs text-gray-700 space-y-1">
+                        <li>• 请正对摄像头，确保光线充足</li>
+                        <li>• 摘下眼镜、帽子等遮挡物</li>
+                        <li>• 保持自然表情，不要遮挡面部</li>
+                        <li>• 系统将进行活体检测和人脸比对</li>
+                    </ul>
+                </div>
+
+                <!-- 摄像头预览区域 -->
+                <div class="mb-6">
+                    <div class="relative border-2 rounded-lg overflow-hidden bg-gray-900"
+                         :class="kycForm.faceRecognitionStatus === 'success' ? 'border-green-500' : kycForm.faceRecognitionStatus === 'failed' ? 'border-red-500' : 'border-blue-500'">
+                        
+                        <!-- 模拟摄像头画面 -->
+                        <div class="aspect-video flex items-center justify-center relative">
+                            <template x-if="!kycForm.isFaceRecognizing && kycForm.faceRecognitionStatus === ''">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    <p class="text-lg font-semibold">点击下方按钮开始人脸识别</p>
+                                </div>
+                            </template>
+
+                            <!-- 识别中状态 -->
+                            <template x-if="kycForm.isFaceRecognizing">
+                                <div class="text-center text-white w-full">
+                                    <div class="relative">
+                                        <svg class="w-32 h-32 mx-auto mb-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <!-- 扫描线动画 -->
+                                        <div class="absolute inset-0 overflow-hidden">
+                                            <div class="scan-line h-0.5 bg-blue-500 shadow-lg shadow-blue-500/50"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-lg font-semibold mb-2">正在进行人脸识别...</p>
+                                    <p class="text-sm text-gray-300" x-text="kycForm.recognitionStep"></p>
+                                </div>
+                            </template>
+
+                            <!-- 识别成功 -->
+                            <template x-if="kycForm.faceRecognitionStatus === 'success'">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-lg font-semibold text-green-500">✓ 人脸识别成功</p>
+                                    <p class="text-sm text-gray-300 mt-2">人脸比对通过，相似度：98.5%</p>
+                                </div>
+                            </template>
+
+                            <!-- 识别失败 -->
+                            <template x-if="kycForm.faceRecognitionStatus === 'failed'">
+                                <div class="text-center text-white">
+                                    <svg class="w-24 h-24 mx-auto mb-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-lg font-semibold text-red-500">✗ 人脸识别失败</p>
+                                    <p class="text-sm text-gray-300 mt-2">请确保光线充足，面部清晰可见</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="text-center mb-6">
+                    <button x-show="!kycForm.isFaceRecognizing && kycForm.faceRecognitionStatus !== 'success'" 
+                            @click="startFaceRecognition()"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition shadow-lg">
+                        <span x-show="kycForm.faceRecognitionStatus !== 'failed'">开始人脸识别</span>
+                        <span x-show="kycForm.faceRecognitionStatus === 'failed'">重新识别</span>
+                    </button>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStage='kyc-capture-id'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="kycForm.faceRecognitionStatus !== 'success'"
+                            :class="{'opacity-50 cursor-not-allowed': kycForm.faceRecognitionStatus !== 'success'}"
+                            @click="currentStage='kyc-confirm-info'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- KYC - 确认信息 -->
+        <section x-show="currentStage==='kyc-confirm-info'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">步骤 4/4：确认个人信息</h2>
+                
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <p class="text-sm text-green-700 mb-2">
+                        <strong>信息识别完成：</strong>
+                    </p>
+                    <p class="text-xs text-gray-700">以下信息由AI自动识别，请仔细核对。如有错误请修改后提交。</p>
+                </div>
+
+                <!-- OCR识别的信息 -->
+                <div class="space-y-4 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">姓名</label>
+                            <input type="text" x-model="kycForm.ocrData.name" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">性别</label>
+                            <select x-model="kycForm.ocrData.gender" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">民族</label>
+                            <input type="text" x-model="kycForm.ocrData.ethnicity" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">出生日期</label>
+                            <input type="text" x-model="kycForm.ocrData.birthDate" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">身份证号 / 护照号</label>
+                        <input type="text" x-model="kycForm.ocrData.idNumber" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">地址</label>
+                        <textarea x-model="kycForm.ocrData.address" rows="2"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4" x-show="kycForm.idType === 'id_card'">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">签发机关</label>
+                            <input type="text" x-model="kycForm.ocrData.issuingAuthority" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">有效期限</label>
+                            <input type="text" x-model="kycForm.ocrData.validPeriod" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStage='kyc-face-recognition'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="submitKYCAndGoToSupplement()">确认并继续</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第二阶段：KYC补充信息 ============ -->
+        
+        <!-- KYC补充信息页面 -->
+        <section x-show="currentStage==='kyc-supplement'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">补充个人信息</h2>
+                <p class="text-gray-600 mb-6 text-sm">为完成认证，请补充以下必要信息以符合监管要求</p>
+                
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <p class="text-sm text-green-700 mb-2">
+                        <strong>✓ 已完成身份验证</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        您的身份证件已通过审核，现在需要补充一些额外信息。
+                    </p>
+                </div>
+
+                <div class="space-y-6 mb-8">
+                    <!-- 居住地址 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            居住地址 <span class="text-red-500">*</span>
+                        </label>
+                        
+                        <select x-model="supplementForm.country" 
+                                @change="supplementForm.state = ''; supplementForm.city = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-3">
+                            <option value="">请选择国家</option>
+                            <option value="US">美国 (United States)</option>
+                            <option value="CN">中国 (China)</option>
+                            <option value="GB">英国 (United Kingdom)</option>
+                            <option value="CA">加拿大 (Canada)</option>
+                            <option value="AU">澳大利亚 (Australia)</option>
+                            <option value="SG">新加坡 (Singapore)</option>
+                        </select>
+                        
+                        <select x-model="supplementForm.state" 
+                                @change="supplementForm.city = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-3">
+                            <option value="">请选择州/省</option>
+                            <!-- 中国省份 -->
+                            <optgroup label="中国省份" x-show="supplementForm.country === 'CN'">
+                                <option value="北京市">北京市</option>
+                                <option value="上海市">上海市</option>
+                                <option value="广东省">广东省</option>
+                                <option value="浙江省">浙江省</option>
+                                <option value="江苏省">江苏省</option>
+                                <option value="四川省">四川省</option>
+                                <option value="湖北省">湖北省</option>
+                                <option value="湖南省">湖南省</option>
+                            </optgroup>
+                            <!-- 美国州 -->
+                            <optgroup label="美国州" x-show="supplementForm.country === 'US'">
+                                <option value="California">California</option>
+                                <option value="New York">New York</option>
+                                <option value="Texas">Texas</option>
+                                <option value="Florida">Florida</option>
+                                <option value="Illinois">Illinois</option>
+                            </optgroup>
+                            <!-- 英国地区 -->
+                            <optgroup label="英国地区" x-show="supplementForm.country === 'GB'">
+                                <option value="England">England</option>
+                                <option value="Scotland">Scotland</option>
+                                <option value="Wales">Wales</option>
+                                <option value="Northern Ireland">Northern Ireland</option>
+                            </optgroup>
+                            <!-- 加拿大省份 -->
+                            <optgroup label="加拿大省份" x-show="supplementForm.country === 'CA'">
+                                <option value="Ontario">Ontario</option>
+                                <option value="Quebec">Quebec</option>
+                                <option value="British Columbia">British Columbia</option>
+                                <option value="Alberta">Alberta</option>
+                            </optgroup>
+                            <!-- 澳大利亚州 -->
+                            <optgroup label="澳大利亚州" x-show="supplementForm.country === 'AU'">
+                                <option value="New South Wales">New South Wales</option>
+                                <option value="Victoria">Victoria</option>
+                                <option value="Queensland">Queensland</option>
+                                <option value="Western Australia">Western Australia</option>
+                            </optgroup>
+                            <!-- 新加坡 -->
+                            <optgroup label="新加坡" x-show="supplementForm.country === 'SG'">
+                                <option value="Singapore">Singapore</option>
+                            </optgroup>
+                        </select>
+                        
+                        <select x-model="supplementForm.city" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-3">
+                            <option value="">请选择城市</option>
+                            <!-- 中国 - 北京 -->
+                            <optgroup label="北京市" x-show="supplementForm.country === 'CN' && supplementForm.state === '北京市'">
+                                <option value="东城区">东城区</option>
+                                <option value="西城区">西城区</option>
+                                <option value="朝阳区">朝阳区</option>
+                                <option value="海淀区">海淀区</option>
+                            </optgroup>
+                            <!-- 中国 - 上海 -->
+                            <optgroup label="上海市" x-show="supplementForm.country === 'CN' && supplementForm.state === '上海市'">
+                                <option value="浦东新区">浦东新区</option>
+                                <option value="黄浦区">黄浦区</option>
+                                <option value="徐汇区">徐汇区</option>
+                                <option value="长宁区">长宁区</option>
+                            </optgroup>
+                            <!-- 中国 - 广东 -->
+                            <optgroup label="广东省城市" x-show="supplementForm.country === 'CN' && supplementForm.state === '广东省'">
+                                <option value="广州市">广州市</option>
+                                <option value="深圳市">深圳市</option>
+                                <option value="东莞市">东莞市</option>
+                                <option value="佛山市">佛山市</option>
+                            </optgroup>
+                            <!-- 美国 - California -->
+                            <optgroup label="California" x-show="supplementForm.country === 'US' && supplementForm.state === 'California'">
+                                <option value="Los Angeles">Los Angeles</option>
+                                <option value="San Francisco">San Francisco</option>
+                                <option value="San Diego">San Diego</option>
+                            </optgroup>
+                            <!-- 美国 - New York -->
+                            <optgroup label="New York" x-show="supplementForm.country === 'US' && supplementForm.state === 'New York'">
+                                <option value="New York City">New York City</option>
+                                <option value="Buffalo">Buffalo</option>
+                                <option value="Rochester">Rochester</option>
+                            </optgroup>
+                            <!-- 英国城市 -->
+                            <optgroup label="英国主要城市" x-show="supplementForm.country === 'GB'">
+                                <option value="London">London</option>
+                                <option value="Manchester">Manchester</option>
+                                <option value="Birmingham">Birmingham</option>
+                                <option value="Edinburgh">Edinburgh</option>
+                            </optgroup>
+                            <!-- 新加坡 -->
+                            <optgroup label="新加坡" x-show="supplementForm.country === 'SG'">
+                                <option value="Singapore">Singapore</option>
+                            </optgroup>
+                        </select>
+                        
+                        <input type="text" x-model="supplementForm.residentialAddress" 
+                               placeholder="请输入详细地址 (街道、门牌号、公寓号等)"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-3">
+                        
+                        <input type="text" x-model="supplementForm.zipCode" 
+                               placeholder="请输入邮政编码 (ZIP/Postal Code)"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        
+                        <p class="text-xs text-gray-500 mt-2">请按顺序填写您当前的主要居住地址</p>
+                    </div>
+
+                    <!-- 职业 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            职业 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="supplementForm.occupation" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择您的职业</option>
+                            <option value="employed">受雇员工 (Employed)</option>
+                            <option value="self_employed">自雇/个体经营 (Self-Employed)</option>
+                            <option value="business_owner">企业主 (Business Owner)</option>
+                            <option value="professional">专业人士 (Professional)</option>
+                            <option value="manager">管理人员 (Manager/Executive)</option>
+                            <option value="retired">退休 (Retired)</option>
+                            <option value="student">学生 (Student)</option>
+                            <option value="unemployed">待业 (Unemployed)</option>
+                            <option value="other">其他 (Other)</option>
+                        </select>
+                        <input x-show="supplementForm.occupation === 'other'" 
+                               type="text" 
+                               x-model="supplementForm.occupationOther" 
+                               placeholder="请说明具体职业"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-3">
+                        <p class="text-xs text-gray-500 mt-2">请选择最符合您当前状况的职业类型</p>
+                    </div>
+
+                    <!-- 所属行业 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            所属行业 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="supplementForm.industry" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择所属行业</option>
+                            <option value="technology">科技/IT (Technology/IT)</option>
+                            <option value="finance">金融/银行 (Finance/Banking)</option>
+                            <option value="healthcare">医疗/健康 (Healthcare)</option>
+                            <option value="education">教育 (Education)</option>
+                            <option value="retail">零售/电商 (Retail/E-commerce)</option>
+                            <option value="manufacturing">制造业 (Manufacturing)</option>
+                            <option value="real_estate">房地产 (Real Estate)</option>
+                            <option value="consulting">咨询服务 (Consulting)</option>
+                            <option value="legal">法律 (Legal)</option>
+                            <option value="media">媒体/娱乐 (Media/Entertainment)</option>
+                            <option value="other">其他 (Other)</option>
+                        </select>
+                        <input x-show="supplementForm.industry === 'other'" 
+                               type="text" 
+                               x-model="supplementForm.industryOther" 
+                               placeholder="请说明具体行业"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-3">
+                        <p class="text-xs text-gray-500 mt-2">请选择您工作或经营的主要行业</p>
+                    </div>
+
+                    <!-- 资金来源 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            资金来源 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="supplementForm.sourceOfFunds" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择主要资金来源</option>
+                            <option value="salary">工资/薪水 (Salary/Wages)</option>
+                            <option value="business">商业/企业收入 (Business Income)</option>
+                            <option value="investment">投资收益 (Investment Income)</option>
+                            <option value="rental">租金收入 (Rental Income)</option>
+                            <option value="pension">退休金/养老金 (Pension/Retirement)</option>
+                            <option value="inheritance">遗产/赠与 (Inheritance/Gift)</option>
+                            <option value="savings">储蓄 (Savings)</option>
+                            <option value="family_support">家庭支持 (Family Support)</option>
+                            <option value="freelance">自由职业 (Freelance/Contract Work)</option>
+                            <option value="other">其他 (Other)</option>
+                        </select>
+                        <input x-show="supplementForm.sourceOfFunds === 'other'" 
+                               type="text" 
+                               x-model="supplementForm.sourceOfFundsOther" 
+                               placeholder="请说明具体资金来源"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mt-3">
+                        <p class="text-xs text-gray-500 mt-2">请选择您的主要资金来源</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="currentStage='kyc-confirm-info'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canSubmitSupplement()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitSupplement()}"
+                            @click="submitSupplementAndGoToAddress()">提交并继续</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第三阶段：住址证明 ============ -->
+        
+        <!-- 住址证明 - 选择证明类型 -->
+        <section x-show="currentStage==='address-proof-type'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">住址证明</h2>
+                <p class="text-gray-600 mb-6 text-sm">请选择并上传有效的住址证明文件，文件需清晰显示您的姓名和居住地址</p>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <p class="text-sm text-yellow-800 mb-1"><strong>重要提示：</strong></p>
+                    <p class="text-sm text-gray-700">住址证明需要与您之前填写的居住地址一致，且文件日期必须在近3个月内</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-4">请选择住址证明类型 <span class="text-red-500">*</span></label>
+                    <div class="space-y-3">
+                        <div class="border rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+                             :class="{'border-blue-500 bg-blue-50': addressForm.proofType === 'utility'}"
+                             @click="addressForm.proofType = 'utility'">
+                            <div class="flex items-center">
+                                <input type="radio" 
+                                       name="proofType" 
+                                       value="utility" 
+                                       x-model="addressForm.proofType"
+                                       class="mr-3 h-5 w-5 text-blue-600">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-900">水电煤气账单 (Utility Bill)</div>
+                                    <div class="text-sm text-gray-600 mt-1">电费单、水费单、燃气费单等</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+                             :class="{'border-blue-500 bg-blue-50': addressForm.proofType === 'bank'}"
+                             @click="addressForm.proofType = 'bank'">
+                            <div class="flex items-center">
+                                <input type="radio" 
+                                       name="proofType" 
+                                       value="bank" 
+                                       x-model="addressForm.proofType"
+                                       class="mr-3 h-5 w-5 text-blue-600">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-900">银行对账单 (Bank Statement)</div>
+                                    <div class="text-sm text-gray-600 mt-1">银行出具的对账单或流水</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+                             :class="{'border-blue-500 bg-blue-50': addressForm.proofType === 'tax'}"
+                             @click="addressForm.proofType = 'tax'">
+                            <div class="flex items-center">
+                                <input type="radio" 
+                                       name="proofType" 
+                                       value="tax" 
+                                       x-model="addressForm.proofType"
+                                       class="mr-3 h-5 w-5 text-blue-600">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-900">税务文件 (Tax Document)</div>
+                                    <div class="text-sm text-gray-600 mt-1">税务局出具的税单或通知</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+                             :class="{'border-blue-500 bg-blue-50': addressForm.proofType === 'gov'}"
+                             @click="addressForm.proofType = 'gov'">
+                            <div class="flex items-center">
+                                <input type="radio" 
+                                       name="proofType" 
+                                       value="gov" 
+                                       x-model="addressForm.proofType"
+                                       class="mr-3 h-5 w-5 text-blue-600">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-900">政府信函 (Government Letter)</div>
+                                    <div class="text-sm text-gray-600 mt-1">政府部门发出的信函</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+                             :class="{'border-blue-500 bg-blue-50': addressForm.proofType === 'lease'}"
+                             @click="addressForm.proofType = 'lease'">
+                            <div class="flex items-center">
+                                <input type="radio" 
+                                       name="proofType" 
+                                       value="lease" 
+                                       x-model="addressForm.proofType"
+                                       class="mr-3 h-5 w-5 text-blue-600">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-900">租赁合同 (Lease Agreement)</div>
+                                    <div class="text-sm text-gray-600 mt-1">有效的房屋租赁合同</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 mt-8">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='kyc-supplement'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                            :disabled="!addressForm.proofType"
+                            :class="{'opacity-50 cursor-not-allowed': !addressForm.proofType}"
+                            @click="currentStage='address-proof-upload'">
+                        下一步
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 住址证明 - 上传文件 -->
+        <section x-show="currentStage==='address-proof-upload'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">上传住址证明文件</h2>
+                <p class="text-gray-600 mb-6 text-sm">
+                    已选择：<strong x-text="getProofTypeName()"></strong>
+                </p>
+
+                <!-- 文件上传区域 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">上传文件 <span class="text-red-500">*</span></label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition"
+                         @dragover.prevent
+                         @drop.prevent="handleFileDrop($event)">
+                        <template x-if="!addressForm.uploadedFile">
+                            <div>
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <p class="mt-2 text-sm text-gray-600">拖拽文件到此处或点击选择文件</p>
+                                <p class="mt-1 text-xs text-gray-500">支持 JPG, PNG, PDF 格式，不超过10MB</p>
+                                <button type="button" 
+                                        class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                        @click="$refs.fileInput.click()">
+                                    选择文件
+                                </button>
+                                <input type="file" 
+                                       x-ref="fileInput" 
+                                       class="hidden" 
+                                       accept="image/*,.pdf"
+                                       @change="handleFileSelect($event)">
+                            </div>
+                        </template>
+                        <template x-if="addressForm.uploadedFile">
+                            <div>
+                                <svg class="mx-auto h-12 w-12 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <p class="mt-2 text-sm text-gray-800 font-semibold" x-text="addressForm.uploadedFile"></p>
+                                <button type="button" 
+                                        class="mt-3 text-sm text-blue-600 hover:underline"
+                                        @click="addressForm.uploadedFile = ''; $refs.fileInput.value = ''">
+                                    重新上传
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 文件要求说明 -->
+                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                    <p class="font-semibold text-sm text-gray-800 mb-2">文件要求：</p>
+                    <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                        <li>文件必须清晰可读，信息完整</li>
+                        <li>必须包含您的全名和完整地址</li>
+                        <li>文件日期需在最近3个月内</li>
+                        <li>不接受截图或复印件</li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='address-proof-type'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                            :disabled="!addressForm.uploadedFile"
+                            :class="{'opacity-50 cursor-not-allowed': !addressForm.uploadedFile}"
+                            @click="submitAddressAndGoToAML()">
+                        完成住址证明
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第四阶段：合规审查 ============ -->
+        
+        <!-- 合规审查页面 -->
+        <section x-show="currentStage==='aml-input'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">合规审查</h2>
+                <p class="text-gray-600 mb-6 text-sm">根据相关地区的合规要求，需要提供以下内容</p>
+
+                <div class="space-y-6">
+                    <!-- 出生国家或地区 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生国家或地区 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="amlForm.birthCountry" 
+                                @change="amlForm.birthState = ''; amlForm.birthCity = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择出生国家或地区</option>
+                            <option value="CN">中国 (China)</option>
+                            <option value="US">美国 (United States)</option>
+                            <option value="GB">英国 (United Kingdom)</option>
+                            <option value="CA">加拿大 (Canada)</option>
+                            <option value="AU">澳大利亚 (Australia)</option>
+                            <option value="SG">新加坡 (Singapore)</option>
+                            <option value="HK">中国香港 (Hong Kong)</option>
+                            <option value="JP">日本 (Japan)</option>
+                            <option value="KR">韩国 (South Korea)</option>
+                        </select>
+                    </div>
+
+                    <!-- 出生州/省 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生州/省 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="amlForm.birthState" 
+                                @change="amlForm.birthCity = ''"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择出生州/省</option>
+                            <!-- 中国省份 -->
+                            <optgroup label="中国省份" x-show="amlForm.birthCountry === 'CN'">
+                                <option value="北京市">北京市</option>
+                                <option value="上海市">上海市</option>
+                                <option value="广东省">广东省</option>
+                                <option value="浙江省">浙江省</option>
+                                <option value="江苏省">江苏省</option>
+                                <option value="四川省">四川省</option>
+                                <option value="湖北省">湖北省</option>
+                                <option value="湖南省">湖南省</option>
+                            </optgroup>
+                            <!-- 美国州 -->
+                            <optgroup label="美国州" x-show="amlForm.birthCountry === 'US'">
+                                <option value="California">California</option>
+                                <option value="New York">New York</option>
+                                <option value="Texas">Texas</option>
+                                <option value="Florida">Florida</option>
+                                <option value="Illinois">Illinois</option>
+                            </optgroup>
+                            <!-- 其他国家 -->
+                            <optgroup label="其他州/省" x-show="amlForm.birthCountry && amlForm.birthCountry !== 'CN' && amlForm.birthCountry !== 'US'">
+                                <option value="其他">其他</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- 出生城市 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生城市 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="amlForm.birthCity" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择出生城市</option>
+                            <!-- 中国 - 北京 -->
+                            <optgroup label="北京市" x-show="amlForm.birthCountry === 'CN' && amlForm.birthState === '北京市'">
+                                <option value="东城区">东城区</option>
+                                <option value="西城区">西城区</option>
+                                <option value="朝阳区">朝阳区</option>
+                                <option value="海淀区">海淀区</option>
+                            </optgroup>
+                            <!-- 中国 - 上海 -->
+                            <optgroup label="上海市" x-show="amlForm.birthCountry === 'CN' && amlForm.birthState === '上海市'">
+                                <option value="浦东新区">浦东新区</option>
+                                <option value="黄浦区">黄浦区</option>
+                                <option value="徐汇区">徐汇区</option>
+                                <option value="长宁区">长宁区</option>
+                            </optgroup>
+                            <!-- 中国 - 广东 -->
+                            <optgroup label="广东省城市" x-show="amlForm.birthCountry === 'CN' && amlForm.birthState === '广东省'">
+                                <option value="广州市">广州市</option>
+                                <option value="深圳市">深圳市</option>
+                                <option value="东莞市">东莞市</option>
+                                <option value="佛山市">佛山市</option>
+                            </optgroup>
+                            <!-- 美国城市 -->
+                            <optgroup label="美国城市" x-show="amlForm.birthCountry === 'US'">
+                                <option value="New York City">New York City</option>
+                                <option value="Los Angeles">Los Angeles</option>
+                                <option value="Chicago">Chicago</option>
+                                <option value="Houston">Houston</option>
+                            </optgroup>
+                            <!-- 其他国家 -->
+                            <optgroup label="其他城市" x-show="amlForm.birthCountry && amlForm.birthCountry !== 'CN' && amlForm.birthCountry !== 'US'">
+                                <option value="其他">其他</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- 出生地详细地址 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生地详细地址 <span class="text-gray-500 text-xs">(可选)</span>
+                        </label>
+                        <input type="text" 
+                               x-model="amlForm.birthPlace" 
+                               placeholder="请输入具体出生地址（街道、门牌号等）"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">如有需要，可填写更详细的出生地址</p>
+                    </div>
+
+                    <!-- 中间名 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            中间名 <span class="text-gray-500 text-xs">(无则不填写)</span>
+                        </label>
+                        <input type="text" 
+                               x-model="amlForm.middleName" 
+                               placeholder="请输入中间名"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">如果您有中间名（Middle Name），请填写</p>
+                    </div>
+
+                    <!-- 纳税居住国 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            纳税居住国 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="amlForm.taxResidenceCountry" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择国家或地区</option>
+                            <option value="CHN">中国</option>
+                            <option value="USA">美国</option>
+                            <option value="GBR">英国</option>
+                            <option value="CAN">加拿大</option>
+                            <option value="AUS">澳大利亚</option>
+                            <option value="SGP">新加坡</option>
+                            <option value="HKG">中国香港</option>
+                            <option value="JPN">日本</option>
+                            <option value="KOR">韩国</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">请选择您当前的税务居住国家或地区</p>
+                    </div>
+
+                </div>
+
+                <div class="flex space-x-3 mt-8">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='address-proof-upload'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            :disabled="!canSubmitAML()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitAML()}"
+                            @click="submitAMLAndGoToInvestor()">
+                        完成合规审查
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第五阶段：专业投资者认证 ============ -->
+        
+        <!-- 专业投资者认证 - 填写信息及上传文件 -->
+        <section x-show="currentStage==='investor-info'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">上传证明材料</h2>
+                
+                <div class="mb-6">
+                    <!-- 必须上传的材料 -->
+                    <div class="mb-6">
+                        <h3 class="font-medium text-gray-800 mb-3">财务资格证明（必须）：</h3>
+                        
+                        <!-- 净资产证明 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">1. 净资产证明 <span class="text-red-500">*</span></label>
+                            <div class="text-xs text-gray-600 mb-2">个人或与配偶共同拥有≥100万美元的净资产证明（如银行资产证明、证券账户资产证明等）</div>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" 
+                                 @click="$refs.netAssetInput.click()">
+                                <div x-show="!investorForm.netAssetFile">
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-600">点击上传净资产证明</p>
+                                </div>
+                                <div x-show="investorForm.netAssetFile" class="text-sm">
+                                    <svg class="w-8 h-8 mx-auto text-green-500 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="font-medium" x-text="investorForm.netAssetFile?.name"></p>
+                                    <button class="text-blue-600 text-xs mt-1" @click.stop="investorForm.netAssetFile = null; $refs.netAssetInput.value = ''">重新上传</button>
+                                </div>
+                            </div>
+                            <input type="file" x-ref="netAssetInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="investorForm.netAssetFile = $event.target.files[0]">
+                        </div>
+                    </div>
+
+                    <!-- 专业资格证明 -->
+                    <div class="mb-6">
+                        <h3 class="font-medium text-gray-800 mb-3">专业资格证明（必须）：</h3>
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4 text-sm text-blue-700">
+                            <p class="mb-2">请提供专业资格证明。可接受的证明材料包括：</p>
+                            <ul class="list-disc list-inside space-y-1 text-xs">
+                                <li>金融机构在职证明或工作证明</li>
+                                <li>企业高管任职证明或职责说明</li>
+                                <li>券商账户持仓证明或交易记录</li>
+                                <li>基金投资记录或持有证明</li>
+                                <li>其他能证明您具有投资经验的材料</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2">2. 专业资格证明 <span class="text-red-500">*</span></label>
+                            <div class="text-xs text-gray-600 mb-2">可提供：金融机构在职证明、高管任职证明、券商持仓证明、基金投资记录等</div>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" 
+                                 @click="$refs.qualificationInput.click()">
+                                <div x-show="!investorForm.qualificationFile">
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-600">点击上传专业资格证明</p>
+                                    <p class="text-xs text-gray-500 mt-1">在职证明/任职证明/券商持仓/基金投资记录等</p>
+                                </div>
+                                <div x-show="investorForm.qualificationFile" class="text-sm">
+                                    <svg class="w-8 h-8 mx-auto text-green-500 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="font-medium" x-text="investorForm.qualificationFile?.name"></p>
+                                    <button class="text-blue-600 text-xs mt-1" @click.stop="investorForm.qualificationFile = null; $refs.qualificationInput.value = ''">重新上传</button>
+                                </div>
+                            </div>
+                            <input type="file" x-ref="qualificationInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="investorForm.qualificationFile = $event.target.files[0]">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 声明确认 -->
+                <div class="border-t pt-6 mt-6">
+                    <h3 class="font-medium text-gray-800 mb-4">声明确认</h3>
+                    <div class="bg-gray-50 rounded p-4">
+                        <label class="flex items-start cursor-pointer">
+                            <input type="checkbox" x-model="investorForm.confirmProfessional" class="mt-1 mr-3">
+                            <span class="text-sm text-gray-700">
+                                本人同意被作为专业投资者对待，并理解专业投资者的权利和义务。
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 mt-8">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='aml-input'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                            :disabled="!canSubmitInvestor()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmitInvestor()}"
+                            @click="goToRiskAssessment()">
+                        提交专业投资者认证
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 第六阶段：风险测评 ============ -->
+        
+        <!-- 风险测评 - 欢迎页 -->
+        <section x-show="currentStage==='risk-assessment-welcome'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-3">风险承受能力测评</h2>
+                    <p class="text-gray-600">根据监管要求，需要评估您的风险承受能力</p>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                    <p class="text-sm text-red-700 mb-2">
+                        <strong>⚠️ 重要提示：</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">本RWA产品为高风险产品，仅适合成长型（R4）及以上的专业投资者参与。</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>测评说明：</strong>
+                    </p>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• 共10道问题，预计需要3-5分钟</li>
+                        <li>• 请根据您的真实情况作答</li>
+                        <li>• 测评结果将影响您是否可以参与本产品</li>
+                        <li>• 测评结果有效期为1年</li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='investor-info'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+                            @click="startRiskAssessment()">
+                        开始测评
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 问题页面 -->
+        <section x-show="currentStage==='risk-assessment-questions'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <!-- 进度指示 -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-semibold text-gray-700">问题进度</span>
+                        <span class="text-sm text-purple-600 font-medium" x-text="`${riskAssessment.currentQuestion + 1} / 10`"></span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" 
+                             :style="`width: ${((riskAssessment.currentQuestion + 1) / 10) * 100}%`"></div>
+                    </div>
+                </div>
+
+                <!-- 问题内容 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6" x-text="riskAssessment.questions[riskAssessment.currentQuestion].question"></h3>
+                    
+                    <div class="space-y-3">
+                        <template x-for="(option, index) in riskAssessment.questions[riskAssessment.currentQuestion].options" :key="index">
+                            <div class="border-2 rounded-lg p-4 cursor-pointer transition hover:border-purple-500 hover:bg-purple-50"
+                                 :class="riskAssessment.answers[riskAssessment.currentQuestion] === index ? 'border-purple-600 bg-purple-50' : 'border-gray-200'"
+                                 @click="selectAnswer(index)">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 mt-0.5"
+                                         :class="riskAssessment.answers[riskAssessment.currentQuestion] === index ? 'border-purple-600 bg-purple-600' : 'border-gray-300'">
+                                        <svg x-show="riskAssessment.answers[riskAssessment.currentQuestion] === index" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-gray-800" x-text="option.text"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 导航按钮 -->
+                <div class="flex space-x-3">
+                    <button x-show="riskAssessment.currentQuestion > 0"
+                            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="previousQuestion()">
+                        上一题
+                    </button>
+                    <button x-show="riskAssessment.currentQuestion === 0"
+                            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='risk-assessment-welcome'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+                            :disabled="riskAssessment.answers[riskAssessment.currentQuestion] === null"
+                            :class="{'opacity-50 cursor-not-allowed': riskAssessment.answers[riskAssessment.currentQuestion] === null}"
+                            @click="nextQuestion()">
+                        <span x-show="riskAssessment.currentQuestion < 9">下一题</span>
+                        <span x-show="riskAssessment.currentQuestion === 9">查看结果</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 结果页面（R4-R5通过） -->
+        <section x-show="currentStage==='risk-assessment-result-pass'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">测评完成</h2>
+                    <p class="text-gray-600">您的风险承受能力评估已完成</p>
+                </div>
+
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 mb-6">
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600 mb-2">您的风险等级</p>
+                        <div class="flex items-center justify-center mb-4">
+                            <span class="px-6 py-2 rounded-full text-lg font-bold mr-3"
+                                  :class="riskAssessment.riskLevel === 'R5' ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800'"
+                                  x-text="riskAssessment.riskLevel"></span>
+                            <span class="text-2xl font-bold text-gray-900" x-text="riskAssessment.riskType"></span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-2">测评分数：<span class="font-bold text-lg" x-text="riskAssessment.totalScore"></span> 分</p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <p class="text-sm text-green-700 mb-2">
+                        <strong>✓ 符合产品要求</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">您的风险承受能力符合本RWA产品要求，可以继续完成认证流程。</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-3">您的投资特征：</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed" x-text="riskAssessment.description"></p>
+                </div>
+
+                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-blue-700">
+                        <strong>温馨提示：</strong>测评结果有效期为1年，有效期内无需重新测评。
+                    </p>
+                </div>
+
+                <!-- 声明确认 -->
+                <div class="border-2 border-gray-200 rounded-lg p-5 mb-6 bg-gray-50">
+                    <label class="flex items-start cursor-pointer">
+                        <input type="checkbox" 
+                               x-model="riskAssessment.confirmDeclaration" 
+                               class="mt-1 mr-3 h-5 w-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        <span class="text-sm text-gray-800 leading-relaxed">
+                            <strong class="text-gray-900">声明确认：</strong>本人确认以上风险测评问卷由本人独立完成，未受到任何机构或个人的诱导或不当影响。本人承诺所有答案均基于本人真实情况如实填写，并理解虚假填写可能导致不适当的投资建议和相应的投资风险及法律责任。
+                        </span>
+                    </label>
+                </div>
+
+                <button class="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                        :disabled="!riskAssessment.confirmDeclaration"
+                        :class="{'opacity-50 cursor-not-allowed': !riskAssessment.confirmDeclaration}"
+                        @click="currentStage='investor-final-declaration'">
+                    继续完成认证
+                </button>
+            </div>
+        </section>
+
+        <!-- 风险测评 - 结果页面（R1-R3不通过） -->
+        <section x-show="currentStage==='risk-assessment-result-fail'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">测评结果</h2>
+                    <p class="text-gray-600">您的风险承受能力评估已完成</p>
+                </div>
+
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 mb-6">
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600 mb-2">您的风险等级</p>
+                        <div class="flex items-center justify-center mb-4">
+                            <span class="px-6 py-2 rounded-full text-lg font-bold mr-3"
+                                  :class="{
+                                      'bg-green-100 text-green-800': riskAssessment.riskLevel === 'R1',
+                                      'bg-blue-100 text-blue-800': riskAssessment.riskLevel === 'R2',
+                                      'bg-yellow-100 text-yellow-800': riskAssessment.riskLevel === 'R3'
+                                  }"
+                                  x-text="riskAssessment.riskLevel"></span>
+                            <span class="text-2xl font-bold text-gray-900" x-text="riskAssessment.riskType"></span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-2">测评分数：<span class="font-bold text-lg" x-text="riskAssessment.totalScore"></span> 分</p>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                    <p class="text-sm text-red-700 mb-2">
+                        <strong>✗ 不符合产品要求</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">根据监管要求，本RWA产品为高风险产品，仅适合成长型（R4）及以上的专业投资者参与。</p>
+                    <p class="text-sm text-gray-700 mt-2">您的风险承受能力评估结果为<strong x-text="riskAssessment.riskType"></strong>，暂不符合本产品的投资要求。</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-3">您的投资特征：</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed" x-text="riskAssessment.description"></p>
+                </div>
+
+                <div class="bg-yellow-50 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>建议：</strong>您可以考虑选择风险等级更低的投资产品，或在投资经验和风险承受能力提升后重新进行测评。
+                    </p>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+                            @click="retakeRiskAssessment()">
+                        重新测评
+                    </button>
+                    <button class="flex-1 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition"
+                            @click="resetAndGoHome()">
+                        退出认证
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 最终声明确认 ============ -->
+        <section x-show="currentStage==='investor-final-declaration'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-6 text-center">最终确认</h2>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8">
+                    <label class="flex items-start cursor-pointer">
+                        <input type="checkbox" x-model="investorForm.confirmFinalDeclaration" class="mt-1 mr-3 h-5 w-5">
+                        <span class="text-base text-gray-800 leading-relaxed">
+                            本人确认以上信息真实、准确、完整，并了解提供虚假信息可能承担的法律后果。本人已充分了解投资风险，并自愿承担投资结果。
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="currentStage='investor-info'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                            :disabled="!investorForm.confirmFinalDeclaration"
+                            :class="{'opacity-50 cursor-not-allowed': !investorForm.confirmFinalDeclaration}"
+                            @click="submitAllAndShowSuccess()">
+                        提交全部认证
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 认证完成页面 ============ -->
+        <section x-show="currentStage==='success'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8 text-center">
+                <div class="mb-6">
+                    <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">认证提交成功！</h2>
+                <p class="text-gray-600 mb-8">您的RWA个人认证申请已成功提交，我们将在1-3个工作日内完成审核</p>
+                
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mb-8">
+                    <h3 class="font-semibold text-gray-900 mb-4 text-lg">您已完成以下认证：</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-800">KYC身份认证</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-800">补充信息</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-800">住址证明</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-800">合规审查</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-800">专业投资者认证</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-800">风险承受能力测评 (<span x-text="riskAssessment.riskLevel"></span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <strong class="text-gray-900">📧 接下来会发生什么？</strong>
+                    </p>
+                    <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                        <li>您将收到一封确认邮件</li>
+                        <li>我们的团队将在1-3个工作日内审核您的申请</li>
+                        <li>审核结果将通过邮件和站内信通知您</li>
+                        <li>如需补充材料，我们会及时联系您</li>
+                    </ul>
+                </div>
+
+                <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                        @click="resetAndGoHome()">
+                    返回首页
+                </button>
+            </div>
+        </section>
+        
+    </main>
+
+    <script>
+        function rwaPersonalApp() {
+            return {
+                // ========== 当前页面状态 ==========
+                currentStage: 'home',
+                
+                // ========== 表单数据 ==========
+                kycForm: {
+                    idType: '',
+                    idFrontCaptured: false,
+                    idBackCaptured: false,
+                    passportCaptured: false,
+                    isOCRProcessing: false,
+                    isFaceRecognizing: false,
+                    faceRecognitionStatus: '',
+                    recognitionStep: '',
+                    ocrData: {
+                        name: '张三',
+                        gender: '男',
+                        ethnicity: '汉',
+                        birthDate: '1990年1月1日',
+                        idNumber: '110101199001011234',
+                        address: '北京市东城区长安街1号',
+                        issuingAuthority: '北京市公安局东城分局',
+                        validPeriod: '2020.01.01-2030.01.01'
+                    }
+                },
+                
+                supplementForm: {
+                    country: '',
+                    state: '',
+                    city: '',
+                    residentialAddress: '',
+                    zipCode: '',
+                    occupation: '',
+                    occupationOther: '',
+                    industry: '',
+                    industryOther: '',
+                    sourceOfFunds: '',
+                    sourceOfFundsOther: ''
+                },
+                
+                amlForm: {
+                    birthCountry: '',
+                    birthState: '',
+                    birthCity: '',
+                    birthPlace: '',
+                    middleName: '',
+                    taxResidenceCountry: ''
+                },
+                
+                addressForm: {
+                    proofType: '',
+                    uploadedFile: ''
+                },
+                
+                investorForm: {
+                    netAssetFile: null,
+                    qualificationFile: null,
+                    confirmProfessional: false,
+                    confirmFinalDeclaration: false
+                },
+                
+                riskAssessment: {
+                    currentQuestion: 0,
+                    answers: [null, null, null, null, null, null, null, null, null, null],
+                    totalScore: 0,
+                    riskLevel: '',
+                    riskType: '',
+                    description: '',
+                    confirmDeclaration: false,
+                    questions: [
+                        {
+                            question: '1. 您的年龄属于以下哪个范围？',
+                            options: [
+                                { text: '18-30岁', score: 5 },
+                                { text: '31-45岁', score: 4 },
+                                { text: '46-55岁', score: 3 },
+                                { text: '56-65岁', score: 2 },
+                                { text: '65岁以上', score: 1 }
+                            ]
+                        },
+                        {
+                            question: '2. 您的投资经验如何？',
+                            options: [
+                                { text: '没有投资经验，这是我的第一次投资', score: 1 },
+                                { text: '有1-2年投资经验，主要投资低风险产品', score: 2 },
+                                { text: '有3-5年投资经验，投资过股票、基金等', score: 3 },
+                                { text: '有5-10年投资经验，熟悉各类投资产品', score: 4 },
+                                { text: '超过10年投资经验，有丰富的投资经历', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '3. 您是否投资过以下高风险产品？（股票、期货、期权、数字货币等）',
+                            options: [
+                                { text: '从未投资过', score: 1 },
+                                { text: '投资过但不频繁', score: 2 },
+                                { text: '偶尔投资', score: 3 },
+                                { text: '经常投资', score: 4 },
+                                { text: '主要投资标的', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '4. 您计划投资的资金占您总资产的比例是？',
+                            options: [
+                                { text: '10%以下', score: 1 },
+                                { text: '10%-25%', score: 2 },
+                                { text: '25%-50%', score: 3 },
+                                { text: '50%-75%', score: 4 },
+                                { text: '75%以上', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '5. 您的投资目标是什么？',
+                            options: [
+                                { text: '保本为主，不接受任何损失', score: 1 },
+                                { text: '保值增值，接受极小损失', score: 2 },
+                                { text: '资产增值，接受一定波动', score: 3 },
+                                { text: '追求较高收益，接受较大波动', score: 4 },
+                                { text: '追求最高收益，接受本金大幅波动', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '6. 如果您的投资在短期内下跌20%，您会怎么做？',
+                            options: [
+                                { text: '立即卖出止损，无法承受', score: 1 },
+                                { text: '感到焦虑，考虑卖出', score: 2 },
+                                { text: '保持冷静，继续观察', score: 3 },
+                                { text: '不担心，相信长期回报', score: 4 },
+                                { text: '认为是机会，考虑加仓', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '7. 您的预期投资期限是多久？',
+                            options: [
+                                { text: '少于1年', score: 1 },
+                                { text: '1-3年', score: 2 },
+                                { text: '3-5年', score: 3 },
+                                { text: '5-10年', score: 4 },
+                                { text: '10年以上', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '8. 您对投资收益的期望是？',
+                            options: [
+                                { text: '年化2%-5%，保本最重要', score: 1 },
+                                { text: '年化5%-10%，稳健增长', score: 2 },
+                                { text: '年化10%-20%，适度增长', score: 3 },
+                                { text: '年化20%-50%，积极增长', score: 4 },
+                                { text: '年化50%以上，追求高收益', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '9. 您的家庭财务状况如何？',
+                            options: [
+                                { text: '收入不稳定，依赖投资收益', score: 1 },
+                                { text: '收入稳定，但存款较少', score: 2 },
+                                { text: '收入稳定，有一定存款', score: 3 },
+                                { text: '收入稳定，存款充足', score: 4 },
+                                { text: '财务自由，有大量可投资资产', score: 5 }
+                            ]
+                        },
+                        {
+                            question: '10. 您对区块链和数字资产的了解程度？',
+                            options: [
+                                { text: '完全不了解', score: 1 },
+                                { text: '听说过但不太了解', score: 2 },
+                                { text: '有基本了解', score: 3 },
+                                { text: '比较了解，关注行业动态', score: 4 },
+                                { text: '非常了解，深度参与该领域', score: 5 }
+                            ]
+                        }
+                    ]
+                },
+                
+                // ========== Alpine.js初始化数据 ==========
+                init() {
+                    console.log('RWA个人认证系统初始化');
+                },
+                
+                // ========== 全局导航方法 ==========
+                startCertification() {
+                    this.currentStage = 'kyc-select-id-type';
+                },
+                
+                goToStage(stage) {
+                    this.currentStage = stage;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+                
+                resetAndGoHome() {
+                    this.currentStage = 'home';
+                    // 重置所有表单数据
+                    this.resetAllForms();
+                },
+                
+                resetAllForms() {
+                    // 重置KYC表单
+                    this.kycForm = {
+                        idType: '',
+                        idFrontCaptured: false,
+                        idBackCaptured: false,
+                        passportCaptured: false,
+                        ocrProcessing: false,
+                        faceRecognitionDone: false,
+                        ocrData: {
+                            name: '',
+                            idNumber: '',
+                            nationality: '',
+                            birthDate: '',
+                            expiryDate: '',
+                            address: ''
+                        }
+                    };
+                    
+                    // 重置补充信息表单
+                    this.supplementForm = {
+                        residentialCountry: '',
+                        residentialState: '',
+                        residentialCity: '',
+                        streetAddress: '',
+                        postalCode: '',
+                        occupation: '',
+                        industry: '',
+                        sourceOfFunds: ''
+                    };
+                    
+                    // 重置AML表单
+                    this.amlForm = {
+                        birthCountry: '',
+                        birthState: '',
+                        birthCity: '',
+                        middleName: '',
+                        taxResidenceCountry: ''
+                    };
+                    
+                    // 重置住址证明表单
+                    this.addressForm = {
+                        proofType: '',
+                        uploadedFile: ''
+                    };
+                    
+                    // 重置投资者表单
+                    this.investorForm = {
+                        netAssetFile: null,
+                        qualificationFile: null,
+                        confirmProfessional: false,
+                        confirmFinalDeclaration: false
+                    };
+                },
+                
+                // ========== 进度计算 ==========
+                getOverallProgress() {
+                    const stages = {
+                        'home': 0,
+                        'kyc-select-id-type': 5,
+                        'kyc-capture-id': 8,
+                        'kyc-face-recognition': 11,
+                        'kyc-confirm-info': 14,
+                        'kyc-supplement': 20,
+                        'address-proof-type': 35,
+                        'address-proof-upload': 40,
+                        'aml-input': 55,
+                        'investor-info': 70,
+                        'risk-assessment-welcome': 80,
+                        'risk-assessment-questions': 85,
+                        'risk-assessment-result-pass': 90,
+                        'risk-assessment-result-fail': 90,
+                        'investor-final-declaration': 95,
+                        'success': 100
+                    };
+                    return stages[this.currentStage] || 0;
+                },
+                
+                getProgressText() {
+                    if (this.currentStage.startsWith('kyc-') && !this.currentStage.startsWith('kyc-supplement')) return '第1阶段：KYC身份认证';
+                    if (this.currentStage.startsWith('kyc-supplement')) return '第2阶段：补充个人信息';
+                    if (this.currentStage.startsWith('address-')) return '第3阶段：住址证明';
+                    if (this.currentStage.startsWith('aml-')) return '第4阶段：合规审查';
+                    if (this.currentStage.startsWith('investor-') && !this.currentStage.startsWith('investor-final')) return '第5阶段：专业投资者认证';
+                    if (this.currentStage.startsWith('risk-assessment')) return '第6阶段：风险承受能力测评';
+                    if (this.currentStage === 'investor-final-declaration') return '最终确认';
+                    return 'RWA个人认证';
+                },
+                
+                // ========== KYC相关方法 ==========
+                selectIdType(type) {
+                    this.kycForm.idType = type;
+                    console.log('选择证件类型:', type);
+                },
+                
+                goToKYCCapture() {
+                    this.currentStage = 'kyc-capture-id';
+                },
+                
+                captureIdFront() {
+                    console.log('拍摄身份证正面');
+                    setTimeout(() => {
+                        this.kycForm.idFrontCaptured = true;
+                    }, 500);
+                },
+                
+                captureIdBack() {
+                    console.log('拍摄身份证反面');
+                    setTimeout(() => {
+                        this.kycForm.idBackCaptured = true;
+                    }, 500);
+                },
+                
+                capturePassport() {
+                    console.log('拍摄护照');
+                    setTimeout(() => {
+                        this.kycForm.passportCaptured = true;
+                    }, 500);
+                },
+                
+                canProceedToFaceRecognition() {
+                    if (this.kycForm.idType === 'id_card') {
+                        return this.kycForm.idFrontCaptured && this.kycForm.idBackCaptured;
+                    } else if (this.kycForm.idType === 'passport') {
+                        return this.kycForm.passportCaptured;
+                    }
+                    return false;
+                },
+                
+                startOCR() {
+                    console.log('开始OCR识别');
+                    this.kycForm.isOCRProcessing = true;
+                    
+                    // 模拟OCR识别过程
+                    setTimeout(() => {
+                        this.kycForm.isOCRProcessing = false;
+                        
+                        // 模拟识别结果
+                        if (this.kycForm.idType === 'passport') {
+                            this.kycForm.ocrData = {
+                                name: 'ZHANG San',
+                                gender: '男',
+                                ethnicity: '-',
+                                birthDate: '1990-01-01',
+                                idNumber: 'E12345678',
+                                address: 'Beijing, China',
+                                issuingAuthority: 'Ministry of Public Security',
+                                validPeriod: '2020-01-01 - 2030-01-01'
+                            };
+                        }
+                        
+                        this.currentStage = 'kyc-face-recognition';
+                    }, 2000);
+                },
+                
+                startFaceRecognition() {
+                    console.log('开始人脸识别');
+                    this.kycForm.isFaceRecognizing = true;
+                    this.kycForm.faceRecognitionStatus = '';
+                    
+                    // 模拟识别步骤
+                    const steps = [
+                        '正在启动摄像头...',
+                        '检测人脸位置...',
+                        '进行活体检测...',
+                        '提取面部特征...',
+                        '与证件照片比对中...',
+                        '分析相似度...'
+                    ];
+                    
+                    let currentStep = 0;
+                    const stepInterval = setInterval(() => {
+                        if (currentStep < steps.length) {
+                            this.kycForm.recognitionStep = steps[currentStep];
+                            currentStep++;
+                        } else {
+                            clearInterval(stepInterval);
+                            
+                            // 模拟识别结果（95%概率成功）
+                            const success = Math.random() > 0.05;
+                            
+                            setTimeout(() => {
+                                this.kycForm.isFaceRecognizing = false;
+                                this.kycForm.faceRecognitionStatus = success ? 'success' : 'failed';
+                            }, 500);
+                        }
+                    }, 800);
+                },
+                
+                submitKYCAndGoToSupplement() {
+                    console.log('提交KYC认证信息，进入补充信息阶段');
+                    this.currentStage = 'kyc-supplement';
+                },
+                
+                // ========== 补充信息相关方法 ==========
+                canSubmitSupplement() {
+                    // 检查必填字段
+                    const checks = {
+                        '居住国家': this.supplementForm.country,
+                        '居住州/省': this.supplementForm.state,
+                        '居住城市': this.supplementForm.city,
+                        '详细地址': this.supplementForm.residentialAddress,
+                        '邮政编码': this.supplementForm.zipCode,
+                        '职业': this.supplementForm.occupation,
+                        '行业': this.supplementForm.industry,
+                        '资金来源': this.supplementForm.sourceOfFunds
+                    };
+                    
+                    // 检查"其他"选项是否已填写
+                    const occupationValid = this.supplementForm.occupation !== 'other' || this.supplementForm.occupationOther;
+                    const industryValid = this.supplementForm.industry !== 'other' || this.supplementForm.industryOther;
+                    const fundsValid = this.supplementForm.sourceOfFunds !== 'other' || this.supplementForm.sourceOfFundsOther;
+                    
+                    // 调试信息：显示未填写的字段
+                    const missingFields = [];
+                    for (const [field, value] of Object.entries(checks)) {
+                        if (!value) {
+                            missingFields.push(field);
+                        }
+                    }
+                    
+                    if (!occupationValid) missingFields.push('职业（其他）详情');
+                    if (!industryValid) missingFields.push('行业（其他）详情');
+                    if (!fundsValid) missingFields.push('资金来源（其他）详情');
+                    
+                    if (missingFields.length > 0) {
+                        console.log('补充信息 - 未填写的必填字段:', missingFields.join(', '));
+                    }
+                    
+                    const basicFields = this.supplementForm.country &&
+                                       this.supplementForm.state && 
+                                       this.supplementForm.city && 
+                                       this.supplementForm.residentialAddress && 
+                                       this.supplementForm.zipCode &&
+                                       this.supplementForm.occupation && 
+                                       this.supplementForm.industry && 
+                                       this.supplementForm.sourceOfFunds;
+                    
+                    return basicFields && occupationValid && industryValid && fundsValid;
+                },
+                
+                submitSupplementAndGoToAddress() {
+                    console.log('提交补充信息，进入住址证明阶段');
+                    this.currentStage = 'address-proof-type';
+                },
+                
+                // ========== 合规审查相关方法 ==========
+                canSubmitAML() {
+                    const checks = {
+                        '出生国家': this.amlForm.birthCountry,
+                        '出生州/省': this.amlForm.birthState,
+                        '出生城市': this.amlForm.birthCity,
+                        '纳税居住国': this.amlForm.taxResidenceCountry
+                    };
+                    
+                    // 调试信息：显示未填写的字段
+                    const missingFields = [];
+                    for (const [field, value] of Object.entries(checks)) {
+                        if (!value) {
+                            missingFields.push(field);
+                        }
+                    }
+                    
+                    if (missingFields.length > 0) {
+                        console.log('合规审查 - 未填写的必填字段:', missingFields.join(', '));
+                    }
+                    
+                    return this.amlForm.birthCountry && 
+                           this.amlForm.birthState && 
+                           this.amlForm.birthCity && 
+                           this.amlForm.taxResidenceCountry;
+                },
+                
+                submitAddressAndGoToAML() {
+                    console.log('提交住址证明，进入合规审查阶段');
+                    this.currentStage = 'aml-input';
+                },
+                
+                submitAMLAndGoToInvestor() {
+                    console.log('提交合规审查，进入专业投资者认证阶段');
+                    this.currentStage = 'investor-info';
+                },
+                
+                // ========== 住址证明相关方法 ==========
+                getProofTypeName() {
+                    const names = {
+                        'utility': '水电煤气账单',
+                        'bank': '银行对账单',
+                        'tax': '税务文件',
+                        'gov': '政府信函',
+                        'lease': '租赁合同'
+                    };
+                    return names[this.addressForm.proofType] || '';
+                },
+                
+                handleFileSelect(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.addressForm.uploadedFile = file.name;
+                    }
+                },
+                
+                handleFileDrop(event) {
+                    const file = event.dataTransfer.files[0];
+                    if (file) {
+                        this.addressForm.uploadedFile = file.name;
+                    }
+                },
+                
+                
+                // ========== 专业投资者认证相关方法 ==========
+                canSubmitInvestor() {
+                    return this.investorForm.netAssetFile && 
+                           this.investorForm.qualificationFile && 
+                           this.investorForm.confirmProfessional;
+                },
+                
+                goToFinalDeclaration() {
+                    console.log('进入最终声明确认页面');
+                    this.currentStage = 'investor-final-declaration';
+                },
+                
+                submitAllAndShowSuccess() {
+                    console.log('提交全部认证资料');
+                    // 模拟提交到后端
+                    console.log('KYC Form:', this.kycForm);
+                    console.log('Supplement Form:', this.supplementForm);
+                    console.log('AML Form:', this.amlForm);
+                    console.log('Address Form:', this.addressForm);
+                    console.log('Investor Form:', this.investorForm);
+                    console.log('Risk Assessment:', this.riskAssessment);
+                    
+                    // 显示成功页面
+                    this.currentStage = 'success';
+                },
+                
+                // ========== 风险测评相关方法 ==========
+                goToRiskAssessment() {
+                    console.log('进入风险测评欢迎页面');
+                    this.currentStage = 'risk-assessment-welcome';
+                },
+                
+                startRiskAssessment() {
+                    console.log('开始风险测评');
+                    // 重置测评数据
+                    this.riskAssessment.currentQuestion = 0;
+                    this.riskAssessment.answers = [null, null, null, null, null, null, null, null, null, null];
+                    this.riskAssessment.totalScore = 0;
+                    this.riskAssessment.riskLevel = '';
+                    this.riskAssessment.riskType = '';
+                    this.riskAssessment.description = '';
+                    this.riskAssessment.confirmDeclaration = false;
+                    
+                    this.currentStage = 'risk-assessment-questions';
+                },
+                
+                selectAnswer(optionIndex) {
+                    this.riskAssessment.answers[this.riskAssessment.currentQuestion] = optionIndex;
+                    console.log(`问题 ${this.riskAssessment.currentQuestion + 1} 选择了选项 ${optionIndex + 1}`);
+                },
+                
+                previousQuestion() {
+                    if (this.riskAssessment.currentQuestion > 0) {
+                        this.riskAssessment.currentQuestion--;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+                
+                nextQuestion() {
+                    if (this.riskAssessment.answers[this.riskAssessment.currentQuestion] === null) {
+                        alert('请选择一个答案');
+                        return;
+                    }
+                    
+                    if (this.riskAssessment.currentQuestion < 9) {
+                        this.riskAssessment.currentQuestion++;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        // 完成所有问题，计算结果
+                        this.calculateRiskAssessmentResult();
+                    }
+                },
+                
+                calculateRiskAssessmentResult() {
+                    console.log('计算风险测评结果');
+                    
+                    // 计算总分
+                    let totalScore = 0;
+                    for (let i = 0; i < 10; i++) {
+                        const answerIndex = this.riskAssessment.answers[i];
+                        const score = this.riskAssessment.questions[i].options[answerIndex].score;
+                        totalScore += score;
+                    }
+                    
+                    this.riskAssessment.totalScore = totalScore;
+                    console.log('总分:', totalScore);
+                    
+                    // 根据总分判定风险等级
+                    if (totalScore >= 10 && totalScore <= 18) {
+                        this.riskAssessment.riskLevel = 'R1';
+                        this.riskAssessment.riskType = '保守型';
+                        this.riskAssessment.description = '您倾向于保守投资，追求本金安全，不愿承受任何本金损失的风险。建议选择低风险、收益稳定的产品，如货币基金、国债等。';
+                        this.currentStage = 'risk-assessment-result-fail';
+                    } else if (totalScore >= 19 && totalScore <= 27) {
+                        this.riskAssessment.riskLevel = 'R2';
+                        this.riskAssessment.riskType = '稳健型';
+                        this.riskAssessment.description = '您倾向于稳健投资，愿意承受少量本金风险以获取稳定收益。建议选择中低风险产品，如债券基金、银行理财等。';
+                        this.currentStage = 'risk-assessment-result-fail';
+                    } else if (totalScore >= 28 && totalScore <= 35) {
+                        this.riskAssessment.riskLevel = 'R3';
+                        this.riskAssessment.riskType = '平衡型';
+                        this.riskAssessment.description = '您追求收益与风险的平衡，可以承受一定的本金波动以获取较高收益。建议选择中等风险产品，如混合型基金、股票基金等。';
+                        this.currentStage = 'risk-assessment-result-fail';
+                    } else if (totalScore >= 36 && totalScore <= 43) {
+                        this.riskAssessment.riskLevel = 'R4';
+                        this.riskAssessment.riskType = '成长型';
+                        this.riskAssessment.description = '您追求较高收益，愿意承受较大的本金波动风险。您有较丰富的投资经验，了解高风险投资产品的特性。适合投资股票、数字资产等高风险产品。';
+                        this.currentStage = 'risk-assessment-result-pass';
+                    } else if (totalScore >= 44 && totalScore <= 50) {
+                        this.riskAssessment.riskLevel = 'R5';
+                        this.riskAssessment.riskType = '进取型';
+                        this.riskAssessment.description = '您追求最高收益，愿意承受本金的大幅波动甚至全部损失的风险。您有丰富的投资经验和专业知识，能够理解并接受高风险投资。适合投资期货、期权、数字货币等高风险产品。';
+                        this.currentStage = 'risk-assessment-result-pass';
+                    }
+                    
+                    console.log('风险等级:', this.riskAssessment.riskLevel, this.riskAssessment.riskType);
+                },
+                
+                retakeRiskAssessment() {
+                    console.log('重新进行风险测评');
+                    this.startRiskAssessment();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

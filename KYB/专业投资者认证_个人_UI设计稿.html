@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业投资者认证（个人）UI设计稿</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .canvas-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .canvas-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .screen-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 300px;
+            height: 650px;
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .phone-notch {
+            width: 120px;
+            height: 25px;
+            background-color: #000;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .status-bar {
+            height: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: #000;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 5;
+        }
+
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .header .back-arrow {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .header .title {
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .screen-label {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .info-box-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 4px;
+        }
+
+        .info-box-text {
+            font-size: 10px;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .info-box-yellow {
+            background-color: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+        .info-box-yellow .info-box-title {
+            color: #92400e;
+        }
+
+        .info-box-red {
+            background-color: #fef2f2;
+            border-left-color: #ef4444;
+        }
+
+        .info-box-red .info-box-title {
+            color: #991b1b;
+        }
+
+        .requirement-list {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .requirement-item {
+            font-size: 10px;
+            color: #333;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 15px auto;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .button-primary {
+            background-color: #000000;
+            color: #fff;
+        }
+
+        .button-secondary {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .progress-bar {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            height: 6px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: #000;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 6px;
+            padding: 20px 10px;
+            text-align: center;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .upload-area.success {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+
+        .upload-icon {
+            width: 25px;
+            height: 25px;
+            margin: 0 auto 8px;
+            color: #666;
+        }
+
+        .upload-text {
+            font-size: 11px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .upload-subtext {
+            font-size: 9px;
+            color: #999;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: start;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-text {
+            font-size: 10px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <h1 class="canvas-title">专业投资者认证（个人）UI设计稿</h1>
+        
+        <!-- 第一行：首页 + 上传页 + 上传中状态 + 提交成功 -->
+        <div class="screen-row">
+            <!-- 1. 首页 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">专业投资者认证</div>
+                    </div>
+                    <div class="content">
+                        <div class="welcome-section">
+                            <div class="welcome-title">专业投资者认证（个人）</div>
+                            <div class="welcome-desc">根据监管要求，参与特定投资产品需要完成专业投资者认证</div>
+                            
+                            <div class="info-box">
+                                <div class="info-box-title">什么是专业投资者？</div>
+                                <div class="info-box-text">具备专业投资知识和经验，能够自行判断投资风险并承担投资结果的投资者</div>
+                            </div>
+
+                            <div class="info-box info-box-red">
+                                <div class="info-box-title">必要条件（必须同时满足）</div>
+                                <div class="requirement-list">
+                                    <div class="requirement-item">• 净资产 > 100万美元</div>
+                                    <div class="requirement-item">• 初始投资额 ≥ 10万美元</div>
+                                    <div class="requirement-item">• 同意作为专业投资者</div>
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-box-title">专业资格（满足其一）</div>
+                                <div class="requirement-list">
+                                    <div class="requirement-item">• 金融机构从业经验</div>
+                                    <div class="requirement-item">• 企业高管投资职责</div>
+                                </div>
+                            </div>
+
+                            <div class="info-box info-box-yellow">
+                                <div class="info-box-title">重要提示</div>
+                                <div class="requirement-list">
+                                    <div class="requirement-item">• 准备材料扫描件</div>
+                                    <div class="requirement-item">• 支持PDF/JPG/PNG</div>
+                                    <div class="requirement-item">• 审核时间1-3工作日</div>
+                                </div>
+                            </div>
+                            
+                            <button class="button button-primary">开始认证</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">1. 认证首页</div>
+            </div>
+
+            <!-- 2. 上传材料页 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">上传证明材料</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">上传证明材料并确认声明</div>
+
+                        <div class="section-title">1. 净资产证明 *</div>
+                        <div class="upload-subtext" style="margin-bottom: 8px; text-align: left;">个人或与配偶共同拥有≥100万美元</div>
+                        
+                        <div style="background-color: #f3e8ff; border-left: 4px solid #9333ea; padding: 8px; margin-bottom: 10px; border-radius: 4px;">
+                            <div style="font-size: 10px; color: #6b21a8; margin-bottom: 4px;"><strong>📅 有效期说明：</strong></div>
+                            <div style="font-size: 9px; color: #6b21a8; line-height: 1.4;">
+                                • 银行存款/证券账户证明：6个月 | 综合资产证明：1年⭐
+                            </div>
+                        </div>
+                        
+                        <div class="upload-area">
+                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <div class="upload-text">点击上传净资产证明</div>
+                            <div class="upload-subtext">银行资产证明/证券账户资产证明</div>
+                        </div>
+
+                        <div class="section-title">2. 专业资格证明 *</div>
+                        <div class="info-box" style="margin-bottom: 8px;">
+                            <div class="info-box-text">可提供：金融机构在职证明、高管任职证明、券商持仓证明、基金投资记录等</div>
+                        </div>
+                        
+                        <div style="background-color: #f3e8ff; border-left: 4px solid #9333ea; padding: 8px; margin-bottom: 10px; border-radius: 4px;">
+                            <div style="font-size: 10px; color: #6b21a8; margin-bottom: 4px;"><strong>📅 有效期说明：</strong></div>
+                            <div style="font-size: 9px; color: #6b21a8; line-height: 1.4;">
+                                • 资格证书：跟随证书有效期⭐ | 学位证书：长期有效⭐⭐
+                            </div>
+                        </div>
+                        <div class="upload-area success">
+                            <svg class="upload-icon" fill="currentColor" viewBox="0 0 20 20" style="color: #28a745;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="upload-text" style="color: #28a745; font-weight: 600;">已选择文件</div>
+                            <div class="upload-subtext" style="color: #333;">qualification_proof.pdf (1.2MB)</div>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; padding-top: 12px; margin-top: 12px;">
+                            <div class="section-title">声明确认</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="checkbox">
+                                <div class="checkbox-text">本人同意被作为专业投资者对待</div>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="opacity: 0.6; margin-top: 10px;">提交专业投资者认证</button>
+                    </div>
+                </div>
+                <div class="screen-label">2. 上传材料页</div>
+            </div>
+
+            <!-- 3. 上传中状态 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">上传证明材料</div>
+                    </div>
+                    <div class="content">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">上传证明材料并确认声明</div>
+
+                        <div class="section-title">1. 净资产证明 *</div>
+                        <div class="upload-area" style="border-color: #f59e0b; background-color: #fffbeb;">
+                            <div style="width: 25px; height: 25px; border: 2px solid #f59e0b; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 8px;"></div>
+                            <div class="upload-text" style="color: #f59e0b; font-weight: 600;">上传中... 65%</div>
+                            <div class="upload-subtext" style="color: #92400e;">net_asset_proof.pdf (3.4MB)</div>
+                        </div>
+
+                        <div class="section-title">2. 专业资格证明 *</div>
+                        <div class="upload-area success">
+                            <svg class="upload-icon" fill="currentColor" viewBox="0 0 20 20" style="color: #28a745;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="upload-text" style="color: #28a745; font-weight: 600;">已上传</div>
+                            <div class="upload-subtext" style="color: #333;">qualification_proof.pdf (1.2MB)</div>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; padding-top: 12px; margin-top: 12px;">
+                            <div class="section-title">声明确认</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="checkbox" checked>
+                                <div class="checkbox-text">本人同意被作为专业投资者对待</div>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="opacity: 0.6; margin-top: 10px;" disabled>上传中...</button>
+                    </div>
+                </div>
+                <div class="screen-label">3. 上传中状态</div>
+            </div>
+
+            <!-- 4. 最终声明确认 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">最终确认</div>
+                    </div>
+                    <div class="content">
+                        <div class="info-box info-box-yellow" style="margin-bottom: 15px;">
+                            <div class="info-box-title">请仔细阅读并确认以下声明：</div>
+                            <div class="info-box-text" style="line-height: 1.5;">本人确认以上信息真实、准确、完整，并了解提供虚假信息可能承担的法律后果。本人已充分了解投资风险，并自愿承担投资结果。</div>
+                        </div>
+
+                        <div style="background: #f8f9fa; border-radius: 6px; padding: 12px;">
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="checkbox" checked>
+                                <div class="checkbox-text">本人已阅读并同意上述声明</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px; display: flex; gap: 8px;">
+                            <button class="button" style="flex: 1; background: #e0e0e0; color: #666;">返回</button>
+                            <button class="button button-primary" style="flex: 1;">提交全部认证</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">4. 最终声明确认</div>
+            </div>
+
+            <!-- 5. 提交成功 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <div class="title">专业投资者认证</div>
+                    </div>
+                    <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <svg style="width: 60px; height: 60px; color: #28a745; margin-bottom: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 10px;">申请提交成功！</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5;">您的专业投资者认证申请已提交<br>我们将在1-3个工作日内完成审核</div>
+
+                        <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; width: 100%; margin-bottom: 20px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">申请信息摘要</div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">上传材料：</span>
+                                <span style="font-size: 11px; color: #28a745; font-weight: 600;">✓ 已上传</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 11px; color: #666;">提交时间：</span>
+                                <span style="font-size: 11px; color: #333;">2024-11-04 14:30</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 11px; color: #666;">当前状态：</span>
+                                <span style="background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 10px;">审核中</span>
+                            </div>
+                        </div>
+
+                        <button class="button button-primary">完成</button>
+                    </div>
+                </div>
+                <div class="screen-label">5. 提交成功</div>
+            </div>
+        </div>
+
+        <!-- 第二行：审核通过 + 审核驳回 + 需要补充材料 + 补充材料上传 -->
+        <div class="screen-row">
+            <!-- 6. 审核通过 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <svg style="width: 60px; height: 60px; color: #28a745; margin-bottom: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div style="font-size: 18px; font-weight: 600; color: #28a745; margin-bottom: 10px;">恭喜，认证成功！</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 25px;">您的专业投资者认证已通过</div>
+
+                        <div style="background: #f8fff9; border: 1px solid #d4edda; border-radius: 8px; padding: 15px; width: 100%; margin-bottom: 25px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #155724; margin-bottom: 10px;">认证信息</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">认证时间：2024-11-04 16:20</div>
+                            <div style="font-size: 10px; color: #155724; margin-bottom: 4px;">有效期至：2025-11-04</div>
+                            <div style="font-size: 10px; color: #155724;">认证编号：PI202411040001</div>
+                        </div>
+
+                        <button class="button button-primary">确定</button>
+                    </div>
+                </div>
+                <div class="screen-label">6. 审核通过</div>
+            </div>
+
+            <!-- 7. 审核驳回 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px; color: #dc3545;">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px;" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span style="font-size: 16px; font-weight: 600;">认证未通过</span>
+                        </div>
+
+                        <div style="font-size: 12px; color: #666; margin-bottom: 12px;">您的认证申请未能通过审核，原因如下：</div>
+
+                        <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #c53030; margin-bottom: 6px;">驳回原因：</div>
+                            <div style="font-size: 10px; color: #c53030; line-height: 1.5;">
+                                • 净资产证明文件不清晰<br>
+                                • 专业资格证明材料缺失<br>
+                                • 上传的银行证明已过期
+                            </div>
+                        </div>
+
+                        <div style="background: #f8f9fa; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #495057; margin-bottom: 6px;">处理建议：</div>
+                            <div style="font-size: 10px; color: #495057; line-height: 1.4;">
+                                请重新准备清晰、有效的认证材料后重新提交申请
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="margin-bottom: 5px;">重新提交材料</button>
+                        <div style="text-align: center;">
+                            <a href="#" style="font-size: 12px; color: #007bff; text-decoration: none;">联系客服</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">7. 审核驳回</div>
+            </div>
+
+            <!-- 8. 需要补充材料 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">认证结果</div>
+                    </div>
+                    <div class="content">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px; color: #f59e0b;">
+                            <svg style="width: 24px; height: 24px; margin-right: 8px;" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span style="font-size: 16px; font-weight: 600;">需补充材料</span>
+                        </div>
+
+                        <div style="font-size: 12px; color: #666; margin-bottom: 12px;">您的认证申请需要补充以下材料：</div>
+
+                        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #92400e; margin-bottom: 6px;">需补充项：</div>
+                            <div style="font-size: 10px; color: #92400e; line-height: 1.5;">
+                                • 请补充更清晰的净资产证明<br>
+                                • 请提供金融机构在职证明或券商持仓证明<br>
+                                • 请上传最新的银行资产证明
+                            </div>
+                        </div>
+
+                        <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 11px; font-weight: 600; color: #0369a1; margin-bottom: 6px;">温馨提示：</div>
+                            <div style="font-size: 10px; color: #0369a1; line-height: 1.4;">
+                                补充材料后，我们将在1-2个工作日内完成审核
+                            </div>
+                        </div>
+
+                        <button class="button button-primary" style="margin-bottom: 5px;">上传补充材料</button>
+                        <div style="text-align: center;">
+                            <a href="#" style="font-size: 12px; color: #007bff; text-decoration: none;">联系客服</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">8. 需要补充材料</div>
+            </div>
+
+            <!-- 9. 补充材料上传 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <div class="title">补充材料</div>
+                    </div>
+                    <div class="content">
+                        <div class="info-box info-box-yellow" style="margin-bottom: 15px;">
+                            <div class="info-box-title">补充说明</div>
+                            <div class="info-box-text">请根据审核要求上传补充材料，确保文件清晰完整</div>
+                        </div>
+
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <div style="font-size: 10px; color: #666; margin-bottom: 5px;">第 1 项，共 3 项</div>
+                            <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 5px;">净资产证明</div>
+                            <div style="font-size: 10px; color: #666;">请补充更清晰的净资产证明</div>
+                        </div>
+
+                        <div class="upload-area success">
+                            <svg class="upload-icon" fill="currentColor" viewBox="0 0 20 20" style="color: #28a745;">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="upload-text" style="color: #28a745; font-weight: 600;">已选择文件</div>
+                            <div class="upload-subtext" style="color: #333; font-weight: 500;">new_net_asset_proof.pdf (2.8 MB)</div>
+                            <div class="upload-subtext" style="color: #007bff; margin-top: 6px; cursor: pointer;">重新选择</div>
+                        </div>
+
+                        <button class="button button-primary">确认上传</button>
+                        <button class="button button-secondary">跳过此项</button>
+                    </div>
+                </div>
+                <div class="screen-label">9. 补充材料上传</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>住址证明认证流程</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .file-upload-area {
+            transition: all 0.3s ease;
+        }
+        .file-upload-area:hover {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="addressProofApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">住址证明认证</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="page='home'">首页</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home' && page !== 'status'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">认证进度</span>
+                    <span class="text-sm text-gray-500" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${getProgressPercentage()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>填写地址</span>
+                    <span>上传证明</span>
+                    <span>提交完成</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证首页 -->
+        <section x-show="page==='home'" x-transition x-cloak>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=600&q=80" alt="住址证明" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-xl font-semibold mb-2">住址证明认证</h2>
+                <p class="mb-6 text-gray-600 text-center max-w-md">根据监管要求，需要验证您的居住地址。请上传有效的住址证明文件。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>什么是住址证明？</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            住址证明是用于验证您当前居住地址的官方文件，通常包括您的姓名和完整地址信息。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-4 mb-4">
+                        <h3 class="font-medium mb-3 text-gray-800">可接受的住址证明类型：</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>水电煤气费账单（3个月内）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>银行对账单（3个月内）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>政府机构信件（3个月内）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>租赁合同或房产证明</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>互联网、电话或电视账单（3个月内）</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                        <p class="text-sm text-yellow-700 mb-1">
+                            <strong>重要提示：</strong>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• 文件必须清晰可读</li>
+                            <li>• 必须显示您的全名和完整地址</li>
+                            <li>• 必须是近3个月内的文件</li>
+                            <li>• 支持格式：PDF、JPG、PNG（单个文件不超过10MB）</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="w-full max-w-md py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='address-info'">开始认证</button>
+            </div>
+        </section>
+
+        <!-- 上传文件页 -->
+        <section x-show="page==='upload'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">上传住址证明文件</h2>
+                
+                <div class="mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700">
+                            <strong>第2步：</strong>请上传证明文件来验证您的居住地址：<strong x-text="getFullAddress()"></strong>
+                        </p>
+                    </div>
+
+                    <!-- 选择证明类型 -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold mb-3">选择证明类型 <span class="text-red-500">*</span></label>
+                        <select x-model="form.proofType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4">
+                            <option value="">请选择证明文件类型</option>
+                            <option value="utility_bill">水电煤气费账单（需3个月内，认证有效期1年）</option>
+                            <option value="bank_statement">银行对账单（需3个月内，认证有效期1年）</option>
+                            <option value="telecom_bill">通信服务账单（需3个月内，认证有效期1年）</option>
+                            <option value="government_letter">政府机构信件（需3个月内，认证有效期1年）</option>
+                            <option value="lease_contract">租赁合同（跟随合同有效期）</option>
+                            <option value="property_deed">房产证明（认证有效期2-3年）</option>
+                        </select>
+                        
+                        <div class="bg-purple-50 border-l-4 border-purple-400 p-3 mt-3">
+                            <p class="text-xs text-purple-700">
+                                <strong>📅 有效期说明：</strong>不同文件类型的认证有效期不同，选择合适的文件类型可延长认证有效期。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">上传文件 <span class="text-red-500">*</span></label>
+                    </div>
+
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center file-upload-area cursor-pointer" @click="triggerFileUpload()">
+                        <div x-show="!uploadedFile">
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-gray-600 mb-2">点击上传或拖拽文件到此处</p>
+                            <p class="text-sm text-gray-500">支持 PDF、JPG、PNG 格式，单个文件不超过10MB</p>
+                        </div>
+                        <div x-show="uploadedFile" class="flex items-center justify-center">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-10 h-10 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="text-left">
+                                    <p class="font-medium text-gray-800" x-text="uploadedFileName"></p>
+                                    <p class="text-sm text-gray-500">文件已上传</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileUpload($event)">
+
+                    <div x-show="uploadedFile" class="mt-4 text-center">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm" @click="removeFile()">重新上传</button>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-6">
+                        <p class="text-sm text-yellow-700 mb-2">
+                            <strong>文件要求：</strong>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• 文件必须清晰可读</li>
+                            <li>• 必须显示您的全名和完整地址</li>
+                            <li>• 地址必须与上一步填写的地址一致</li>
+                            <li>• 必须是近3个月内的文件（租赁合同除外）</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='address-info'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!canSubmitUpload()"
+                            :class="{'opacity-50': !canSubmitUpload()}"
+                            @click="submitApplication()">提交申请</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 填写地址信息页 -->
+        <section x-show="page==='address-info'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-lg font-bold mb-4">填写居住地址</h2>
+                
+                <div class="mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700">
+                            <strong>第1步：</strong>请填写您当前的居住地址，下一步需要上传证明文件来验证该地址。
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">国家/地区 <span class="text-red-500">*</span></label>
+                            <select x-model="form.country" class="w-full border rounded p-2">
+                                <option value="">请选择国家/地区</option>
+                                <option value="CN">中国大陆</option>
+                                <option value="HK">香港</option>
+                                <option value="MO">澳门</option>
+                                <option value="TW">台湾</option>
+                                <option value="US">美国</option>
+                                <option value="GB">英国</option>
+                                <option value="SG">新加坡</option>
+                                <option value="JP">日本</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">省/州 <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="form.province" class="w-full border rounded p-2" placeholder="例如：California">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">城市 <span class="text-red-500">*</span></label>
+                            <input type="text" x-model="form.city" class="w-full border rounded p-2" placeholder="例如：Los Angeles">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">区/县</label>
+                            <input type="text" x-model="form.district" class="w-full border rounded p-2" placeholder="例如：Los Angeles County">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">详细地址 <span class="text-red-500">*</span></label>
+                            <textarea x-model="form.detailedAddress" class="w-full border rounded p-2" rows="3" placeholder="例如：1234 Main Street, Apt 567"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">邮政编码</label>
+                            <input type="text" x-model="form.postalCode" class="w-full border rounded p-2" placeholder="例如：90001">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" @click="page='home'">返回</button>
+                    <button class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" 
+                            :disabled="!isAddressComplete()"
+                            :class="{'opacity-50': !isAddressComplete()}"
+                            @click="page='upload'">下一步</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 认证状态页 -->
+        <section x-show="page==='status'" x-transition x-cloak>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">提交成功！</h2>
+                    <p class="text-gray-600">您的住址证明已提交，我们将在1-2个工作日内完成审核。</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h3 class="font-medium mb-4">提交信息摘要</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">证明类型：</span>
+                            <span class="font-medium" x-text="getProofTypeName(form.proofType)"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">上传文件：</span>
+                            <span class="font-medium" x-text="uploadedFileName"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">地址：</span>
+                            <span class="font-medium text-right ml-4" x-text="getFullAddress()"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-medium" x-text="submissionTime"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">当前状态：</span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">审核中</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>接下来会发生什么？</strong>
+                    </p>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• 我们的团队将审核您提交的住址证明</li>
+                        <li>• 如果需要补充材料，我们会通过邮件通知您</li>
+                        <li>• 审核通过后，您将收到确认通知</li>
+                    </ul>
+                </div>
+
+                <button class="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="resetForm()">完成</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function addressProofApp() {
+            return {
+                page: 'home',
+                uploadedFile: null,
+                uploadedFileName: '',
+                submissionTime: '',
+                
+                form: {
+                    proofType: '',
+                    country: '',
+                    province: '',
+                    city: '',
+                    district: '',
+                    detailedAddress: '',
+                    postalCode: ''
+                },
+
+                // 触发文件上传
+                triggerFileUpload() {
+                    document.getElementById('fileInput').click();
+                },
+
+                // 处理文件上传
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        // 验证文件大小（10MB）
+                        if (file.size > 10 * 1024 * 1024) {
+                            alert('文件大小不能超过10MB');
+                            return;
+                        }
+
+                        // 验证文件类型
+                        const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('只支持 PDF、JPG、PNG 格式的文件');
+                            return;
+                        }
+
+                        this.uploadedFile = file;
+                        this.uploadedFileName = file.name;
+                    }
+                },
+
+                // 删除已上传文件
+                removeFile() {
+                    this.uploadedFile = null;
+                    this.uploadedFileName = '';
+                    document.getElementById('fileInput').value = '';
+                },
+
+                // 获取证明类型名称
+                getProofTypeName(type) {
+                    const typeMap = {
+                        'utility_bill': '水电煤气费账单',
+                        'bank_statement': '银行对账单',
+                        'government_letter': '政府机构信件',
+                        'lease_contract': '租赁合同/房产证明',
+                        'telecom_bill': '通信服务账单'
+                    };
+                    return typeMap[type] || '';
+                },
+
+                // 检查地址是否填写完整
+                isAddressComplete() {
+                    return this.form.country && 
+                           this.form.province && 
+                           this.form.city && 
+                           this.form.detailedAddress;
+                },
+
+                // 检查是否可以提交上传
+                canSubmitUpload() {
+                    return this.form.proofType && this.uploadedFile;
+                },
+
+                // 获取完整地址
+                getFullAddress() {
+                    let address = [];
+                    if (this.form.country) address.push(this.getCountryName(this.form.country));
+                    if (this.form.province) address.push(this.form.province);
+                    if (this.form.city) address.push(this.form.city);
+                    if (this.form.district) address.push(this.form.district);
+                    if (this.form.detailedAddress) address.push(this.form.detailedAddress);
+                    return address.join(' ');
+                },
+
+                // 获取国家名称
+                getCountryName(code) {
+                    const countryMap = {
+                        'CN': '中国大陆',
+                        'HK': '香港',
+                        'MO': '澳门',
+                        'TW': '台湾',
+                        'US': '美国',
+                        'GB': '英国',
+                        'SG': '新加坡',
+                        'JP': '日本'
+                    };
+                    return countryMap[code] || code;
+                },
+
+                // 提交申请
+                submitApplication() {
+                    // 模拟提交
+                    const now = new Date();
+                    this.submissionTime = now.toLocaleString('zh-CN', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    // 跳转到状态页
+                    this.page = 'status';
+                    
+                    alert('住址证明认证申请提交成功！\n\n我们将在1-2个工作日内完成审核。\n您将通过邮件收到审核结果通知。');
+                },
+
+                // 重置表单
+                resetForm() {
+                    this.page = 'home';
+                    this.uploadedFile = null;
+                    this.uploadedFileName = '';
+                    this.submissionTime = '';
+                    this.form = {
+                        proofType: '',
+                        country: '',
+                        province: '',
+                        city: '',
+                        district: '',
+                        detailedAddress: '',
+                        postalCode: ''
+                    };
+                    document.getElementById('fileInput').value = '';
+                },
+
+                // 获取进度百分比
+                getProgressPercentage() {
+                    if (this.page === 'address-info') return 50;
+                    if (this.page === 'upload') return 100;
+                    return 0;
+                },
+
+                // 获取进度文本
+                getProgressText() {
+                    if (this.page === 'address-info') return '第1步：填写居住地址';
+                    if (this.page === 'upload') return '第2步：上传证明文件';
+                    return '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

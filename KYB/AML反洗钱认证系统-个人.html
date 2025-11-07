@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合规审查认证系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900" x-data="amlApp()">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight">合规审查认证</h1>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 rounded hover:bg-gray-100" :class="{ 'font-bold text-blue-600': page==='home' }" @click="page='home'">首页</button>
+                <button class="px-3 py-1 rounded hover:bg-gray-100" @click="page='history'">历史记录</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 进度条 -->
+        <div x-show="page !== 'home' && page !== 'history'" class="mb-8">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">合规审查进度</span>
+                    <span class="text-sm text-gray-500" x-text="getProgressText()"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${getProgressPercentage()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>补充信息</span>
+                    <span>提交成功</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <section x-show="page==='home'" x-transition>
+            <div class="flex flex-col items-center">
+                <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=600&q=80" alt="合规审查" class="rounded-xl w-64 h-40 object-cover mb-6 shadow">
+                <h2 class="text-xl font-semibold mb-2">合规审查认证</h2>
+                <p class="mb-4 text-gray-600 text-center">根据XXX地区的合规要求，需要对所有用户进行合规性审查，确保符合监管要求。</p>
+                
+                <div class="w-full max-w-md mb-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-700 mb-2">
+                            <strong>什么是合规审查？</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            合规审查是金融监管的重要环节，系统将检查您是否出现在制裁名单、政治公众人物名单（PEP）或负面媒体中。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                        <p class="text-sm text-green-700 mb-2">
+                            <strong>已从KYC获取的信息：</strong>
+                        </p>
+                        <div class="text-sm text-gray-700 space-y-1">
+                            <div>• 姓名：<span class="font-semibold" x-text="kycData.fullName"></span></div>
+                            <div>• 出生日期：<span class="font-semibold" x-text="kycData.dateOfBirth"></span></div>
+                            <div>• 国籍：<span class="font-semibold" x-text="kycData.nationality"></span></div>
+                            <div>• 证件号：<span class="font-semibold" x-text="kycData.idNumber"></span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full max-w-md">
+                    <div class="mb-4">
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>1. 补充个人信息（出生地、纳税居住国等）</span>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                            <span>2. 提交合规审查申请，等待审核</span>
+                        </div>
+                    </div>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition" @click="page='input'">开始认证</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 补充信息页面 -->
+        <section x-show="page==='input'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <h2 class="text-2xl font-bold mb-2">请填写以下信息</h2>
+                <p class="text-gray-600 mb-6 text-sm">根据当地合规要求请填写以下内容</p>
+                
+                <div class="space-y-6 mb-8">
+                    <!-- 出生国家或地区 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生国家或地区 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="form.birthCountry" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择出生国家或地区</option>
+                            <option value="CHN">中国</option>
+                            <option value="USA">美国</option>
+                            <option value="GBR">英国</option>
+                            <option value="CAN">加拿大</option>
+                            <option value="AUS">澳大利亚</option>
+                            <option value="SGP">新加坡</option>
+                            <option value="HKG">中国香港</option>
+                            <option value="JPN">日本</option>
+                            <option value="KOR">韩国</option>
+                            <option value="DEU">德国</option>
+                            <option value="FRA">法国</option>
+                        </select>
+                    </div>
+
+                    <!-- 出生州/省 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生州/省 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="form.birthState" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择出生州/省</option>
+                            <!-- 示例选项 -->
+                            <template x-if="form.birthCountry === 'CHN'">
+                                <optgroup label="中国省份">
+                                    <option value="北京市">北京市</option>
+                                    <option value="上海市">上海市</option>
+                                    <option value="广东省">广东省</option>
+                                    <option value="浙江省">浙江省</option>
+                                    <option value="江苏省">江苏省</option>
+                                    <option value="四川省">四川省</option>
+                                </optgroup>
+                            </template>
+                            <template x-if="form.birthCountry === 'USA'">
+                                <optgroup label="美国州">
+                                    <option value="California">California</option>
+                                    <option value="New York">New York</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Florida">Florida</option>
+                                </optgroup>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- 出生地 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            出生地 <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               x-model="form.birthPlace" 
+                               placeholder="请输入具体出生地址"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">例如：市/县、区、具体地址</p>
+                    </div>
+
+                    <!-- 中间名 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            中间名 <span class="text-gray-500 text-xs">(无则不填写)</span>
+                        </label>
+                        <input type="text" 
+                               x-model="form.middleName" 
+                               placeholder="请输入中间名"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <p class="text-xs text-gray-500 mt-1">如果您有中间名（Middle Name），请填写</p>
+                    </div>
+
+                    <!-- 纳税居住国 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            纳税居住国 <span class="text-red-500">*</span>
+                        </label>
+                        <select x-model="form.taxResidenceCountry" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">请选择国家或地区</option>
+                            <option value="CHN">中国</option>
+                            <option value="USA">美国</option>
+                            <option value="GBR">英国</option>
+                            <option value="CAN">加拿大</option>
+                            <option value="AUS">澳大利亚</option>
+                            <option value="SGP">新加坡</option>
+                            <option value="HKG">中国香港</option>
+                            <option value="JPN">日本</option>
+                            <option value="KOR">韩国</option>
+                            <option value="DEU">德国</option>
+                            <option value="FRA">法国</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">请选择您当前的税务居住国家或地区</p>
+                    </div>
+
+                </div>
+
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" 
+                            @click="page='home'">
+                        返回
+                    </button>
+                    <button class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition" 
+                            :disabled="!canSubmit()"
+                            :class="{'opacity-50 cursor-not-allowed': !canSubmit()}"
+                            @click="startAMLCheck()">
+                        提交合规审查
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 检查中页面 - 已移除，直接跳转到提交成功 -->
+        <!-- 
+        <section x-show="page==='checking'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-12 text-center">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600 mb-6"></div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">正在提交合规审查</h2>
+                <p class="text-gray-600 mb-8">请稍候，系统正在处理您的信息...</p>
+                
+                <div class="max-w-md mx-auto mb-8">
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                        <div class="bg-blue-600 h-3 rounded-full transition-all duration-300" :style="`width: ${checkProgress}%`"></div>
+                    </div>
+                    <div class="text-sm text-gray-600 text-center" x-text="`${checkProgress}% 完成`"></div>
+                </div>
+
+                <div class="max-w-md mx-auto space-y-3 text-left">
+                    <div class="flex items-center space-x-3 p-3 rounded-lg transition" 
+                         :class="checkProgress >= 33 ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-400'">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <div class="font-semibold">验证信息</div>
+                            <div class="text-xs">Validating Information</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 rounded-lg transition" 
+                         :class="checkProgress >= 66 ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-400'">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <div class="font-semibold">提交数据</div>
+                            <div class="text-xs">Submitting Data</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 rounded-lg transition" 
+                         :class="checkProgress >= 100 ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-400'">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <div class="font-semibold">等待审核</div>
+                            <div class="text-xs">Pending Review</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        -->
+
+        <!-- 提交成功页面 -->
+        <section x-show="page==='success'" x-transition>
+            <div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-8">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">提交成功</h2>
+                    <p class="text-gray-600">您的合规审查信息已成功提交</p>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg mb-6">
+                    <p class="text-sm text-blue-700 mb-2">
+                        <strong>下一步操作：</strong>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        您的信息已提交至我们的合规团队。管理员将对您的合规审查进行审核，审核结果将通过邮件或站内通知发送给您。
+                    </p>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">提交信息</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">姓名：</span>
+                            <span class="font-semibold text-gray-800" x-text="kycData.fullName"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提交时间：</span>
+                            <span class="font-semibold text-gray-800" x-text="new Date().toLocaleString('zh-CN')"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">申请ID：</span>
+                            <span class="font-mono text-sm text-gray-800">COMP-20251105-<span x-text="Math.random().toString(36).substr(2, 6).toUpperCase()"></span></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">审核状态：</span>
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                                待审核
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm">审核说明</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>审核通常需要1-3个工作日</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>如需补充材料，我们会及时通知您</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>您可以在"历史记录"中查看审核进度</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button @click="page = 'history'" 
+                            class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                        查看历史记录
+                    </button>
+                    <button @click="page = 'home'; resetForm()" 
+                            class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition">
+                        返回首页
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 历史记录 -->
+        <section x-show="page==='history'" x-transition>
+            <div class="bg-white rounded-xl shadow p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">历史记录</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-blue-300 transition">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <div class="font-bold text-lg text-gray-800">张三 (Zhang San)</div>
+                                    <div class="text-sm text-gray-500">2025-11-05 14:32:15</div>
+                                </div>
+                                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full font-semibold">
+                                    通过
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+                                <div>
+                                    <span class="text-gray-600">检查ID：</span>
+                                    <span class="font-mono text-gray-800">COMP-20251105-7D8F2A</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">风险等级：</span>
+                                    <span class="font-semibold text-green-600">低风险</span>
+                                </div>
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                                查看详情 →
+                            </button>
+                        </div>
+
+                        <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-blue-300 transition">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <div class="font-bold text-lg text-gray-800">ABC Technology Ltd.</div>
+                                    <div class="text-sm text-gray-500">2025-11-04 10:15:30</div>
+                                </div>
+                                <span class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full font-semibold">
+                                    命中
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+                                <div>
+                                    <span class="text-gray-600">检查ID：</span>
+                                    <span class="font-mono text-gray-800">COMP-20251104-9A2C5E</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">风险等级：</span>
+                                    <span class="font-semibold text-yellow-600">中风险</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-3">
+                                命中记录：PEP (1条)
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                                查看详情 →
+                            </button>
+                        </div>
+
+                        <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-blue-300 transition">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <div class="font-bold text-lg text-gray-800">李四 (Li Si)</div>
+                                    <div class="text-sm text-gray-500">2025-11-03 16:45:22</div>
+                                </div>
+                                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full font-semibold">
+                                    通过
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+                                <div>
+                                    <span class="text-gray-600">检查ID：</span>
+                                    <span class="font-mono text-gray-800">COMP-20251103-3F7B1D</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">风险等级：</span>
+                                    <span class="font-semibold text-green-600">低风险</span>
+                                </div>
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                                查看详情 →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+        function amlApp() {
+            return {
+                page: 'home',
+                
+                // 从KYC获取的数据（模拟）
+                kycData: {
+                    fullName: 'John Smith',
+                    dateOfBirth: '1985-03-15',
+                    nationality: '美国',
+                    idNumber: 'P123456789'
+                },
+                
+                // 补充信息表单
+                form: {
+                    birthCountry: '',
+                    birthState: '',
+                    birthPlace: '',
+                    middleName: '',
+                    taxResidenceCountry: ''
+                },
+
+                canSubmit() {
+                    return this.form.birthCountry && 
+                           this.form.birthState && 
+                           this.form.birthPlace && 
+                           this.form.taxResidenceCountry;
+                },
+
+                startAMLCheck() {
+                    // 直接跳转到提交成功页面，无需中间检查进度页
+                    this.page = 'success';
+                },
+
+                resetForm() {
+                    this.form = {
+                        birthCountry: '',
+                        birthState: '',
+                        birthPlace: '',
+                        middleName: '',
+                        taxResidenceCountry: ''
+                    };
+                },
+
+                getProgressPercentage() {
+                    if (this.page === 'input') return 50;
+                    if (this.page === 'success') return 100;
+                    return 0;
+                },
+
+                getProgressText() {
+                    if (this.page === 'input') return '第1步：补充个人信息';
+                    if (this.page === 'success') return '第2步：提交成功';
+                    return '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

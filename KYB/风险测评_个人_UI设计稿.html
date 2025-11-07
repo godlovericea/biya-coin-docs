@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人风险测评 - UI设计稿</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .canvas-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .canvas-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        .screen-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .phone-mockup {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 30px;
+            background: black;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            padding-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .back-arrow {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: white;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #9333ea, #7e22ce);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .content {
+            padding: 16px;
+            overflow-y: auto;
+            height: calc(812px - 44px - 56px);
+        }
+
+        .screen-label {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <h1 class="canvas-title">个人风险测评 - UI设计稿</h1>
+        
+        <!-- 第一行：欢迎页 + 问题页 -->
+        <div class="screen-row">
+            <!-- 1. 欢迎页 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <div class="title">风险测评</div>
+                    </div>
+                    <div class="content">
+                        <div style="text-align: center; padding: 32px 0;">
+                            <div style="width: 96px; height: 96px; margin: 0 auto 24px; background: linear-gradient(to bottom right, #e9d5ff, #ddd6fe); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg style="width: 48px; height: 48px; color: #9333ea;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">风险承受能力测评</h2>
+                            <p style="color: #6b7280; margin-bottom: 32px; line-height: 1.6;">
+                                为了帮助您更好地了解自己的风险承受能力，<br>
+                                请如实填写以下问题。<br>
+                                测评大约需要 3-5 分钟。
+                            </p>
+                        </div>
+
+                        <div style="background: #dbeafe; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #2563eb; margin-top: 2px; margin-right: 12px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div style="font-size: 13px; color: #1e40af;">
+                                    <p style="font-weight: 600; margin-bottom: 6px;">重要提示</p>
+                                    <ul style="list-style: disc; padding-left: 18px; font-size: 12px; line-height: 1.5;">
+                                        <li>测评结果仅供参考，不构成投资建议</li>
+                                        <li style="margin-top: 4px;">请根据真实情况填写，以获得准确评估</li>
+                                        <li style="margin-top: 4px;">测评结果有效期为一年</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button style="width: 100%; background: linear-gradient(to right, #9333ea, #7e22ce); color: white; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; border: none; box-shadow: 0 10px 25px rgba(147, 51, 234, 0.3);">
+                            开始测评
+                        </button>
+                    </div>
+                </div>
+                <div class="screen-label">1. 欢迎页</div>
+            </div>
+
+            <!-- 2. 问题页 - 第1题 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <div class="title">风险测评</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-info">
+                            <span style="color: #6b7280;">测评进度</span>
+                            <span style="color: #9333ea; font-weight: 600;">1/10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 10%;"></div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div style="margin-bottom: 24px;">
+                            <div style="font-size: 13px; color: #9333ea; font-weight: 600; margin-bottom: 8px;">问题 1</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">您的年龄是？</h3>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #9333ea; background: #faf5ff; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #9333ea; background: #9333ea; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
+                                        <svg style="width: 12px; height: 12px; color: white;" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div style="font-weight: 500; color: #111827;">18-30岁</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">31-40岁</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">41-50岁</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">51-60岁</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 32px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">60岁以上</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button style="flex: 1; background: #9333ea; color: white; padding: 12px; border-radius: 12px; font-weight: 600; border: none;">
+                                下一题
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">2. 问题页 - 第1题（已选择）</div>
+            </div>
+
+            <!-- 3. 问题页 - 第5题 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <div class="title">风险测评</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-info">
+                            <span style="color: #6b7280;">测评进度</span>
+                            <span style="color: #9333ea; font-weight: 600;">5/10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div style="margin-bottom: 24px;">
+                            <div style="font-size: 13px; color: #9333ea; font-weight: 600; margin-bottom: 8px;">问题 5</div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">您计划的投资期限是？</h3>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">3个月以内</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">3-6个月</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">6-12个月</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">1-3年</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 32px;">
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; flex-shrink: 0;"></div>
+                                    <div style="font-weight: 500; color: #111827;">3年以上</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button style="flex: 1; background: #f3f4f6; color: #374151; padding: 12px; border-radius: 12px; font-weight: 600; border: none;">
+                                上一题
+                            </button>
+                            <button style="flex: 1; background: #d1d5db; color: white; padding: 12px; border-radius: 12px; font-weight: 600; border: none; cursor: not-allowed;">
+                                下一题
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-label">3. 问题页 - 第5题（未选择）</div>
+            </div>
+        </div>
+
+        <!-- 第二行：结果页 -->
+        <div class="screen-row">
+            <!-- 4. 结果页 - 保守型 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <div class="title">风险测评</div>
+                    </div>
+                    <div class="content">
+                        <div style="text-align: center; padding: 32px 0;">
+                            <div style="width: 96px; height: 96px; margin: 0 auto 24px; background: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg style="width: 48px; height: 48px; color: #10b981;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">测评完成</h2>
+                            <p style="color: #6b7280; margin-bottom: 32px;">您的风险承受能力等级为</p>
+                        </div>
+
+                        <div style="background: linear-gradient(to bottom right, #34d399, #10b981); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center; color: white;">
+                            <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">保守型</div>
+                            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 16px;">得分：12 分</div>
+                            <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.3); border-radius: 20px; font-size: 13px; font-weight: 500;">
+                                Conservative
+                            </div>
+                        </div>
+
+                        <div style="background: #f9fafb; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #9333ea; margin-top: 2px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <div style="font-weight: 600; color: #111827; margin-bottom: 4px; font-size: 14px;">等级说明</div>
+                                    <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">您的风险承受能力较低，适合投资低风险产品，以保本为主要目标。</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #dbeafe; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #2563eb; margin-top: 2px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"></path>
+                                    <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"></path>
+                                    <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"></path>
+                                </svg>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #111827; margin-bottom: 8px; font-size: 14px;">适合的产品类型</div>
+                                    <div style="display: flex; flex-wrap: gap: 8px;">
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">货币基金</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">国债</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">银行存款</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">低风险理财</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 18px; height: 18px; color: #d97706; margin-top: 1px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div style="font-size: 12px; color: #92400e;">
+                                    <p style="font-weight: 600; margin-bottom: 4px;">风险提示</p>
+                                    <p>投资有风险，入市需谨慎。本测评结果仅供参考，不构成投资建议。请根据自身实际情况谨慎决策。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 24px;">
+                            <p>测评结果有效期至：<span style="font-weight: 600;">2026-11-07</span></p>
+                        </div>
+
+                        <button style="width: 100%; background: linear-gradient(to right, #9333ea, #7e22ce); color: white; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; border: none; margin-bottom: 12px;">
+                            确认结果
+                        </button>
+                        <button style="width: 100%; background: white; border: 2px solid #d1d5db; color: #374151; padding: 12px; border-radius: 12px; font-size: 16px; font-weight: 600;">
+                            重新测评
+                        </button>
+                    </div>
+                </div>
+                <div class="screen-label">4. 结果页 - 保守型</div>
+            </div>
+
+            <!-- 5. 结果页 - 平衡型 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <div class="title">风险测评</div>
+                    </div>
+                    <div class="content">
+                        <div style="text-align: center; padding: 32px 0;">
+                            <div style="width: 96px; height: 96px; margin: 0 auto 24px; background: #e9d5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg style="width: 48px; height: 48px; color: #9333ea;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">测评完成</h2>
+                            <p style="color: #6b7280; margin-bottom: 32px;">您的风险承受能力等级为</p>
+                        </div>
+
+                        <div style="background: linear-gradient(to bottom right, #a78bfa, #9333ea); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center; color: white;">
+                            <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">平衡型</div>
+                            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 16px;">得分：32 分</div>
+                            <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.3); border-radius: 20px; font-size: 13px; font-weight: 500;">
+                                Balanced
+                            </div>
+                        </div>
+
+                        <div style="background: #f9fafb; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #9333ea; margin-top: 2px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <div style="font-weight: 600; color: #111827; margin-bottom: 4px; font-size: 14px;">等级说明</div>
+                                    <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">您追求收益与风险的平衡，可以接受一定程度的本金波动。</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #dbeafe; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #2563eb; margin-top: 2px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"></path>
+                                    <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"></path>
+                                    <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"></path>
+                                </svg>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #111827; margin-bottom: 8px; font-size: 14px;">适合的产品类型</div>
+                                    <div style="display: flex; flex-wrap: gap: 8px;">
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">混合基金</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">指数基金</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">平衡型理财</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">优质债券</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 18px; height: 18px; color: #d97706; margin-top: 1px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div style="font-size: 12px; color: #92400e;">
+                                    <p style="font-weight: 600; margin-bottom: 4px;">风险提示</p>
+                                    <p>投资有风险，入市需谨慎。本测评结果仅供参考，不构成投资建议。请根据自身实际情况谨慎决策。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 24px;">
+                            <p>测评结果有效期至：<span style="font-weight: 600;">2026-11-07</span></p>
+                        </div>
+
+                        <button style="width: 100%; background: linear-gradient(to right, #9333ea, #7e22ce); color: white; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; border: none; margin-bottom: 12px;">
+                            确认结果
+                        </button>
+                        <button style="width: 100%; background: white; border: 2px solid #d1d5db; color: #374151; padding: 12px; border-radius: 12px; font-size: 16px; font-weight: 600;">
+                            重新测评
+                        </button>
+                    </div>
+                </div>
+                <div class="screen-label">5. 结果页 - 平衡型</div>
+            </div>
+
+            <!-- 6. 结果页 - 进取型 -->
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>100%</span>
+                    </div>
+                    <div class="header">
+                        <svg class="back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <div class="title">风险测评</div>
+                    </div>
+                    <div class="content">
+                        <div style="text-align: center; padding: 32px 0;">
+                            <div style="width: 96px; height: 96px; margin: 0 auto 24px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg style="width: 48px; height: 48px; color: #ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">测评完成</h2>
+                            <p style="color: #6b7280; margin-bottom: 32px;">您的风险承受能力等级为</p>
+                        </div>
+
+                        <div style="background: linear-gradient(to bottom right, #f87171, #ef4444); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center; color: white;">
+                            <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">进取型</div>
+                            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 16px;">得分：48 分</div>
+                            <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.3); border-radius: 20px; font-size: 13px; font-weight: 500;">
+                                Aggressive
+                            </div>
+                        </div>
+
+                        <div style="background: #f9fafb; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #9333ea; margin-top: 2px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <div style="font-weight: 600; color: #111827; margin-bottom: 4px; font-size: 14px;">等级说明</div>
+                                    <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">您追求高收益，能够承受较大风险，包括本金的重大损失。</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #dbeafe; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 20px; height: 20px; color: #2563eb; margin-top: 2px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"></path>
+                                    <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"></path>
+                                    <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"></path>
+                                </svg>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #111827; margin-bottom: 8px; font-size: 14px;">适合的产品类型</div>
+                                    <div style="display: flex; flex-wrap: gap: 8px;">
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">股票</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">期货</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">期权</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">杠杆产品</span>
+                                        <span style="display: inline-block; padding: 6px 12px; background: white; border-radius: 20px; font-size: 12px; font-weight: 500; color: #374151;">高风险衍生品</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <svg style="width: 18px; height: 18px; color: #d97706; margin-top: 1px; margin-right: 8px; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div style="font-size: 12px; color: #92400e;">
+                                    <p style="font-weight: 600; margin-bottom: 4px;">风险提示</p>
+                                    <p>投资有风险，入市需谨慎。本测评结果仅供参考，不构成投资建议。请根据自身实际情况谨慎决策。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 24px;">
+                            <p>测评结果有效期至：<span style="font-weight: 600;">2026-11-07</span></p>
+                        </div>
+
+                        <button style="width: 100%; background: linear-gradient(to right, #9333ea, #7e22ce); color: white; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; border: none; margin-bottom: 12px;">
+                            确认结果
+                        </button>
+                        <button style="width: 100%; background: white; border: 2px solid #d1d5db; color: #374151; padding: 12px; border-radius: 12px; font-size: 16px; font-weight: 600;">
+                            重新测评
+                        </button>
+                    </div>
+                </div>
+                <div class="screen-label">6. 结果页 - 进取型</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

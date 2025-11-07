@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04-任务拆解模板</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#任务拆解模板-wbs工作分解结构" class="toc-link">任务拆解模板（WBS工作分解结构）</a>
+    <li class="toc-item toc-level-2">
+      <a href="#项目信息" class="toc-link">项目信息</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#一-功能范围-项目边界" class="toc-link">一、功能范围（项目边界）</a>
+    <li class="toc-item toc-level-3">
+      <a href="#本期包含-in-scope" class="toc-link">✅ 本期包含（In Scope）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#本期不含-out-of-scope" class="toc-link">❌ 本期不含（Out of Scope）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#二-wbs任务分解树" class="toc-link">二、WBS任务分解树</a>
+    <li class="toc-item toc-level-3">
+      <a href="#层级结构说明" class="toc-link">层级结构说明</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#任务树结构-示例" class="toc-link">任务树结构（示例）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#三-详细任务清单" class="toc-link">三、详细任务清单</a>
+    <li class="toc-item toc-level-3">
+      <a href="#任务卡片格式" class="toc-link">任务卡片格式</a>
+    <li class="toc-item toc-level-4">
+      <a href="#task-id-2-1-1-1" class="toc-link">Task ID: 2.1.1.1</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#批量任务表格视图" class="toc-link">批量任务表格视图</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#四-依赖关系矩阵" class="toc-link">四、依赖关系矩阵</a>
+    <li class="toc-item toc-level-3">
+      <a href="#关键路径分析" class="toc-link">关键路径分析</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#依赖关系图" class="toc-link">依赖关系图</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#跨团队依赖追踪" class="toc-link">跨团队依赖追踪</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#五-任务优先级-moscow" class="toc-link">五、任务优先级（MoSCoW）</a>
+    <li class="toc-item toc-level-3">
+      <a href="#must-have-必须有-p0" class="toc-link">Must Have（必须有 - P0）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#should-have-应该有-p1" class="toc-link">Should Have（应该有 - P1）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#could-have-可以有-p2" class="toc-link">Could Have（可以有 - P2）</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#won-t-have-不会有" class="toc-link">Won&#39;t Have（不会有）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#六-资源分配甘特图-简化版" class="toc-link">六、资源分配甘特图（简化版）</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#七-风险任务清单" class="toc-link">七、风险任务清单</a>
+    <li class="toc-item toc-level-3">
+      <a href="#高风险任务-需特别关注" class="toc-link">高风险任务（需特别关注）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#八-任务拆解检查清单" class="toc-link">八、任务拆解检查清单</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#九-变更管理" class="toc-link">九、变更管理</a>
+    <li class="toc-item toc-level-3">
+      <a href="#任务变更记录" class="toc-link">任务变更记录</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#变更影响分析模板" class="toc-link">变更影响分析模板</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#十-回顾与优化" class="toc-link">十、回顾与优化</a>
+    <li class="toc-item toc-level-3">
+      <a href="#项目复盘-项目结束后填写" class="toc-link">项目复盘（项目结束后填写）</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="任务拆解模板-wbs工作分解结构">任务拆解模板（WBS工作分解结构）</h1>
+<h2 id="项目信息">项目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目名称</th>
+<th>项目目标</th>
+<th>项目周期</th>
+<th>项目经理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[项目名]</td>
+<td>[一句话描述]</td>
+<td>[开始-结束日期]</td>
+<td>[姓名]</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="一-功能范围-项目边界">一、功能范围（项目边界）</h2>
+<h3 id="本期包含-in-scope">✅ 本期包含（In Scope）</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 功能1</li>
+<li><input disabled="" type="checkbox"> 功能2</li>
+<li><input disabled="" type="checkbox"> 功能3</li>
+</ul>
+<h3 id="本期不含-out-of-scope">❌ 本期不含（Out of Scope）</h3>
+<ul>
+<li>功能X（下期迭代）</li>
+<li>功能Y（非核心需求）</li>
+</ul>
+<hr>
+<h2 id="二-wbs任务分解树">二、WBS任务分解树</h2>
+<h3 id="层级结构说明">层级结构说明</h3>
+<pre><code>Level 0: 项目
+  ├─ Level 1: 一级模块（功能模块）
+  │   ├─ Level 2: 二级任务（开发/测试阶段）
+  │   │   ├─ Level 3: 三级任务（具体工作项）
+  │   │   │   └─ Level 4: 四级任务（最小执行单元，0.5-1天）
+</code></pre>
+<h3 id="任务树结构-示例">任务树结构（示例）</h3>
+<pre><code>项目：[项目名称]
+│
+├─ 1.0 需求与设计阶段
+│   ├─ 1.1 需求分析
+│   │   ├─ 1.1.1 需求调研与访谈
+│   │   ├─ 1.1.2 需求文档编写
+│   │   └─ 1.1.3 需求评审会议
+│   └─ 1.2 UI/UX设计
+│       ├─ 1.2.1 原型设计
+│       ├─ 1.2.2 视觉设计
+│       └─ 1.2.3 设计评审
+│
+├─ 2.0 [功能模块A]
+│   ├─ 2.1 前端开发
+│   │   ├─ 2.1.1 页面布局与组件
+│   │   │   ├─ 2.1.1.1 首页布局 (1天) [@张三]
+│   │   │   ├─ 2.1.1.2 列表组件 (1.5天) [@张三]
+│   │   │   └─ 2.1.1.3 表单组件 (2天) [@李四]
+│   │   ├─ 2.1.2 状态管理
+│   │   │   ├─ 2.1.2.1 Redux配置 (0.5天) [@张三]
+│   │   │   └─ 2.1.2.2 数据流设计 (1天) [@张三]
+│   │   └─ 2.1.3 API对接
+│   │       ├─ 2.1.3.1 接口封装 (1天) [@李四]
+│   │       └─ 2.1.3.2 数据联调 (1天) [@李四]
+│   ├─ 2.2 后端开发
+│   │   ├─ 2.2.1 数据库设计 (2天) [@王五]
+│   │   ├─ 2.2.2 API开发 (5天) [@王五]
+│   │   └─ 2.2.3 单元测试 (2天) [@王五]
+│   └─ 2.3 测试验收
+│       ├─ 2.3.1 功能测试 (2天) [@测试]
+│       ├─ 2.3.2 集成测试 (1天) [@测试]
+│       └─ 2.3.3 Bug修复 (预留2天)
+│
+├─ 3.0 [功能模块B]
+│   └─ ...
+│
+└─ 4.0 上线发布
+    ├─ 4.1 性能优化
+    ├─ 4.2 安全检查
+    ├─ 4.3 部署脚本
+    └─ 4.4 发布验证
+</code></pre>
+<hr>
+<h2 id="三-详细任务清单">三、详细任务清单</h2>
+<h3 id="任务卡片格式">任务卡片格式</h3>
+<h4 id="task-id-2-1-1-1">Task ID: 2.1.1.1</h4>
+<p><strong>任务名称</strong>：首页布局开发<br><strong>所属模块</strong>：功能模块A - 前端开发<br><strong>负责人</strong>：张三<br><strong>协助人</strong>：-<br><strong>优先级</strong>：P0（高）  </p>
+<p><strong>任务描述</strong>：</p>
+<ul>
+<li>实现响应式布局</li>
+<li>头部导航栏</li>
+<li>侧边栏菜单</li>
+<li>主内容区</li>
+</ul>
+<p><strong>完成标准（DoD - Definition of Done）</strong>：</p>
+<ul>
+<li><input disabled="" type="checkbox"> 代码通过Code Review</li>
+<li><input disabled="" type="checkbox"> 在Chrome/Safari/Firefox三种浏览器测试通过</li>
+<li><input disabled="" type="checkbox"> 响应式适配移动端</li>
+<li><input disabled="" type="checkbox"> 无ESLint错误</li>
+<li><input disabled="" type="checkbox"> 合并到开发分支</li>
+</ul>
+<p><strong>工时评估</strong>：</p>
+<ul>
+<li>乐观：0.5天</li>
+<li>最可能：1天</li>
+<li>悲观：2天</li>
+<li><strong>期望：1天</strong></li>
+</ul>
+<p><strong>依赖关系</strong>：</p>
+<ul>
+<li>前置任务：1.2.2 视觉设计完成</li>
+<li>后续任务：2.1.2.1 Redux配置</li>
+</ul>
+<p><strong>风险点</strong>：</p>
+<ul>
+<li>🟡 设计稿可能有微调</li>
+</ul>
+<p><strong>开始日期</strong>：[日期]<br><strong>截止日期</strong>：[日期]<br><strong>实际完成日期</strong>：[填写]</p>
+<hr>
+<h3 id="批量任务表格视图">批量任务表格视图</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>任务名称</th>
+<th>负责人</th>
+<th>工时(天)</th>
+<th>开始日期</th>
+<th>截止日期</th>
+<th>前置任务</th>
+<th>状态</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.1.1</td>
+<td>需求调研</td>
+<td>PM</td>
+<td>2</td>
+<td>11-08</td>
+<td>11-09</td>
+<td>-</td>
+<td>✅完成</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>1.1.2</td>
+<td>需求文档</td>
+<td>PM</td>
+<td>1</td>
+<td>11-10</td>
+<td>11-10</td>
+<td>1.1.1</td>
+<td>✅完成</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>2.1.1.1</td>
+<td>首页布局</td>
+<td>张三</td>
+<td>1</td>
+<td>11-11</td>
+<td>11-11</td>
+<td>1.2.2</td>
+<td>🚧进行中</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>2.1.1.2</td>
+<td>列表组件</td>
+<td>张三</td>
+<td>1.5</td>
+<td>11-12</td>
+<td>11-13</td>
+<td>2.1.1.1</td>
+<td>⏸️待开始</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>2.2.1</td>
+<td>数据库设计</td>
+<td>王五</td>
+<td>2</td>
+<td>11-11</td>
+<td>11-12</td>
+<td>1.1.2</td>
+<td>🚧进行中</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>2.2.2</td>
+<td>API开发</td>
+<td>王五</td>
+<td>5</td>
+<td>11-13</td>
+<td>11-19</td>
+<td>2.2.1</td>
+<td>⏸️待开始</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<p><strong>状态说明</strong>：</p>
+<ul>
+<li>✅ 完成</li>
+<li>🚧 进行中</li>
+<li>⏸️ 待开始</li>
+<li>🔴 阻塞中</li>
+<li>⚠️ 有风险</li>
+</ul>
+<hr>
+<h2 id="四-依赖关系矩阵">四、依赖关系矩阵</h2>
+<h3 id="关键路径分析">关键路径分析</h3>
+<pre><code>关键路径（Critical Path）：
+1.1.1 → 1.1.2 → 2.2.1 → 2.2.2 → 2.1.3.2 → 2.3.1 → 2.3.3
+
+总工期：13天（任何节点延期都会导致项目延期）
+</code></pre>
+<h3 id="依赖关系图">依赖关系图</h3>
+<pre><code>      [1.1.2需求文档]
+         /        \
+        /          \
+   [2.1.1.1       [2.2.1
+    前端布局]      数据库]
+        |            |
+   [2.1.1.2       [2.2.2
+    列表组件]      API开发]
+        |            |
+        +-----+------+
+              |
+         [2.1.3.2
+          数据联调]
+              |
+         [2.3.1
+          功能测试]
+</code></pre>
+<h3 id="跨团队依赖追踪">跨团队依赖追踪</h3>
+<table>
+<thead>
+<tr>
+<th>本团队任务</th>
+<th>依赖对方团队</th>
+<th>依赖内容</th>
+<th>计划交付日期</th>
+<th>实际状态</th>
+<th>风险等级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>支付功能开发</td>
+<td>财务系统团队</td>
+<td>支付API接口</td>
+<td>11-15</td>
+<td>⏰进行中</td>
+<td>🟡</td>
+</tr>
+<tr>
+<td>用户认证</td>
+<td>第三方服务商</td>
+<td>OAuth配置</td>
+<td>11-10</td>
+<td>✅已完成</td>
+<td>🟢</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五-任务优先级-moscow">五、任务优先级（MoSCoW）</h2>
+<h3 id="must-have-必须有-p0">Must Have（必须有 - P0）</h3>
+<p>核心功能，MVP必需，延期会影响项目目标</p>
+<ul>
+<li><input disabled="" type="checkbox"> 用户登录/注册</li>
+<li><input disabled="" type="checkbox"> 核心业务流程</li>
+<li><input disabled="" type="checkbox"> 数据安全机制</li>
+</ul>
+<h3 id="should-have-应该有-p1">Should Have（应该有 - P1）</h3>
+<p>重要但不紧急，可以在后续版本补充</p>
+<ul>
+<li><input disabled="" type="checkbox"> 用户个人信息编辑</li>
+<li><input disabled="" type="checkbox"> 操作日志记录</li>
+<li><input disabled="" type="checkbox"> 数据导出功能</li>
+</ul>
+<h3 id="could-have-可以有-p2">Could Have（可以有 - P2）</h3>
+<p>锦上添花，资源富余时做</p>
+<ul>
+<li><input disabled="" type="checkbox"> 个性化主题</li>
+<li><input disabled="" type="checkbox"> 快捷键支持</li>
+<li><input disabled="" type="checkbox"> 操作引导动画</li>
+</ul>
+<h3 id="won-t-have-不会有">Won&#39;t Have（不会有）</h3>
+<p>明确排除，避免范围蔓延</p>
+<ul>
+<li>❌ 社交分享功能（下期）</li>
+<li>❌ AI推荐功能（需独立立项）</li>
+</ul>
+<hr>
+<h2 id="六-资源分配甘特图-简化版">六、资源分配甘特图（简化版）</h2>
+<pre><code>任务         |周一|周二|周三|周四|周五|周六|周日|下周一|下周二|
+─────────────|────|────|────|────|────|────|────|─────|─────|
+需求文档      |■■■■|    |    |    |    |    |    |     |     |
+数据库设计    |    |■■■■|■■■■|    |    |    |    |     |     |
+前端布局      |    |■■■■|    |    |    |    |    |     |     |
+API开发       |    |    |■■■■|■■■■|■■■■|■■■■|■■■■|     |     |
+列表组件      |    |    |■■■■|■■■■|    |    |    |     |     |
+数据联调      |    |    |    |    |    |■■■■|■■■■|     |     |
+功能测试      |    |    |    |    |    |    |    |■■■■■|■■■■■|
+
+■ = 计划工作时间
+</code></pre>
+<hr>
+<h2 id="七-风险任务清单">七、风险任务清单</h2>
+<h3 id="高风险任务-需特别关注">高风险任务（需特别关注）</h3>
+<table>
+<thead>
+<tr>
+<th>任务ID</th>
+<th>任务名称</th>
+<th>风险描述</th>
+<th>风险等级</th>
+<th>应对措施</th>
+<th>责任人</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2.2.2</td>
+<td>API开发</td>
+<td>第三方接口文档不全</td>
+<td>🔴高</td>
+<td>提前1周对接，准备Mock</td>
+<td>王五</td>
+</tr>
+<tr>
+<td>2.3.3</td>
+<td>Bug修复</td>
+<td>可能发现重大Bug</td>
+<td>🟡中</td>
+<td>预留2天缓冲时间</td>
+<td>全员</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="八-任务拆解检查清单">八、任务拆解检查清单</h2>
+<p>在完成任务拆解后，使用此清单自检：</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>颗粒度</strong>：最小任务单元是否在0.5-3天之间？</li>
+<li><input disabled="" type="checkbox"> <strong>SMART原则</strong>：每个任务是否具体、可衡量、可实现、相关、有时限？</li>
+<li><input disabled="" type="checkbox"> <strong>完成标准</strong>：每个任务是否有明确的DoD（Definition of Done）？</li>
+<li><input disabled="" type="checkbox"> <strong>依赖关系</strong>：任务间的依赖是否已清晰标注？</li>
+<li><input disabled="" type="checkbox"> <strong>关键路径</strong>：是否识别出关键路径并重点关注？</li>
+<li><input disabled="" type="checkbox"> <strong>责任人</strong>：每个任务是否有唯一负责人？</li>
+<li><input disabled="" type="checkbox"> <strong>工时合理性</strong>：工时评估是否使用了三点估算法？</li>
+<li><input disabled="" type="checkbox"> <strong>缓冲时间</strong>：是否预留了15-25%的缓冲时间？</li>
+<li><input disabled="" type="checkbox"> <strong>优先级</strong>：是否用MoSCoW标注了优先级？</li>
+<li><input disabled="" type="checkbox"> <strong>风险识别</strong>：高风险任务是否有应对预案？</li>
+</ul>
+<hr>
+<h2 id="九-变更管理">九、变更管理</h2>
+<h3 id="任务变更记录">任务变更记录</h3>
+<table>
+<thead>
+<tr>
+<th>变更日期</th>
+<th>变更内容</th>
+<th>变更原因</th>
+<th>影响评估</th>
+<th>批准人</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>11-12</td>
+<td>新增&quot;数据导出&quot;功能</td>
+<td>客户需求</td>
+<td>+3天工期</td>
+<td>项目经理</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="变更影响分析模板">变更影响分析模板</h3>
+<p><strong>变更请求</strong>：[描述]<br><strong>提出人</strong>：[姓名]<br><strong>提出日期</strong>：[日期]</p>
+<p><strong>影响评估</strong>：</p>
+<ul>
+<li>工时影响：+/- [X]天</li>
+<li>资源影响：是否需要额外人力？</li>
+<li>进度影响：是否影响里程碑交付？</li>
+<li>风险影响：是否引入新风险？</li>
+</ul>
+<p><strong>决策</strong>：</p>
+<ul>
+<li><input disabled="" type="checkbox"> 接受并立即实施</li>
+<li><input disabled="" type="checkbox"> 接受但延后到下期</li>
+<li><input disabled="" type="checkbox"> 拒绝</li>
+</ul>
+<hr>
+<h2 id="十-回顾与优化">十、回顾与优化</h2>
+<h3 id="项目复盘-项目结束后填写">项目复盘（项目结束后填写）</h3>
+<p><strong>拆解得当的部分</strong>：</p>
+<ul>
+<li>[哪些任务拆解得很好，按时完成]</li>
+</ul>
+<p><strong>拆解不足的部分</strong>：</p>
+<ul>
+<li>[哪些任务拆分得太粗，导致延期]</li>
+</ul>
+<p><strong>意外任务</strong>：</p>
+<ul>
+<li>[哪些任务是计划外的，为什么]</li>
+</ul>
+<p><strong>下次改进</strong>：</p>
+<p>1.<br>2.<br>3. </p>
+<hr>
+<p><em>模板版本：v1.0</em><br><em>使用建议：使用Excel、Jira、Notion等工具数字化管理</em></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机构风险测评 - UI设计稿</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2 text-center">机构风险测评 - UI设计稿</h1>
+        <p class="text-gray-600 text-center mb-8">展示机构投资者风险承受能力测评的8个关键界面</p>
+
+        <!-- 第一行：欢迎页 + 问题页示例 -->
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <!-- 1. 欢迎页 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+                    <h3 class="font-bold">1. 测评欢迎页</h3>
+                </div>
+                <div class="p-6">
+                    <!-- 手机模拟器 -->
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <h2 class="text-2xl font-bold text-center mb-1">机构风险承受能力测评</h2>
+                            <p class="text-gray-600 text-center text-sm mb-6">请根据贵机构的真实情况完成以下测评</p>
+
+                            <!-- 重要提示 -->
+                            <div class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                                <div class="flex items-start">
+                                    <span class="text-lg mr-2">⚠️</span>
+                                    <div>
+                                        <p class="font-semibold text-red-800 text-xs mb-1">重要提示：</p>
+                                        <p class="text-red-700 text-xs">本RWA产品为高风险产品，仅适合成长型（R4）及以上的机构投资者参与。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 测评说明 -->
+                            <div class="mb-6 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                                <div class="flex items-start">
+                                    <span class="text-lg mr-2">ℹ️</span>
+                                    <div>
+                                        <p class="font-semibold text-blue-800 text-xs mb-2">测评说明：</p>
+                                        <ul class="text-blue-700 text-xs space-y-1">
+                                            <li>• 共10道问题，预计需要5-8分钟</li>
+                                            <li>• 请根据贵机构的真实情况作答</li>
+                                            <li>• 测评结果将影响贵机构是否可以参与本产品</li>
+                                            <li>• 测评结果有效期为1年</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg">
+                                开始测评
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 问题1页面 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+                    <h3 class="font-bold">2. 测评问题页 - 第1题</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <!-- 进度 -->
+                            <div class="mb-4">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-700">第 1 题 / 共 10 题</span>
+                                    <span class="text-blue-600">10%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 10%"></div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">1. 贵机构的类型是？</h3>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q1" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">初创企业（成立3年以内）</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q1" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">成长型企业（成立3-10年）</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-blue-600 bg-blue-50 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q1" checked class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">成熟企业（成立10年以上）</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q1" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">金融机构或投资机构</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q1" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">上市公司或大型集团</span>
+                                </label>
+                            </div>
+
+                            <div class="flex justify-end mt-6">
+                                <button class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg">
+                                    下一题
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第二行：问题5 + 问题9 -->
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <!-- 3. 问题5页面 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+                    <h3 class="font-bold">3. 测评问题页 - 第5题</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <div class="mb-4">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-700">第 5 题 / 共 10 题</span>
+                                    <span class="text-blue-600">50%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">5. 贵机构的投资目的是？</h3>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q5" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">资产保值，保本为主</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q5" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">稳定增值，追求稳定收益</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q5" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">资产增值，愿意承担一定风险</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-blue-600 bg-blue-50 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q5" checked class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">追求高收益，可承受较大波动</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q5" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">战略投资或激进投资，追求最大收益</span>
+                                </label>
+                            </div>
+
+                            <div class="flex justify-between mt-6">
+                                <button class="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg">
+                                    上一题
+                                </button>
+                                <button class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg">
+                                    下一题
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 问题9页面 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+                    <h3 class="font-bold">4. 测评问题页 - 第9题</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <div class="mb-4">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-700">第 9 题 / 共 10 题</span>
+                                    <span class="text-blue-600">90%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">9. 贵机构能承受的最大投资亏损比例是？</h3>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q9" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">不能承受任何亏损</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q9" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">5%以内</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q9" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">5%-15%</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-blue-600 bg-blue-50 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q9" checked class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">15%-30%</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q9" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">30%以上</span>
+                                </label>
+                            </div>
+
+                            <div class="flex justify-between mt-6">
+                                <button class="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg">
+                                    上一题
+                                </button>
+                                <button class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg">
+                                    下一题
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第三行：第10题 + 声明确认页 -->
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <!-- 5. 问题10页面 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+                    <h3 class="font-bold">5. 测评问题页 - 第10题</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <div class="mb-4">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-700">第 10 题 / 共 10 题</span>
+                                    <span class="text-blue-600">100%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">10. 贵机构对高风险投资产品（如衍生品、杠杆产品）的了解程度？</h3>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q10" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">完全不了解</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q10" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">了解基础知识</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q10" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">有一定了解</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-blue-600 bg-blue-50 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q10" checked class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">比较了解</span>
+                                </label>
+                                <label class="flex items-start p-3 border-2 border-gray-200 rounded-lg cursor-pointer">
+                                    <input type="radio" name="q10" class="mt-1 mr-2 text-blue-600">
+                                    <span class="text-sm text-gray-700">非常了解，有实际投资经验</span>
+                                </label>
+                            </div>
+
+                            <div class="flex justify-between mt-6">
+                                <button class="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg">
+                                    上一题
+                                </button>
+                                <button class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg">
+                                    提交测评
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. 声明确认页 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4">
+                    <h3 class="font-bold">6. 声明确认页</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <div class="text-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-900 mb-1">声明确认</h2>
+                                <p class="text-gray-600 text-sm">在查看测评结果前，请确认以下声明</p>
+                            </div>
+
+                            <!-- 声明框 -->
+                            <div class="mb-6 p-4 bg-gray-50 border-2 border-gray-200 rounded-lg">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" checked class="mt-0.5 mr-3 text-blue-600 w-5 h-5">
+                                    <span class="text-gray-700 text-sm">
+                                        本机构确认以上风险测评问卷由本机构授权代表独立完成，未受到任何机构或个人的诱导或不当影响。本机构承诺所有答案均基于本机构真实情况如实填写，并理解虚假填写可能导致不适当的投资建议和相应的投资风险及法律责任。
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg text-sm">
+                                    返回修改
+                                </button>
+                                <button class="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-lg text-sm">
+                                    查看结果
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第四行：测评结果页 (R4通过) + 测评结果页 (R2不通过) -->
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <!-- 7. 测评结果页 - 通过 (R4) -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4">
+                    <h3 class="font-bold">7. 测评结果页 - 通过 (R5进取型)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <div class="text-center mb-4">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-2">
+                                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900 mb-1">风险测评完成</h2>
+                                <p class="text-green-600 font-semibold">✓ 符合产品要求</p>
+                            </div>
+
+                            <!-- 测评结果 -->
+                            <div class="mb-3 p-4 bg-green-50 border-2 border-green-500 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-bold">测评结果</h3>
+                                    <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">R5</span>
+                                </div>
+                                <div class="mb-3">
+                                    <p class="text-gray-600 text-xs">风险等级</p>
+                                    <p class="font-semibold text-base">进取型</p>
+                                </div>
+                                <p class="text-xs text-gray-700">贵机构具备极高风险承受能力，适合进取型投资策略，可参与各类高风险高收益产品。</p>
+                            </div>
+
+                            <!-- 温馨提示 -->
+                            <div class="mb-3 p-2 bg-blue-50 border-l-4 border-blue-500 rounded">
+                                <p class="font-semibold text-blue-800 text-xs mb-1">温馨提示：</p>
+                                <p class="text-blue-700 text-xs">测评结果有效期为1年，若有效期内公司情况有变化也可以重新测评。</p>
+                            </div>
+
+                            <button class="w-full bg-green-600 text-white font-semibold py-2.5 rounded-lg text-sm">
+                                继续完成认证
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. 测评结果页 - 不通过 (R2) -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-red-600 to-red-700 text-white p-4">
+                    <h3 class="font-bold">8. 测评结果页 - 不通过 (R2稳健型)</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mx-auto" style="width: 375px; height: 667px; border: 3px solid #333; border-radius: 30px; overflow: hidden; background: white;">
+                        <div class="h-full overflow-y-auto p-6">
+                            <div class="text-center mb-4">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-2">
+                                    <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900 mb-1">风险测评完成</h2>
+                                <p class="text-red-600 font-semibold">✗ 不符合产品要求</p>
+                            </div>
+
+                            <!-- 测评结果 -->
+                            <div class="mb-3 p-4 bg-red-50 border-2 border-red-500 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-bold">测评结果</h3>
+                                    <span class="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full">R2</span>
+                                </div>
+                                <div class="mb-3">
+                                    <p class="text-gray-600 text-xs">风险等级</p>
+                                    <p class="font-semibold text-base">稳健型</p>
+                                </div>
+                                <p class="text-xs text-gray-700">贵机构具备一定风险承受能力，适合稳健型投资策略。</p>
+                            </div>
+
+                            <!-- 不符合要求 -->
+                            <div class="mb-3 p-2 bg-red-50 border-l-4 border-red-500 rounded">
+                                <div class="flex items-start">
+                                    <span class="text-sm mr-1">✗</span>
+                                    <div>
+                                        <p class="font-semibold text-red-800 text-xs mb-1">不符合产品要求</p>
+                                        <p class="text-red-700 text-xs mb-1">根据监管要求，本RWA产品为高风险产品，仅适合成长型（R4）及以上的机构投资者参与。</p>
+                                        <p class="text-red-700 text-xs">您的机构风险承受能力评估结果为稳健型，暂不符合本产品的投资要求。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作提示 -->
+                            <div class="mb-3 p-2 bg-blue-50 border-l-4 border-blue-500 rounded">
+                                <p class="font-semibold text-blue-800 text-xs mb-1">您可以选择：</p>
+                                <ul class="text-blue-700 text-xs space-y-0.5">
+                                    <li>• 重新测评（如果您认为测评结果不准确）</li>
+                                    <li>• 退出认证（我们会为您推荐更适合的产品）</li>
+                                </ul>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-lg text-sm">
+                                    重新测评
+                                </button>
+                                <button class="flex-1 bg-gray-400 text-white font-semibold py-2.5 rounded-lg text-sm">
+                                    退出认证
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚说明 -->
+        <div class="mt-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+            <h3 class="font-semibold text-blue-900 mb-2">设计说明</h3>
+            <ul class="text-blue-800 text-sm space-y-1">
+                <li><strong>问题设计：</strong>针对机构特点，评估资产规模、投资团队、投资经验等维度</li>
+                <li><strong>评分体系：</strong>10题累加制，每题1-5分，总分10-50分，划分为R1-R5五个风险等级</li>
+                <li><strong>准入控制：</strong>RWA产品仅允许R4（成长型）和R5（进取型）机构参与</li>
+                <li><strong>流程设计：</strong>欢迎页 → 10题问卷 → 声明确认 → 结果展示（通过可继续，不通过可重新测评）</li>
+                <li><strong>结果展示：</strong>仅显示风险等级和描述，不显示总分和适合产品</li>
+                <li><strong>温馨提示：</strong>有效期1年，有效期内公司情况有变化也可重新测评</li>
+                <li><strong>页面数量：</strong>共8个关键页面（欢迎页、Q1、Q5、Q9、Q10、声明页、通过页、不通过页）</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+
