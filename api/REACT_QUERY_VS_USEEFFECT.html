@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REACT_QUERY_VS_USEEFFECT</title>
+    <link rel="stylesheet" href="../md2html/style.css">
+</head>
+<body>
+<nav class="table-of-contents">
+  <h2 class="toc-title">📑 目录</h2>
+  <ul class="toc-list">
+    <li class="toc-item toc-level-1">
+      <a href="#react-query-vs-useeffect-为什么要替换数据获取方式" class="toc-link">React Query vs useEffect：为什么要替换数据获取方式？</a>
+    <li class="toc-item toc-level-2">
+      <a href="#目录" class="toc-link">📑 目录</a>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#核心观点" class="toc-link">核心观点</a>
+    <li class="toc-item toc-level-3">
+      <a href="#一句话总结" class="toc-link">🎯 一句话总结</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#关键数据" class="toc-link">📊 关键数据</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#useeffect-的-7-个严重问题" class="toc-link">useEffect 的 7 个严重问题</a>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-1-代码冗长-样板代码过多" class="toc-link">问题 1: 代码冗长，样板代码过多 📝</a>
+    <li class="toc-item toc-level-4">
+      <a href="#使用-useeffect-的传统方式" class="toc-link">❌ 使用 useEffect 的传统方式</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#使用-react-query-的方式" class="toc-link">✅ 使用 React Query 的方式</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-2-竞态条件-race-condition" class="toc-link">问题 2: 竞态条件（Race Condition）🐛</a>
+    <li class="toc-item toc-level-4">
+      <a href="#什么是竞态条件" class="toc-link">什么是竞态条件？</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#useeffect-的竞态问题示例" class="toc-link">❌ useEffect 的竞态问题示例</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#尝试修复-但仍不完美" class="toc-link">尝试修复（但仍不完美）</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-query-的解决方案" class="toc-link">✅ React Query 的解决方案</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-3-重复请求和缓存缺失" class="toc-link">问题 3: 重复请求和缓存缺失 🔄</a>
+    <li class="toc-item toc-level-4">
+      <a href="#useeffect-的重复请求问题" class="toc-link">❌ useEffect 的重复请求问题</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-query-的自动缓存" class="toc-link">✅ React Query 的自动缓存</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-4-加载状态管理复杂" class="toc-link">问题 4: 加载状态管理复杂 🎛️</a>
+    <li class="toc-item toc-level-4">
+      <a href="#多个数据源的状态管理噩梦" class="toc-link">❌ 多个数据源的状态管理噩梦</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-query-的优雅方案" class="toc-link">✅ React Query 的优雅方案</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-5-窗口聚焦时数据过期" class="toc-link">问题 5: 窗口聚焦时数据过期 🪟</a>
+    <li class="toc-item toc-level-4">
+      <a href="#useeffect-不会自动刷新" class="toc-link">❌ useEffect 不会自动刷新</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-query-的智能刷新" class="toc-link">✅ React Query 的智能刷新</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-6-乐观更新困难" class="toc-link">问题 6: 乐观更新困难 ⚡</a>
+    <li class="toc-item toc-level-4">
+      <a href="#useeffect-实现乐观更新-复杂" class="toc-link">❌ useEffect 实现乐观更新（复杂）</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-query-的乐观更新-内置支持" class="toc-link">✅ React Query 的乐观更新（内置支持）</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#问题-7-轮询和实时更新" class="toc-link">问题 7: 轮询和实时更新 🔄</a>
+    <li class="toc-item toc-level-4">
+      <a href="#useeffect-手动轮询" class="toc-link">❌ useEffect 手动轮询</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#react-query-的智能轮询" class="toc-link">✅ React Query 的智能轮询</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#react-query-如何解决这些问题" class="toc-link">React Query 如何解决这些问题</a>
+    <li class="toc-item toc-level-3">
+      <a href="#核心设计理念" class="toc-link">🎯 核心设计理念</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#核心机制" class="toc-link">🛠️ 核心机制</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-基于-key-的缓存系统" class="toc-link">1. 基于 Key 的缓存系统</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-自动取消过期请求" class="toc-link">2. 自动取消过期请求</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#3-智能的缓存失效策略" class="toc-link">3. 智能的缓存失效策略</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#4-自动的后台重新验证" class="toc-link">4. 自动的后台重新验证</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#实际项目对比" class="toc-link">实际项目对比</a>
+    <li class="toc-item toc-level-3">
+      <a href="#场景-用户列表页面" class="toc-link">场景：用户列表页面</a>
+    <li class="toc-item toc-level-4">
+      <a href="#使用-useeffect-120-行代码" class="toc-link">❌ 使用 useEffect (120 行代码)</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#使用-react-query-30-行代码" class="toc-link">✅ 使用 React Query (30 行代码)</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#性能和体验提升" class="toc-link">性能和体验提升</a>
+    <li class="toc-item toc-level-3">
+      <a href="#性能对比" class="toc-link">📊 性能对比</a>
+    <li class="toc-item toc-level-4">
+      <a href="#场景-1-用户快速切换标签" class="toc-link">场景 1: 用户快速切换标签</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#场景-2-多组件共享数据" class="toc-link">场景 2: 多组件共享数据</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#场景-3-离线后重连" class="toc-link">场景 3: 离线后重连</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#用户体验提升" class="toc-link">💡 用户体验提升</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#何时仍需要-useeffect" class="toc-link">何时仍需要 useEffect</a>
+    <li class="toc-item toc-level-3">
+      <a href="#useeffect-的正确使用场景" class="toc-link">✅ useEffect 的正确使用场景</a>
+    <li class="toc-item toc-level-4">
+      <a href="#1-非数据获取的副作用" class="toc-link">1. 非数据获取的副作用</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#2-dom-操作" class="toc-link">2. DOM 操作</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#3-订阅外部数据源" class="toc-link">3. 订阅外部数据源</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#4-同步-react-状态到外部系统" class="toc-link">4. 同步 React 状态到外部系统</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#不要用-useeffect-做数据获取" class="toc-link">❌ 不要用 useEffect 做数据获取</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#迁移指南" class="toc-link">迁移指南</a>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-1-安装-react-query" class="toc-link">步骤 1: 安装 React Query</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-2-设置-queryclient" class="toc-link">步骤 2: 设置 QueryClient</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-3-迁移第一个组件" class="toc-link">步骤 3: 迁移第一个组件</a>
+    <li class="toc-item toc-level-4">
+      <a href="#before-useeffect" class="toc-link">Before (useEffect)</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#after-react-query" class="toc-link">After (React Query)</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-4-迁移带参数的请求" class="toc-link">步骤 4: 迁移带参数的请求</a>
+    <li class="toc-item toc-level-4">
+      <a href="#before" class="toc-link">Before</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#after" class="toc-link">After</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#步骤-5-迁移-post-put-delete-操作" class="toc-link">步骤 5: 迁移 POST/PUT/DELETE 操作</a>
+    <li class="toc-item toc-level-4">
+      <a href="#before" class="toc-link">Before</a>
+  </li>
+    <li class="toc-item toc-level-4">
+      <a href="#after" class="toc-link">After</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#常见问题解答" class="toc-link">常见问题解答</a>
+    <li class="toc-item toc-level-3">
+      <a href="#q1-react-query-会增加包体积吗" class="toc-link">Q1: React Query 会增加包体积吗？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q2-学习-react-query-难吗" class="toc-link">Q2: 学习 React Query 难吗？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q3-如何处理需要立即执行的请求" class="toc-link">Q3: 如何处理需要立即执行的请求？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q4-如何处理依赖其他数据的请求" class="toc-link">Q4: 如何处理依赖其他数据的请求？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q5-useeffect-的依赖数组在-react-query-中如何体现" class="toc-link">Q5: useEffect 的依赖数组在 React Query 中如何体现？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q6-如何清空缓存" class="toc-link">Q6: 如何清空缓存？</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#q7-react-query-与-redux-有什么区别" class="toc-link">Q7: React Query 与 Redux 有什么区别？</a>
+    </ul>
+  </li>
+    <li class="toc-item toc-level-2">
+      <a href="#总结" class="toc-link">总结</a>
+    <li class="toc-item toc-level-3">
+      <a href="#核心要点" class="toc-link">🎯 核心要点</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#迁移带来的价值" class="toc-link">📈 迁移带来的价值</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#立即开始" class="toc-link">🚀 立即开始</a>
+  </li>
+    <li class="toc-item toc-level-3">
+      <a href="#推荐资源" class="toc-link">📚 推荐资源</a>
+    </ul>
+  </li>
+    </ul>
+  </li>
+  </li>
+  </ul>
+</nav>
+
+<div class="content">
+<h1 id="react-query-vs-useeffect-为什么要替换数据获取方式">React Query vs useEffect：为什么要替换数据获取方式？</h1>
+<blockquote>
+<p><strong>文档目的</strong>: 深入解释为什么在数据获取场景下，React Query 比传统的 useEffect 方式更优秀<br><strong>适用读者</strong>: React 开发者，特别是习惯使用 useEffect 进行数据获取的开发者<br><strong>阅读时间</strong>: 15-20 分钟<br><strong>更新日期</strong>: 2025-11-05</p>
+</blockquote>
+<hr>
+<h2 id="目录">📑 目录</h2>
+<ol>
+<li><a href="#%E6%A0%B8%E5%BF%83%E8%A7%82%E7%82%B9">核心观点</a></li>
+<li><a href="#useeffect-%E7%9A%84-7-%E4%B8%AA%E4%B8%A5%E9%87%8D%E9%97%AE%E9%A2%98">useEffect 的 7 个严重问题</a></li>
+<li><a href="#react-query-%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E8%BF%99%E4%BA%9B%E9%97%AE%E9%A2%98">React Query 如何解决这些问题</a></li>
+<li><a href="#%E5%AE%9E%E9%99%85%E9%A1%B9%E7%9B%AE%E5%AF%B9%E6%AF%94">实际项目对比</a></li>
+<li><a href="#%E6%80%A7%E8%83%BD%E5%92%8C%E4%BD%93%E9%AA%8C%E6%8F%90%E5%8D%87">性能和体验提升</a></li>
+<li><a href="#%E4%BD%95%E6%97%B6%E4%BB%8D%E9%9C%80%E8%A6%81-useeffect">何时仍需要 useEffect</a></li>
+<li><a href="#%E8%BF%81%E7%A7%BB%E6%8C%87%E5%8D%97">迁移指南</a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E7%AD%94">常见问题解答</a></li>
+</ol>
+<hr>
+<h2 id="核心观点">核心观点</h2>
+<h3 id="一句话总结">🎯 一句话总结</h3>
+<p><strong>useEffect 是为副作用设计的，不是为数据获取设计的。React Query 是专门为数据获取设计的，解决了 useEffect 在数据获取场景下的所有痛点。</strong></p>
+<h3 id="关键数据">📊 关键数据</h3>
+<ul>
+<li><strong>代码量减少</strong>: 70-90%</li>
+<li><strong>Bug 减少</strong>: 约 60-70%（避免竞态条件、内存泄漏等）</li>
+<li><strong>性能提升</strong>: 请求去重 + 智能缓存</li>
+<li><strong>开发效率</strong>: 提升 3-5 倍</li>
+<li><strong>用户体验</strong>: 显著改善（更快的响应、更少的闪烁）</li>
+</ul>
+<hr>
+<h2 id="useeffect-的-7-个严重问题">useEffect 的 7 个严重问题</h2>
+<h3 id="问题-1-代码冗长-样板代码过多">问题 1: 代码冗长，样板代码过多 📝</h3>
+<h4 id="使用-useeffect-的传统方式">❌ 使用 useEffect 的传统方式</h4>
+<pre><code class="language-typescript">function UserDashboard() {
+  // 状态管理 - 需要 3 个状态
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  useEffect(() =&gt; {
+    // 防止内存泄漏的标志
+    let cancelled = false
+    
+    // 设置加载状态
+    setLoading(true)
+    setError(null)
+    
+    // 发起请求
+    fetchUserData()
+      .then(result =&gt; {
+        // 检查是否已取消
+        if (!cancelled) {
+          setData(result)
+          setError(null)
+        }
+      })
+      .catch(err =&gt; {
+        // 检查是否已取消
+        if (!cancelled) {
+          setError(err.message)
+          setData(null)
+        }
+      })
+      .finally(() =&gt; {
+        // 检查是否已取消
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    // 清理函数 - 防止内存泄漏
+    return () =&gt; {
+      cancelled = true
+    }
+  }, []) // 空依赖数组
+
+  // 渲染逻辑
+  if (loading) return &lt;LoadingSpinner /&gt;
+  if (error) return &lt;ErrorMessage message={error} /&gt;
+  if (!data) return null
+
+  return &lt;div&gt;{/* 渲染数据 */}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>代码行数</strong>: ~45 行<br><strong>需要管理</strong>: 3 个状态变量 + 1 个取消标志 + 清理逻辑</p>
+<hr>
+<h4 id="使用-react-query-的方式">✅ 使用 React Query 的方式</h4>
+<pre><code class="language-typescript">function UserDashboard() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: [&#39;userData&#39;],
+    queryFn: fetchUserData,
+  })
+
+  if (isLoading) return &lt;LoadingSpinner /&gt;
+  if (error) return &lt;ErrorMessage message={error.message} /&gt;
+
+  return &lt;div&gt;{/* 渲染数据 */}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>代码行数</strong>: ~10 行<br><strong>代码减少</strong>: 78% ⬇️<br><strong>自动处理</strong>: 缓存、取消、错误、加载状态</p>
+<hr>
+<h3 id="问题-2-竞态条件-race-condition">问题 2: 竞态条件（Race Condition）🐛</h3>
+<p>这是 useEffect 最严重的 Bug 之一，也是最容易被忽视的。</p>
+<h4 id="什么是竞态条件">什么是竞态条件？</h4>
+<p>当用户快速操作（如快速切换选项卡），多个异步请求同时进行，响应顺序可能与请求顺序不一致，导致显示错误的数据。</p>
+<h4 id="useeffect-的竞态问题示例">❌ useEffect 的竞态问题示例</h4>
+<pre><code class="language-typescript">function UserProfile({ userId }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() =&gt; {
+    setLoading(true)
+    
+    // 🐛 BUG: 没有取消机制
+    fetchUser(userId)
+      .then(data =&gt; {
+        setUser(data)
+        setLoading(false)
+      })
+  }, [userId])
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>问题场景：</strong></p>
+<pre><code>时间线：
+t=0ms    用户点击 userId=1 → 发送请求1 (需要 500ms)
+t=100ms  用户点击 userId=2 → 发送请求2 (需要 200ms)
+t=200ms  用户点击 userId=3 → 发送请求3 (需要 100ms)
+
+响应顺序（根据网络延迟）：
+t=300ms  请求3返回 → setUser(user3) ✅
+t=300ms  请求2返回 → setUser(user2) ❌ 覆盖了 user3
+t=500ms  请求1返回 → setUser(user1) ❌ 覆盖了 user2
+
+最终结果：显示 user1 的数据 ❌
+期望结果：显示 user3 的数据 ✅
+</code></pre>
+<h4 id="尝试修复-但仍不完美">尝试修复（但仍不完美）</h4>
+<pre><code class="language-typescript">function UserProfile({ userId }) {
+  const [user, setUser] = useState(null)
+
+  useEffect(() =&gt; {
+    let cancelled = false // 添加取消标志
+
+    fetchUser(userId).then(data =&gt; {
+      if (!cancelled) { // 检查是否取消
+        setUser(data)
+      }
+    })
+
+    return () =&gt; {
+      cancelled = true // 组件卸载或 userId 变化时取消
+    }
+  }, [userId])
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>问题：</strong></p>
+<ol>
+<li>虽然避免了设置状态，但请求仍在进行（浪费带宽）</li>
+<li>需要在每个组件中重复这个逻辑</li>
+<li>容易忘记添加取消逻辑</li>
+<li>如果使用 axios，需要额外的 CancelToken 逻辑</li>
+</ol>
+<hr>
+<h4 id="react-query-的解决方案">✅ React Query 的解决方案</h4>
+<pre><code class="language-typescript">function UserProfile({ userId }) {
+  const { data: user } = useQuery({
+    queryKey: [&#39;user&#39;, userId],
+    queryFn: () =&gt; fetchUser(userId),
+  })
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>React Query 如何解决：</strong></p>
+<ol>
+<li>✅ 自动取消过期的请求（真正的网络层取消）</li>
+<li>✅ 通过 queryKey 管理请求唯一性</li>
+<li>✅ 保证只显示最新 queryKey 对应的数据</li>
+<li>✅ 零额外代码</li>
+</ol>
+<hr>
+<h3 id="问题-3-重复请求和缓存缺失">问题 3: 重复请求和缓存缺失 🔄</h3>
+<h4 id="useeffect-的重复请求问题">❌ useEffect 的重复请求问题</h4>
+<pre><code class="language-typescript">// 场景：Dashboard 和 Sidebar 同时需要用户列表
+
+// Dashboard 组件
+function Dashboard() {
+  const [users, setUsers] = useState([])
+
+  useEffect(() =&gt; {
+    fetchUsers().then(setUsers) // 请求1
+  }, [])
+
+  return &lt;UserList users={users} /&gt;
+}
+
+// Sidebar 组件（同时渲染）
+function Sidebar() {
+  const [users, setUsers] = useState([])
+
+  useEffect(() =&gt; {
+    fetchUsers().then(setUsers) // 请求2（重复！）
+  }, [])
+
+  return &lt;UserCount count={users.length} /&gt;
+}
+</code></pre>
+<p><strong>问题：</strong></p>
+<ol>
+<li>发送了 2 次相同的请求（浪费带宽）</li>
+<li>用户看到两次加载状态</li>
+<li>数据可能不一致（两次请求之间数据可能变化）</li>
+</ol>
+<p><strong>尝试手动缓存（复杂且容易出错）：</strong></p>
+<pre><code class="language-typescript">// 需要创建全局缓存
+const cache = new Map()
+
+function useFetchUsers() {
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() =&gt; {
+    // 检查缓存
+    if (cache.has(&#39;users&#39;)) {
+      setUsers(cache.get(&#39;users&#39;))
+      return
+    }
+
+    // 发起请求
+    setLoading(true)
+    fetchUsers().then(data =&gt; {
+      cache.set(&#39;users&#39;, data) // 存入缓存
+      setUsers(data)
+      setLoading(false)
+    })
+  }, [])
+
+  return { users, loading }
+}
+</code></pre>
+<p><strong>新问题：</strong></p>
+<ol>
+<li>何时更新缓存？</li>
+<li>缓存何时过期？</li>
+<li>如何清除缓存？</li>
+<li>多个参数如何作为缓存 key？</li>
+<li>需要手动管理缓存生命周期</li>
+</ol>
+<hr>
+<h4 id="react-query-的自动缓存">✅ React Query 的自动缓存</h4>
+<pre><code class="language-typescript">// Dashboard 组件
+function Dashboard() {
+  const { data: users } = useQuery({
+    queryKey: [&#39;users&#39;],
+    queryFn: fetchUsers,
+  })
+
+  return &lt;UserList users={users} /&gt;
+}
+
+// Sidebar 组件
+function Sidebar() {
+  const { data: users } = useQuery({
+    queryKey: [&#39;users&#39;],
+    queryFn: fetchUsers, // ✅ 不会发送请求！使用缓存
+  })
+
+  return &lt;UserCount count={users?.length || 0} /&gt;
+}
+</code></pre>
+<p><strong>React Query 的智能缓存：</strong></p>
+<ol>
+<li>✅ 自动去重 - 相同 queryKey 只发送一次请求</li>
+<li>✅ 自动缓存 - 数据存储在内存中</li>
+<li>✅ 自动过期 - 可配置 staleTime</li>
+<li>✅ 自动重新验证 - 过期后自动刷新</li>
+<li>✅ 零配置 - 开箱即用</li>
+</ol>
+<hr>
+<h3 id="问题-4-加载状态管理复杂">问题 4: 加载状态管理复杂 🎛️</h3>
+<h4 id="多个数据源的状态管理噩梦">❌ 多个数据源的状态管理噩梦</h4>
+<pre><code class="language-typescript">function ComplexDashboard() {
+  // 用户数据
+  const [users, setUsers] = useState(null)
+  const [usersLoading, setUsersLoading] = useState(false)
+  const [usersError, setUsersError] = useState(null)
+
+  // 订单数据
+  const [orders, setOrders] = useState(null)
+  const [ordersLoading, setOrdersLoading] = useState(false)
+  const [ordersError, setOrdersError] = useState(null)
+
+  // 产品数据
+  const [products, setProducts] = useState(null)
+  const [productsLoading, setProductsLoading] = useState(false)
+  const [productsError, setProductsError] = useState(null)
+
+  // 统计数据
+  const [stats, setStats] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [statsError, setStatsError] = useState(null)
+
+  useEffect(() =&gt; {
+    setUsersLoading(true)
+    fetchUsers()
+      .then(setUsers)
+      .catch(setUsersError)
+      .finally(() =&gt; setUsersLoading(false))
+  }, [])
+
+  useEffect(() =&gt; {
+    setOrdersLoading(true)
+    fetchOrders()
+      .then(setOrders)
+      .catch(setOrdersError)
+      .finally(() =&gt; setOrdersLoading(false))
+  }, [])
+
+  useEffect(() =&gt; {
+    setProductsLoading(true)
+    fetchProducts()
+      .then(setProducts)
+      .catch(setProductsError)
+      .finally(() =&gt; setProductsLoading(false))
+  }, [])
+
+  useEffect(() =&gt; {
+    setStatsLoading(true)
+    fetchStats()
+      .then(setStats)
+      .catch(setStatsError)
+      .finally(() =&gt; setStatsLoading(false))
+  }, [])
+
+  // 😵 需要协调所有状态
+  const isLoading = usersLoading || ordersLoading || productsLoading || statsLoading
+  const hasError = usersError || ordersError || productsError || statsError
+
+  // 😵 组件有 12 个状态变量！
+}
+</code></pre>
+<p><strong>问题：</strong></p>
+<ul>
+<li>12 个状态变量（数据 + 加载 + 错误）× 4</li>
+<li>4 个 useEffect</li>
+<li>难以维护</li>
+<li>容易出错</li>
+</ul>
+<hr>
+<h4 id="react-query-的优雅方案">✅ React Query 的优雅方案</h4>
+<pre><code class="language-typescript">function ComplexDashboard() {
+  const users = useQuery({ queryKey: [&#39;users&#39;], queryFn: fetchUsers })
+  const orders = useQuery({ queryKey: [&#39;orders&#39;], queryFn: fetchOrders })
+  const products = useQuery({ queryKey: [&#39;products&#39;], queryFn: fetchProducts })
+  const stats = useQuery({ queryKey: [&#39;stats&#39;], queryFn: fetchStats })
+
+  // ✅ 清晰简洁
+  const isLoading = users.isLoading || orders.isLoading || products.isLoading || stats.isLoading
+  const hasError = users.error || orders.error || products.error || stats.error
+
+  // 每个查询独立管理，但可以组合
+}
+</code></pre>
+<p><strong>优势：</strong></p>
+<ul>
+<li>4 行查询代码</li>
+<li>每个查询独立</li>
+<li>易于组合和条件化</li>
+<li>类型安全</li>
+</ul>
+<hr>
+<h3 id="问题-5-窗口聚焦时数据过期">问题 5: 窗口聚焦时数据过期 🪟</h3>
+<h4 id="useeffect-不会自动刷新">❌ useEffect 不会自动刷新</h4>
+<pre><code class="language-typescript">function StockPrice() {
+  const [price, setPrice] = useState(null)
+
+  useEffect(() =&gt; {
+    fetchStockPrice().then(setPrice)
+  }, [])
+
+  return &lt;div&gt;当前价格: ${price}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>用户场景：</strong></p>
+<pre><code>1. 用户打开股票页面，看到价格 $100
+2. 用户切换到邮件标签页工作 10 分钟
+3. 这期间股票涨到 $150
+4. 用户切回来，仍然看到 $100 ❌
+</code></pre>
+<p><strong>尝试修复：</strong></p>
+<pre><code class="language-typescript">function StockPrice() {
+  const [price, setPrice] = useState(null)
+
+  useEffect(() =&gt; {
+    fetchStockPrice().then(setPrice)
+  }, [])
+
+  // 需要手动添加焦点监听
+  useEffect(() =&gt; {
+    const handleFocus = () =&gt; {
+      fetchStockPrice().then(setPrice)
+    }
+
+    window.addEventListener(&#39;focus&#39;, handleFocus)
+    return () =&gt; window.removeEventListener(&#39;focus&#39;, handleFocus)
+  }, [])
+
+  return &lt;div&gt;当前价格: ${price}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>问题：</strong></p>
+<ul>
+<li>每次聚焦都刷新（即使数据刚获取）</li>
+<li>需要在每个组件重复这个逻辑</li>
+</ul>
+<hr>
+<h4 id="react-query-的智能刷新">✅ React Query 的智能刷新</h4>
+<pre><code class="language-typescript">function StockPrice() {
+  const { data: price } = useQuery({
+    queryKey: [&#39;stockPrice&#39;],
+    queryFn: fetchStockPrice,
+    staleTime: 2 * 60 * 1000, // 2分钟内认为数据新鲜
+    refetchOnWindowFocus: true, // ✅ 默认开启
+  })
+
+  return &lt;div&gt;当前价格: ${price}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>智能刷新逻辑：</strong></p>
+<pre><code>1. 用户打开页面 → 获取价格
+2. 用户切走 → 数据在 2 分钟内认为是新鲜的
+3. 2 分钟后用户回来 → 自动刷新（数据已过期）
+4. 2 分钟内用户回来 → 不刷新（数据仍然新鲜）
+</code></pre>
+<hr>
+<h3 id="问题-6-乐观更新困难">问题 6: 乐观更新困难 ⚡</h3>
+<p>乐观更新是指：先更新 UI，再发送请求，如果失败则回滚。这能极大提升用户体验。</p>
+<h4 id="useeffect-实现乐观更新-复杂">❌ useEffect 实现乐观更新（复杂）</h4>
+<pre><code class="language-typescript">function TodoList() {
+  const [todos, setTodos] = useState([])
+
+  const addTodo = async (text) =&gt; {
+    // 1. 生成临时 ID
+    const tempId = `temp-${Date.now()}`
+    const tempTodo = { id: tempId, text, completed: false }
+
+    // 2. 立即更新 UI（乐观）
+    setTodos(prev =&gt; [...prev, tempTodo])
+
+    try {
+      // 3. 发送请求
+      const newTodo = await createTodo(text)
+      
+      // 4. 用真实数据替换临时数据
+      setTodos(prev =&gt; 
+        prev.map(todo =&gt; todo.id === tempId ? newTodo : todo)
+      )
+    } catch (error) {
+      // 5. 失败时移除临时数据（回滚）
+      setTodos(prev =&gt; prev.filter(todo =&gt; todo.id !== tempId))
+      
+      // 6. 显示错误
+      toast.error(&#39;添加失败&#39;)
+    }
+  }
+
+  // 😵 复杂的状态更新逻辑
+  // 😵 容易出错（忘记回滚、状态不同步等）
+}
+</code></pre>
+<hr>
+<h4 id="react-query-的乐观更新-内置支持">✅ React Query 的乐观更新（内置支持）</h4>
+<pre><code class="language-typescript">function TodoList() {
+  const queryClient = useQueryClient()
+  
+  const { data: todos } = useQuery({
+    queryKey: [&#39;todos&#39;],
+    queryFn: fetchTodos,
+  })
+
+  const addTodoMutation = useMutation({
+    mutationFn: createTodo,
+    
+    // 乐观更新
+    onMutate: async (newTodoText) =&gt; {
+      // 1. 取消正在进行的查询
+      await queryClient.cancelQueries({ queryKey: [&#39;todos&#39;] })
+      
+      // 2. 保存之前的数据（用于回滚）
+      const previousTodos = queryClient.getQueryData([&#39;todos&#39;])
+      
+      // 3. 乐观更新
+      queryClient.setQueryData([&#39;todos&#39;], old =&gt; [
+        ...old,
+        { id: Date.now(), text: newTodoText, completed: false }
+      ])
+      
+      // 4. 返回上下文（用于回滚）
+      return { previousTodos }
+    },
+    
+    // 失败时回滚
+    onError: (err, newTodo, context) =&gt; {
+      queryClient.setQueryData([&#39;todos&#39;], context.previousTodos)
+      toast.error(&#39;添加失败&#39;)
+    },
+    
+    // 成功后重新验证
+    onSettled: () =&gt; {
+      queryClient.invalidateQueries({ queryKey: [&#39;todos&#39;] })
+    },
+  })
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; addTodoMutation.mutate(&#39;新任务&#39;)}&gt;
+        添加
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p><strong>优势：</strong></p>
+<ul>
+<li>✅ 完整的乐观更新流程</li>
+<li>✅ 自动回滚机制</li>
+<li>✅ 类型安全</li>
+<li>✅ 标准化的实现</li>
+</ul>
+<hr>
+<h3 id="问题-7-轮询和实时更新">问题 7: 轮询和实时更新 🔄</h3>
+<h4 id="useeffect-手动轮询">❌ useEffect 手动轮询</h4>
+<pre><code class="language-typescript">function RealtimeData() {
+  const [data, setData] = useState(null)
+
+  useEffect(() =&gt; {
+    // 立即获取
+    const fetchData = () =&gt; {
+      fetch(&#39;/api/data&#39;).then(r =&gt; r.json()).then(setData)
+    }
+
+    fetchData()
+
+    // 每 3 秒轮询
+    const interval = setInterval(fetchData, 3000)
+
+    // 清理
+    return () =&gt; clearInterval(interval)
+  }, [])
+
+  return &lt;div&gt;{data}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>问题：</strong></p>
+<ol>
+<li>标签页隐藏时仍在轮询（浪费资源）</li>
+<li>用户不在线时仍在轮询（浪费资源）</li>
+<li>错误处理复杂</li>
+<li>无法动态调整轮询间隔</li>
+</ol>
+<hr>
+<h4 id="react-query-的智能轮询">✅ React Query 的智能轮询</h4>
+<pre><code class="language-typescript">function RealtimeData() {
+  const { data } = useQuery({
+    queryKey: [&#39;realtimeData&#39;],
+    queryFn: fetchData,
+    refetchInterval: 3000, // 每 3 秒刷新
+    refetchIntervalInBackground: false, // ✅ 标签页隐藏时停止
+    enabled: navigator.onLine, // ✅ 离线时停止
+  })
+
+  return &lt;div&gt;{data}&lt;/div&gt;
+}
+</code></pre>
+<p><strong>智能优化：</strong></p>
+<ul>
+<li>✅ 标签页可见时才轮询</li>
+<li>✅ 网络离线时自动停止</li>
+<li>✅ 组件卸载时自动清理</li>
+<li>✅ 可动态调整间隔</li>
+</ul>
+<hr>
+<h2 id="react-query-如何解决这些问题">React Query 如何解决这些问题</h2>
+<h3 id="核心设计理念">🎯 核心设计理念</h3>
+<p>React Query 专为<strong>异步状态管理</strong>设计，特别是<strong>服务端状态</strong>（Server State）。</p>
+<p><strong>服务端状态的特点：</strong></p>
+<ol>
+<li>存储在远程服务器</li>
+<li>需要异步获取</li>
+<li>可能被其他人修改</li>
+<li>会过期（stale）</li>
+<li>需要缓存以提升性能</li>
+</ol>
+<h3 id="核心机制">🛠️ 核心机制</h3>
+<h4 id="1-基于-key-的缓存系统">1. 基于 Key 的缓存系统</h4>
+<pre><code class="language-typescript">// queryKey 决定数据的唯一性
+useQuery({
+  queryKey: [&#39;user&#39;, userId], // 数组作为 key
+  queryFn: () =&gt; fetchUser(userId),
+})
+
+// 不同的 userId 会有不同的缓存
+// userId=1 → 缓存A
+// userId=2 → 缓存B
+</code></pre>
+<h4 id="2-自动取消过期请求">2. 自动取消过期请求</h4>
+<pre><code class="language-typescript">// 当 queryKey 变化时，旧请求自动取消
+// userId 从 1 → 2 → 3
+// 请求1 和 请求2 自动取消
+// 只有请求3 的结果会被使用
+</code></pre>
+<h4 id="3-智能的缓存失效策略">3. 智能的缓存失效策略</h4>
+<pre><code class="language-typescript">useQuery({
+  queryKey: [&#39;data&#39;],
+  queryFn: fetchData,
+  staleTime: 5 * 60 * 1000, // 5分钟内数据视为新鲜
+  cacheTime: 10 * 60 * 1000, // 缓存保留 10 分钟
+})
+
+// 数据新鲜时：直接使用缓存，不发请求
+// 数据过期但有缓存：先显示缓存，后台刷新
+// 没有缓存：显示加载状态，发送请求
+</code></pre>
+<h4 id="4-自动的后台重新验证">4. 自动的后台重新验证</h4>
+<pre><code class="language-typescript">// 窗口聚焦时
+refetchOnWindowFocus: true
+
+// 网络重连时
+refetchOnReconnect: true
+
+// 组件重新挂载时
+refetchOnMount: true
+</code></pre>
+<hr>
+<h2 id="实际项目对比">实际项目对比</h2>
+<h3 id="场景-用户列表页面">场景：用户列表页面</h3>
+<h4 id="使用-useeffect-120-行代码">❌ 使用 useEffect (120 行代码)</h4>
+<pre><code class="language-typescript">function UsersPage() {
+  // 状态管理
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [search, setSearch] = useState(&#39;&#39;)
+
+  // 获取数据
+  useEffect(() =&gt; {
+    let cancelled = false
+    
+    setLoading(true)
+    setError(null)
+    
+    fetchUsers({ page, search })
+      .then(response =&gt; {
+        if (!cancelled) {
+          setUsers(response.data)
+          setTotal(response.total)
+        }
+      })
+      .catch(err =&gt; {
+        if (!cancelled) {
+          setError(err.message)
+        }
+      })
+      .finally(() =&gt; {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () =&gt; {
+      cancelled = true
+    }
+  }, [page, search]) // 依赖变化时重新请求
+
+  // 搜索防抖
+  const [debouncedSearch, setDebouncedSearch] = useState(search)
+  useEffect(() =&gt; {
+    const timer = setTimeout(() =&gt; {
+      setDebouncedSearch(search)
+    }, 500)
+    return () =&gt; clearTimeout(timer)
+  }, [search])
+
+  // 删除用户
+  const deleteUser = async (id) =&gt; {
+    const originalUsers = [...users]
+    
+    // 乐观更新
+    setUsers(users.filter(u =&gt; u.id !== id))
+    
+    try {
+      await deleteUserApi(id)
+    } catch (error) {
+      // 回滚
+      setUsers(originalUsers)
+      setError(&#39;删除失败&#39;)
+    }
+  }
+
+  // 刷新
+  const refresh = () =&gt; {
+    setLoading(true)
+    fetchUsers({ page, search })
+      .then(response =&gt; {
+        setUsers(response.data)
+        setTotal(response.total)
+      })
+      .finally(() =&gt; setLoading(false))
+  }
+
+  // 分页
+  const handlePageChange = (newPage) =&gt; {
+    setPage(newPage)
+  }
+
+  // 搜索
+  const handleSearch = (value) =&gt; {
+    setSearch(value)
+    setPage(1) // 重置页码
+  }
+
+  if (loading &amp;&amp; !users.length) return &lt;Loading /&gt;
+  if (error) return &lt;Error message={error} /&gt;
+
+  return (
+    &lt;div&gt;
+      &lt;SearchBar value={search} onChange={handleSearch} /&gt;
+      &lt;UserTable 
+        users={users} 
+        onDelete={deleteUser} 
+        loading={loading}
+      /&gt;
+      &lt;Pagination 
+        current={page}
+        total={total}
+        onChange={handlePageChange}
+      /&gt;
+      &lt;button onClick={refresh}&gt;刷新&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<hr>
+<h4 id="使用-react-query-30-行代码">✅ 使用 React Query (30 行代码)</h4>
+<pre><code class="language-typescript">function UsersPage() {
+  const [page, setPage] = useState(1)
+  const [search, setSearch] = useState(&#39;&#39;)
+
+  // 获取用户列表
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: [&#39;users&#39;, page, search],
+    queryFn: () =&gt; fetchUsers({ page, search }),
+    keepPreviousData: true, // 切页时保留旧数据
+  })
+
+  // 删除用户
+  const deleteMutation = useMutation({
+    mutationFn: deleteUserApi,
+    onSuccess: () =&gt; {
+      queryClient.invalidateQueries({ queryKey: [&#39;users&#39;] })
+    },
+  })
+
+  if (isLoading) return &lt;Loading /&gt;
+  if (error) return &lt;Error message={error.message} /&gt;
+
+  return (
+    &lt;div&gt;
+      &lt;SearchBar 
+        value={search} 
+        onChange={(value) =&gt; {
+          setSearch(value)
+          setPage(1)
+        }} 
+      /&gt;
+      &lt;UserTable 
+        users={data.data} 
+        onDelete={(id) =&gt; deleteMutation.mutate(id)}
+        loading={deleteMutation.isLoading}
+      /&gt;
+      &lt;Pagination 
+        current={page}
+        total={data.total}
+        onChange={setPage}
+      /&gt;
+      &lt;button onClick={refetch}&gt;刷新&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p><strong>对比：</strong></p>
+<ul>
+<li>代码减少：75% (120行 → 30行)</li>
+<li>自动防抖：通过 queryKey 变化</li>
+<li>自动缓存：切页再回来无需重新请求</li>
+<li>自动取消：搜索时旧请求自动取消</li>
+<li>保留旧数据：切页时不闪屏</li>
+</ul>
+<hr>
+<h2 id="性能和体验提升">性能和体验提升</h2>
+<h3 id="性能对比">📊 性能对比</h3>
+<h4 id="场景-1-用户快速切换标签">场景 1: 用户快速切换标签</h4>
+<pre><code>用户在列表页快速点击 10 个用户查看详情
+
+useEffect 方式：
+- 发送 10 次请求
+- 可能显示错误用户（竞态条件）
+- 每次都显示加载状态
+- 返回列表时又重新请求
+
+React Query 方式：
+- 发送 10 次请求
+- 自动取消过期请求，保证正确
+- 缓存每个用户数据
+- 返回列表时使用缓存，无需请求
+</code></pre>
+<p><strong>性能提升：50-70%</strong> （减少请求次数）</p>
+<hr>
+<h4 id="场景-2-多组件共享数据">场景 2: 多组件共享数据</h4>
+<pre><code>Dashboard 有 5 个组件都需要用户信息
+
+useEffect 方式：
+- 发送 5 次相同请求
+- 或者需要手动实现 Context 共享
+
+React Query 方式：
+- 只发送 1 次请求
+- 自动共享给所有组件
+</code></pre>
+<p><strong>请求减少：80%</strong> （5个请求 → 1个请求）</p>
+<hr>
+<h4 id="场景-3-离线后重连">场景 3: 离线后重连</h4>
+<pre><code>用户网络中断 1 分钟后恢复
+
+useEffect 方式：
+- 需要手动监听 online 事件
+- 手动刷新数据
+- 可能遗漏某些组件
+
+React Query 方式：
+- 自动检测网络恢复
+- 自动刷新所有过期数据
+- 零额外代码
+</code></pre>
+<hr>
+<h3 id="用户体验提升">💡 用户体验提升</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>useEffect</th>
+<th>React Query</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>首次加载</strong></td>
+<td>显示加载中</td>
+<td>显示加载中</td>
+</tr>
+<tr>
+<td><strong>再次访问</strong></td>
+<td>重新加载，闪屏 ⚠️</td>
+<td>立即显示缓存 ✅</td>
+</tr>
+<tr>
+<td><strong>切换页面后返回</strong></td>
+<td>重新加载，闪屏 ⚠️</td>
+<td>立即显示缓存 ✅</td>
+</tr>
+<tr>
+<td><strong>窗口失焦后返回</strong></td>
+<td>数据可能过期 ⚠️</td>
+<td>自动刷新 ✅</td>
+</tr>
+<tr>
+<td><strong>网络中断恢复</strong></td>
+<td>需手动刷新 ⚠️</td>
+<td>自动刷新 ✅</td>
+</tr>
+<tr>
+<td><strong>重复请求</strong></td>
+<td>发送多次 ⚠️</td>
+<td>自动去重 ✅</td>
+</tr>
+<tr>
+<td><strong>竞态条件</strong></td>
+<td>可能显示错误数据 ❌</td>
+<td>自动处理 ✅</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="何时仍需要-useeffect">何时仍需要 useEffect</h2>
+<p><strong>重要：useEffect 并未被完全抛弃！</strong></p>
+<h3 id="useeffect-的正确使用场景">✅ useEffect 的正确使用场景</h3>
+<h4 id="1-非数据获取的副作用">1. 非数据获取的副作用</h4>
+<pre><code class="language-typescript">// ✅ 更新页面标题
+useEffect(() =&gt; {
+  document.title = `您有 ${count} 条新消息`
+}, [count])
+
+// ✅ 添加全局事件监听
+useEffect(() =&gt; {
+  const handleResize = () =&gt; {
+    console.log(&#39;窗口大小改变&#39;)
+  }
+  
+  window.addEventListener(&#39;resize&#39;, handleResize)
+  return () =&gt; window.removeEventListener(&#39;resize&#39;, handleResize)
+}, [])
+</code></pre>
+<h4 id="2-dom-操作">2. DOM 操作</h4>
+<pre><code class="language-typescript">// ✅ 自动聚焦输入框
+useEffect(() =&gt; {
+  inputRef.current?.focus()
+}, [])
+
+// ✅ 滚动到顶部
+useEffect(() =&gt; {
+  window.scrollTo(0, 0)
+}, [pathname])
+</code></pre>
+<h4 id="3-订阅外部数据源">3. 订阅外部数据源</h4>
+<pre><code class="language-typescript">// ✅ WebSocket 订阅
+useEffect(() =&gt; {
+  const ws = new WebSocket(&#39;ws://example.com&#39;)
+  
+  ws.onmessage = (event) =&gt; {
+    console.log(&#39;收到消息:&#39;, event.data)
+  }
+  
+  return () =&gt; ws.close()
+}, [])
+</code></pre>
+<h4 id="4-同步-react-状态到外部系统">4. 同步 React 状态到外部系统</h4>
+<pre><code class="language-typescript">// ✅ 同步状态到 localStorage
+useEffect(() =&gt; {
+  localStorage.setItem(&#39;theme&#39;, theme)
+}, [theme])
+</code></pre>
+<h3 id="不要用-useeffect-做数据获取">❌ 不要用 useEffect 做数据获取</h3>
+<pre><code class="language-typescript">// ❌ 错误
+useEffect(() =&gt; {
+  fetchUsers().then(setUsers)
+}, [])
+
+// ✅ 正确
+const { data: users } = useQuery({
+  queryKey: [&#39;users&#39;],
+  queryFn: fetchUsers,
+})
+</code></pre>
+<hr>
+<h2 id="迁移指南">迁移指南</h2>
+<h3 id="步骤-1-安装-react-query">步骤 1: 安装 React Query</h3>
+<pre><code class="language-bash">pnpm add @tanstack/react-query @tanstack/react-query-devtools
+</code></pre>
+<h3 id="步骤-2-设置-queryclient">步骤 2: 设置 QueryClient</h3>
+<pre><code class="language-typescript">// app/layout.tsx
+import { QueryClient, QueryClientProvider } from &#39;@tanstack/react-query&#39;
+import { ReactQueryDevtools } from &#39;@tanstack/react-query-devtools&#39;
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5分钟
+      cacheTime: 10 * 60 * 1000, // 10分钟
+      retry: 1,
+      refetchOnWindowFocus: false, // 可选：关闭窗口聚焦刷新
+    },
+  },
+})
+
+export default function RootLayout({ children }) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;QueryClientProvider client={queryClient}&gt;
+          {children}
+          &lt;ReactQueryDevtools initialIsOpen={false} /&gt;
+        &lt;/QueryClientProvider&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+<h3 id="步骤-3-迁移第一个组件">步骤 3: 迁移第一个组件</h3>
+<h4 id="before-useeffect">Before (useEffect)</h4>
+<pre><code class="language-typescript">function Users() {
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  useEffect(() =&gt; {
+    setLoading(true)
+    fetchUsers()
+      .then(setUsers)
+      .catch(setError)
+      .finally(() =&gt; setLoading(false))
+  }, [])
+
+  if (loading) return &lt;Loading /&gt;
+  if (error) return &lt;Error /&gt;
+  return &lt;UserList users={users} /&gt;
+}
+</code></pre>
+<h4 id="after-react-query">After (React Query)</h4>
+<pre><code class="language-typescript">function Users() {
+  const { data: users, isLoading, error } = useQuery({
+    queryKey: [&#39;users&#39;],
+    queryFn: fetchUsers,
+  })
+
+  if (isLoading) return &lt;Loading /&gt;
+  if (error) return &lt;Error /&gt;
+  return &lt;UserList users={users} /&gt;
+}
+</code></pre>
+<h3 id="步骤-4-迁移带参数的请求">步骤 4: 迁移带参数的请求</h3>
+<h4 id="before">Before</h4>
+<pre><code class="language-typescript">function UserProfile({ userId }) {
+  const [user, setUser] = useState(null)
+
+  useEffect(() =&gt; {
+    let cancelled = false
+    fetchUser(userId).then(data =&gt; {
+      if (!cancelled) setUser(data)
+    })
+    return () =&gt; { cancelled = true }
+  }, [userId])
+}
+</code></pre>
+<h4 id="after">After</h4>
+<pre><code class="language-typescript">function UserProfile({ userId }) {
+  const { data: user } = useQuery({
+    queryKey: [&#39;user&#39;, userId], // 包含参数
+    queryFn: () =&gt; fetchUser(userId),
+  })
+}
+</code></pre>
+<h3 id="步骤-5-迁移-post-put-delete-操作">步骤 5: 迁移 POST/PUT/DELETE 操作</h3>
+<h4 id="before">Before</h4>
+<pre><code class="language-typescript">const createUser = async (userData) =&gt; {
+  setLoading(true)
+  try {
+    const newUser = await createUserApi(userData)
+    setUsers([...users, newUser])
+  } catch (error) {
+    setError(error)
+  } finally {
+    setLoading(false)
+  }
+}
+</code></pre>
+<h4 id="after">After</h4>
+<pre><code class="language-typescript">const createUserMutation = useMutation({
+  mutationFn: createUserApi,
+  onSuccess: () =&gt; {
+    // 刷新用户列表
+    queryClient.invalidateQueries({ queryKey: [&#39;users&#39;] })
+  },
+})
+
+// 使用
+createUserMutation.mutate(userData)
+</code></pre>
+<hr>
+<h2 id="常见问题解答">常见问题解答</h2>
+<h3 id="q1-react-query-会增加包体积吗">Q1: React Query 会增加包体积吗？</h3>
+<p><strong>A:</strong> 会增加约 13KB (gzip 后 ~4KB)，但考虑到：</p>
+<ul>
+<li>减少 70-90% 的业务代码</li>
+<li>避免自己实现缓存、取消等逻辑</li>
+<li>性能提升带来的价值</li>
+</ul>
+<p><strong>完全值得！</strong></p>
+<hr>
+<h3 id="q2-学习-react-query-难吗">Q2: 学习 React Query 难吗？</h3>
+<p><strong>A:</strong> 基础用法非常简单：</p>
+<pre><code class="language-typescript">// 99% 的场景只需要这个
+const { data, isLoading, error } = useQuery({
+  queryKey: [&#39;key&#39;],
+  queryFn: fetchData,
+})
+</code></pre>
+<p>进阶功能（乐观更新、无限滚动等）可以渐进式学习。</p>
+<hr>
+<h3 id="q3-如何处理需要立即执行的请求">Q3: 如何处理需要立即执行的请求？</h3>
+<p><strong>A:</strong> useQuery 默认在组件挂载时就会执行。如果需要手动触发：</p>
+<pre><code class="language-typescript">const { data, refetch } = useQuery({
+  queryKey: [&#39;data&#39;],
+  queryFn: fetchData,
+  enabled: false, // 不自动执行
+})
+
+// 手动触发
+&lt;button onClick={() =&gt; refetch()}&gt;加载数据&lt;/button&gt;
+</code></pre>
+<hr>
+<h3 id="q4-如何处理依赖其他数据的请求">Q4: 如何处理依赖其他数据的请求？</h3>
+<p><strong>A:</strong> 使用 <code>enabled</code> 选项：</p>
+<pre><code class="language-typescript">// 先获取用户
+const { data: user } = useQuery({
+  queryKey: [&#39;user&#39;],
+  queryFn: fetchUser,
+})
+
+// 只有当用户数据存在时才获取订单
+const { data: orders } = useQuery({
+  queryKey: [&#39;orders&#39;, user?.id],
+  queryFn: () =&gt; fetchOrders(user.id),
+  enabled: !!user, // ✅ 条件启用
+})
+</code></pre>
+<hr>
+<h3 id="q5-useeffect-的依赖数组在-react-query-中如何体现">Q5: useEffect 的依赖数组在 React Query 中如何体现？</h3>
+<p><strong>A:</strong> 通过 <code>queryKey</code> 实现：</p>
+<pre><code class="language-typescript">// useEffect 方式
+useEffect(() =&gt; {
+  fetchData(userId, page)
+}, [userId, page]) // 依赖数组
+
+// React Query 方式
+useQuery({
+  queryKey: [&#39;data&#39;, userId, page], // queryKey 包含所有依赖
+  queryFn: () =&gt; fetchData(userId, page),
+})
+// queryKey 变化 = 重新请求
+</code></pre>
+<hr>
+<h3 id="q6-如何清空缓存">Q6: 如何清空缓存？</h3>
+<pre><code class="language-typescript">// 清空所有缓存
+queryClient.clear()
+
+// 清空特定缓存
+queryClient.removeQueries({ queryKey: [&#39;users&#39;] })
+
+// 使特定缓存失效（会触发刷新）
+queryClient.invalidateQueries({ queryKey: [&#39;users&#39;] })
+</code></pre>
+<hr>
+<h3 id="q7-react-query-与-redux-有什么区别">Q7: React Query 与 Redux 有什么区别？</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>React Query</th>
+<th>Redux</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>主要用途</strong></td>
+<td>服务端状态</td>
+<td>客户端状态</td>
+</tr>
+<tr>
+<td><strong>数据来源</strong></td>
+<td>API 请求</td>
+<td>应用内状态</td>
+</tr>
+<tr>
+<td><strong>缓存</strong></td>
+<td>自动</td>
+<td>手动</td>
+</tr>
+<tr>
+<td><strong>异步处理</strong></td>
+<td>内置</td>
+<td>需要中间件</td>
+</tr>
+<tr>
+<td><strong>代码量</strong></td>
+<td>少</td>
+<td>多</td>
+</tr>
+</tbody></table>
+<p><strong>可以同时使用！</strong></p>
+<ul>
+<li>Redux: 管理应用状态（主题、用户偏好等）</li>
+<li>React Query: 管理服务端数据（API 请求）</li>
+</ul>
+<hr>
+<h2 id="总结">总结</h2>
+<h3 id="核心要点">🎯 核心要点</h3>
+<ol>
+<li><strong>useEffect 不是为数据获取设计的</strong> - 它是为副作用设计的</li>
+<li><strong>React Query 解决了所有痛点</strong> - 竞态条件、缓存、加载状态等</li>
+<li><strong>代码量减少 70-90%</strong> - 更少的代码，更少的 bug</li>
+<li><strong>性能和体验显著提升</strong> - 智能缓存，自动优化</li>
+<li><strong>useEffect 仍然有用</strong> - 用于非数据获取的副作用</li>
+</ol>
+<h3 id="迁移带来的价值">📈 迁移带来的价值</h3>
+<ul>
+<li><strong>开发效率</strong>: ⬆️ 3-5倍</li>
+<li><strong>代码质量</strong>: ⬆️ 显著提升</li>
+<li><strong>Bug 数量</strong>: ⬇️ 60-70%</li>
+<li><strong>用户体验</strong>: ⬆️ 明显改善</li>
+<li><strong>可维护性</strong>: ⬆️ 大幅提升</li>
+</ul>
+<h3 id="立即开始">🚀 立即开始</h3>
+<pre><code class="language-typescript">// 1. 安装
+pnpm add @tanstack/react-query
+
+// 2. 配置
+&lt;QueryClientProvider client={queryClient}&gt;
+  &lt;App /&gt;
+&lt;/QueryClientProvider&gt;
+
+// 3. 使用
+const { data } = useQuery({
+  queryKey: [&#39;data&#39;],
+  queryFn: fetchData,
+})
+</code></pre>
+<h3 id="推荐资源">📚 推荐资源</h3>
+<ul>
+<li><a href="https://tanstack.com/query/latest">官方文档</a></li>
+<li><a href="https://tkdodo.eu/blog/practical-react-query">实战教程</a></li>
+<li><a href="https://www.youtube.com/c/TanStack">视频教程</a></li>
+</ul>
+<hr>
+<p><strong>最后的建议：</strong></p>
+<p>如果你正在使用 useEffect 进行数据获取，强烈建议迁移到 React Query。这不仅是技术选型的问题，更是代码质量和用户体验的重大提升。</p>
+<p><strong>数据获取用 React Query，其他副作用用 useEffect</strong> - 这就是现代 React 应用的最佳实践。</p>
+<hr>
+<p><strong>文档版本</strong>: 1.0<br><strong>最后更新</strong>: 2025-11-05<br><strong>维护者</strong>: Development Team</p>
+
+</div>
+</body>
+</html>
