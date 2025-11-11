@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 在线预览器</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.0.0/marked.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Microsoft YaHei', '微软雅黑';
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            color: #2c3e50;
+            background: linear-gradient(to bottom right, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 目录样式 - 左侧固定 */
+        .table-of-contents {
+            width: 320px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fc 100%);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
+            padding: 30px 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 目录滚动条样式 */
+        .table-of-contents::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-of-contents::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .table-of-contents::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .table-of-contents::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #5568d3 0%, #653a91 100%);
+        }
+
+        .toc-title {
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 1.3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding-bottom: 12px;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-image-slice: 1;
+            position: sticky;
+            top: 0;
+            background-color: #ffffff;
+            z-index: 10;
+            letter-spacing: 0.5px;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .toc-sublist {
+            list-style: none;
+            padding-left: 18px;
+            margin: 4px 0;
+            border-left: 2px solid #e9ecef;
+        }
+
+        .toc-item {
+            margin: 3px 0;
+        }
+
+        .toc-link {
+            color: #495057;
+            text-decoration: none;
+            display: block;
+            padding: 10px 14px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.92em;
+            line-height: 1.5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toc-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toc-link:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea;
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+
+        .toc-link:hover::before {
+            transform: scaleY(1);
+        }
+
+        .toc-link:active {
+            transform: translateX(2px) scale(0.98);
+        }
+
+        .toc-level-1>.toc-link {
+            font-weight: 600;
+            font-size: 0.98em;
+            color: #2c3e50;
+        }
+
+        .toc-level-2>.toc-link {
+            font-weight: 500;
+            padding-left: 18px;
+        }
+
+        .toc-level-3>.toc-link {
+            font-size: 0.88em;
+            padding-left: 22px;
+            color: #6c757d;
+        }
+
+        /* 主内容区域 */
+        .content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 50px 70px;
+            max-width: 1400px;
+            background-color: #ffffff;
+            box-shadow: -2px 0 20px rgba(0, 0, 0, 0.05);
+            min-height: 100vh;
+        }
+
+        /* 内容样式 */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+            scroll-margin-top: 20px;
+            color: #1a202c;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-image-slice: 1;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 1.9em;
+            color: #2d3748;
+            border-left: 4px solid #667eea;
+            padding-left: 16px;
+            margin-top: 48px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #2d3748;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        h3::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        h4 {
+            font-size: 1.25em;
+            color: #4a5568;
+        }
+
+        h5 {
+            font-size: 1.1em;
+            color: #4a5568;
+        }
+
+        h6 {
+            font-size: 1em;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        code {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 87%;
+            margin: 0;
+            padding: 3px 8px;
+            font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+            color: #e83e8c;
+            font-weight: 500;
+        }
+
+        pre {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            line-height: 1.6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+            color: #495057;
+            border: none;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            color: #4a5568;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        blockquote p {
+            margin: 0;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin: 24px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        table th,
+        table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: 0.3px;
+            border: none;
+        }
+
+        table tr {
+            transition: all 0.2s;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        table tr:hover {
+            background-color: rgba(102, 126, 234, 0.08);
+            transform: scale(1.01);
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        a:hover {
+            color: #764ba2;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        img {
+            max-width: 100%;
+            box-sizing: border-box;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 16px 0;
+        }
+
+        ul,
+        ol {
+            padding-left: 2em;
+            margin: 0 0 20px 0;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.8;
+        }
+
+        li::marker {
+            color: #667eea;
+        }
+
+        hr {
+            height: 2px;
+            padding: 0;
+            margin: 48px 0;
+            background: linear-gradient(90deg, transparent 0%, #667eea 50%, transparent 100%);
+            border: 0;
+        }
+
+        p {
+            margin: 16px 0;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+
+        strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        em {
+            color: #718096;
+        }
+
+        .task-list-item {
+            list-style-type: none;
+        }
+
+        .task-list-item input {
+            margin: 0 0.2em 0.25em -1.6em;
+            vertical-align: middle;
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .table-of-contents {
+                width: 260px;
+                padding: 20px 15px;
+            }
+
+            .content {
+                margin-left: 260px;
+                padding: 30px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .table-of-contents {
+                position: relative;
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e9ecef;
+                max-height: 400px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            h3 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>📝 Markdown 在线预览器</h1>
+            <p>上传 Markdown 文件，实时预览精美格式</p>
+        </div>
+
+        <!-- 上传区域 -->
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">拖拽文件到这里，或点击选择文件</div>
+                <div class="upload-hint">支持 .md、.markdown 格式</div>
+                <input type="file" id="fileInput" accept=".md,.markdown">
+            </div>
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <!-- 示例按钮 -->
+        <div class="demo-section">
+            <span class="demo-label">或者试试示例：</span>
+            <button class="demo-btn" onclick="loadDemo('simple')">简单示例</button>
+            <button class="demo-btn" onclick="loadDemo('complex')">复杂文档</button>
+        </div>
+
+        <!-- 加载动画 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在转换...</p>
+        </div>
+
+        <!-- 预览区域 -->
+        <div class="preview-container" id="previewContainer">
+            <div class="preview-header">
+                <div class="preview-title">📖 预览</div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="downloadHTML()">💾 下载 HTML</button>
+                    <button class="action-btn" onclick="copyHTML()">📋 复制 HTML</button>
+                    <button class="action-btn" onclick="reset()">🔄 重新上传</button>
+                </div>
+            </div>
+            <div class="preview-body" id="previewBody">
+                <!-- 目录和内容将动态插入这里 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMarkdown = '';
+        let currentFileName = '';
+        let tocItems = [];
+        let currentHTML = '';
+
+        // 配置 marked
+        const renderer = new marked.Renderer();
+        const originalHeading = renderer.heading.bind(renderer);
+
+        renderer.heading = function (text, level, raw) {
+            const id = raw
+                .toLowerCase()
+                .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
+            tocItems.push({
+                level: level,
+                text: text,
+                id: id
+            });
+
+            return `<h${level} id="${id}">${text}</h${level}>\n`;
+        };
+
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false,
+            renderer: renderer
+        });
+
+        // 生成目录 HTML
+        function generateTOC(items) {
+            if (items.length === 0) return '';
+
+            let tocHtml = '<nav class="table-of-contents">\n';
+            tocHtml += '  <h2 class="toc-title">📑 目录</h2>\n';
+            tocHtml += '  <ul class="toc-list">\n';
+
+            let lastLevel = 0;
+
+            items.forEach((item, index) => {
+                const { level, text, id } = item;
+
+                if (level > lastLevel) {
+                    for (let i = lastLevel; i < level - 1; i++) {
+                        tocHtml += '    <ul class="toc-sublist">\n';
+                    }
+                } else if (level < lastLevel) {
+                    for (let i = level; i < lastLevel; i++) {
+                        tocHtml += '    </ul>\n';
+                        tocHtml += '  </li>\n';
+                    }
+                } else if (index > 0) {
+                    tocHtml += '  </li>\n';
+                }
+
+                tocHtml += `    <li class="toc-item toc-level-${level}">\n`;
+                tocHtml += `      <a href="#${id}" class="toc-link">${text}</a>\n`;
+
+                lastLevel = level;
+            });
+
+            for (let i = 1; i < lastLevel; i++) {
+                tocHtml += '    </ul>\n';
+                tocHtml += '  </li>\n';
+            }
+
+            tocHtml += '  </li>\n';
+            tocHtml += '  </ul>\n';
+            tocHtml += '</nav>\n';
+
+            return tocHtml;
+        }
+
+        // 转换 Markdown
+        function convertMarkdown(markdown, fileName = 'document') {
+            tocItems = [];
+            const htmlContent = marked.parse(markdown);
+            const tocHtml = generateTOC(tocItems);
+
+            const previewBody = document.getElementById('previewBody');
+            previewBody.innerHTML = tocHtml + '<div class="content">' + htmlContent + '</div>';
+
+            // 生成完整 HTML（用于下载）
+            currentHTML = generateFullHTML(fileName, tocHtml, htmlContent);
+
+            // 显示预览
+            document.getElementById('previewContainer').style.display = 'block';
+        }
+
+        // 生成完整 HTML
+        function generateFullHTML(title, toc, content) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/你的GitHub用户名/md2html/style.css">
+</head>
+<body>
+${toc}
+<div class="content">
+${content}
+</div>
+</body>
+</html>`;
+        }
+
+        // 文件上传处理
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDiv = document.getElementById('fileName');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+
+        // 处理文件
+        function handleFile(file) {
+            if (!file.name.match(/\.(md|markdown)$/i)) {
+                alert('请上传 .md 或 .markdown 文件！');
+                return;
+            }
+
+            currentFileName = file.name;
+            fileNameDiv.textContent = `已选择: ${file.name}`;
+            fileNameDiv.style.display = 'block';
+
+            document.getElementById('loading').style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentMarkdown = e.target.result;
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    convertMarkdown(currentMarkdown, file.name.replace(/\.(md|markdown)$/i, ''));
+                }, 500);
+            };
+            reader.readAsText(file);
+        }
+
+        // 加载示例
+        function loadDemo(type) {
+            let markdown = '';
+            if (type === 'simple') {
+                markdown = `# 简单示例文档
+
+## 欢迎使用 Markdown 预览器
+
+这是一个**简单的示例**，展示基本的 Markdown 语法。
+
+### 功能特点
+
+- ✅ 支持标题层级
+- ✅ 支持**粗体**和*斜体*
+- ✅ 支持代码高亮
+- ✅ 支持表格和列表
+
+### 代码示例
+
+\`\`\`javascript
+function hello() {
+    console.log('Hello, World!');
+}
+\`\`\`
+
+### 表格示例
+
+| 功能 | 状态 |
+|-----|------|
+| 文件上传 | ✅ |
+| 实时预览 | ✅ |
+| HTML 导出 | ✅ |
+
+> 💡 提示：你可以上传自己的 Markdown 文件试试！`;
+            } else {
+                markdown = `# 产品需求文档 - 用户积分系统
+
+> **版本**: v1.0  
+> **创建日期**: 2025-11-10  
+> **产品经理**: 张三
+
+---
+
+## 一、需求背景
+
+### 1.1 为什么要做？
+
+**当前问题**：
+- 用户注册后活跃度低，30天留存率仅 35%
+- 用户完成订单后很少回访
+- 缺少用户激励手段
+
+**核心目标**：
+1. 提升用户活跃度 30%
+2. 提升用户留存率至 60%
+
+## 二、核心功能
+
+### 2.1 积分获取
+
+| 任务类型 | 奖励积分 | 频率限制 |
+|---------|---------|---------|
+| 每日签到 | 10 | 1次/天 |
+| 完成订单 | 实付×5% | 无限制 |
+| 评价商品 | 20 | 5次/天 |
+
+### 2.2 计算公式
+
+\`\`\`javascript
+// 订单积分计算
+points = Math.floor(orderAmount * 0.05)
+
+// 抵扣金额计算
+discount = Math.floor(points / 100)
+\`\`\`
+
+## 三、业务流程
+
+\`\`\`
+用户触发任务
+    ↓
+系统验证条件
+    ↓
+发放积分
+    ↓
+推送通知
+    ↓
+完成
+\`\`\`
+
+## 四、验收标准
+
+- [ ] 用户能正常签到
+- [ ] 积分能正确计算
+- [ ] 兑换流程顺畅
+
+> 💡 **提示**：这是一个复杂文档的示例，展示了表格、代码、流程图等多种元素。`;
+            }
+
+            currentMarkdown = markdown;
+            currentFileName = type === 'simple' ? '简单示例.md' : '产品需求文档.md';
+            fileNameDiv.textContent = `已选择: ${currentFileName}`;
+            fileNameDiv.style.display = 'block';
+
+            document.getElementById('loading').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                convertMarkdown(currentMarkdown, currentFileName.replace('.md', ''));
+            }, 500);
+        }
+
+        // 下载 HTML
+        function downloadHTML() {
+            const blob = new Blob([currentHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFileName.replace(/\.(md|markdown)$/i, '.html');
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 复制 HTML
+        function copyHTML() {
+            navigator.clipboard.writeText(currentHTML).then(() => {
+                alert('✅ HTML 代码已复制到剪贴板！');
+            }).catch(() => {
+                alert('❌ 复制失败，请手动复制');
+            });
+        }
+
+        // 重置
+        function reset() {
+            currentMarkdown = '';
+            currentFileName = '';
+            currentHTML = '';
+            tocItems = [];
+            fileInput.value = '';
+            fileNameDiv.style.display = 'none';
+            document.getElementById('previewContainer').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
